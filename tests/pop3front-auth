@@ -1,4 +1,4 @@
-pop3front-auth false echo Yes. <<EOF 2>/dev/null
+$src/pop3front-auth false echo Yes. <<EOF 2>/dev/null
 QUIT NO
 QUIT
 QUIT AGAIN
