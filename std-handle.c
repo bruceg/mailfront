@@ -29,6 +29,7 @@ extern void report_io_bytes(void);
 const response* handle_init(void)
 {
   const char* tmp;
+  const response* resp;
 
   atexit(report_io_bytes);
 
@@ -42,6 +43,8 @@ const response* handle_init(void)
   
   if ((tmp = getenv("DATABYTES")) != 0) maxdatabytes = strtoul(tmp, 0, 10);
   else maxdatabytes = 0;
+
+  if ((resp = backend_validate_init()) != 0) return resp;
 
   return rules_init();
 }

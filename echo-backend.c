@@ -3,6 +3,11 @@
 static response r = { 0, 250, 0 };
 static str tmp;
 
+const response* backend_validate_init(void)
+{
+  return 0;
+}
+
 void backend_handle_reset(void)
 {
 }

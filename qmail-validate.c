@@ -19,7 +19,7 @@ static int lower(str* s)
   return 1;
 }
 
-const response* qmail_validate_init(void)
+const response* backend_validate_init(void)
 {
   static const response resp_no_chdir = {0,451,"Could not change to the qmail directory."};
   static const response resp_error = {0,451,"Internal error."};
@@ -36,7 +36,7 @@ const response* qmail_validate_init(void)
   return 0;
 }
 
-const response* qmail_validate_sender(const str* sender)
+const response* backend_validate_sender(str* sender)
 {
   static const response resp = {0,553,"Sorry, your envelope sender is in my badmailfrom list."};
   int at;
@@ -51,7 +51,7 @@ const response* qmail_validate_sender(const str* sender)
   return 0;
 }
 
-const response* qmail_validate_recipient(const str* recipient)
+const response* backend_validate_recipient(str* recipient)
 {
   static const response resp_rh = {0,553,"Sorry, that domain isn't in my list of allowed rcpthosts."};
   static const response resp_bmt = {0,553,"Sorry, that address is in my badrcptto list."};

@@ -4,7 +4,6 @@
 #include <msg/msg.h>
 #include "mailfront.h"
 #include "mailrules.h"
-#include "qmail.h"
 #include <sysdeps.h>
 #include "conf_qmail.h"
 
@@ -25,13 +24,13 @@ static void close_qqpipe(void)
   qqepipe = qqmpipe = -1;
 }
 
-void qmail_reset(void)
+void backend_handle_reset(void)
 {
   close_qqpipe();
   str_truncate(&buffer, 0);
 }
 
-const response* qmail_sender(const str* sender)
+const response* backend_handle_sender(str* sender)
 {
   if (!str_catc(&buffer, 'F') ||
       !str_cat(&buffer, sender) ||
@@ -39,7 +38,7 @@ const response* qmail_sender(const str* sender)
   return 0;
 }
 
-const response* qmail_recipient(const str* recipient)
+const response* backend_handle_recipient(str* recipient)
 {
   if (!str_catc(&buffer, 'T') ||
       !str_cat(&buffer, recipient) ||
@@ -47,7 +46,7 @@ const response* qmail_recipient(const str* recipient)
   return 0;
 }
 
-const response* qmail_data_start(void)
+const response* backend_handle_data_start(void)
 {
   static const response resp_no_pipe = {0,451,"Could not open pipe to qmail-queue."};
   static const response resp_no_fork = {0,451,"Could not start qmail-queue."};
@@ -106,7 +105,7 @@ static int retry_write(int fd, const char* bytes, unsigned long len)
   return 1;
 }
 
-void qmail_data_bytes(const char* bytes, unsigned long len)
+void backend_handle_data_bytes(const char* bytes, unsigned long len)
 {
   retry_write(qqmpipe, bytes, len);
   databytes += len;
@@ -145,7 +144,7 @@ static void parse_status(int status, response* resp)
   resp->message = str;
 }
 
-const response* qmail_data_end(void)
+const response* backend_handle_data_end(void)
 {
   static const response resp_qq_crashed = {0,451,"qmail-queue crashed."};
   static response resp;

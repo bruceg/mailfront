@@ -23,6 +23,7 @@ extern void handle_data_bytes(const char* bytes, unsigned len);
 extern const response* handle_data_end(void);
 
 /* Defined by a back-end module */
+extern const response* backend_validate_init(void);
 extern const response* backend_validate_sender(str*);
 extern const response* backend_validate_recipient(str*);
 extern void backend_handle_reset(void);

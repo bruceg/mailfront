@@ -3,11 +3,15 @@
 #include "mailfront.h"
 #include "smtp.h"
 #include <iobuf/iobuf.h>
-#include "qmail.h"
 
 const char program[] = "smtpfront-reject";
 
 static response resp = {0,451,"You are not allowed to use this mail server."};
+
+const response* backend_validate_init(void)
+{
+  return 0;
+}
 
 void backend_handle_reset(void)
 {
