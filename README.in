@@ -26,8 +26,9 @@ Development versions of @PACKAGE@ are available via Subversion at:
 
 Installation:
 
-- Make sure the latest version of bglibs from
-  http://untroubled.org/bglibs/ is compiled and installed.
+- Make sure the latest versions of bglibs from
+  http://untroubled.org/bglibs/ and cvm from http://untroubled.org/cvm/
+  are compiled and installed.
 - Build the sources by running "make"
 - Run the "instshow" command to see what will be installed (optional).
 - After the package has been compiled, run the following commands as root:
@@ -38,15 +39,13 @@ Installation:
 Configuration:
 
 - To take advantage of the SMTP AUTH features, make sure you have a CVM
-  authentication program such as:
-  http://www.untroubled.org/cvm/ or
-  http://www.untroubled.org/cvm-vmailmgr/
+  authentication program (some are included with the cvm package itself).
 - Run a CVM authentication module to provide the AUTH feature.
   Example:  To run cvm-vmailmgr as a daemon:
     exec /usr/local/bin/softlimit -m 9000000 \
-     /usr/local/bin/cvm-vmailmgr-local /tmp/.cvm-vmailmgr 2>&1
-- Configure your mail system to use the SMTP back-end with the appropriate
-  environment variables.
+     /usr/local/bin/cvm-vmailmgr /tmp/.cvm-vmailmgr 2>&1
+- Configure your mail system to use the SMTP back-end with the
+  appropriate environment variables.
 
   Example using tcpserver (highly recommended):
     #!/bin/sh
