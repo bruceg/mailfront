@@ -1,5 +1,6 @@
 smtp.a
 log.o
+smtp-auth-stub.o
 iobuf/str.a
 str/str.a
 iobuf/iobuf.a
