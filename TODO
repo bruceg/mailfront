@@ -23,5 +23,5 @@
   - Split the generic protocol handling bits from pop3front-maildir (low
     priority -- who wants anything but maildir?)
 
-- Write a IMAP authenticator? imapfront-auth (to be used intially as a
-  front-end for Courier IMAP)
+- Write a IMAP authenticator imapfront-auth (to be used as a front-end
+  for Courier IMAP)
