@@ -171,7 +171,8 @@ int fixup_received(str* s)
       fixup_ip.len > 0 &&
       (strcasecmp(local_host, fixup_host.s) != 0 ||
        strcasecmp(local_ip, fixup_ip.s) != 0)) {
-    if (!str_cat5s(s, "Received: from ", local_host, " ([", local_ip, "])\n"
+    if (!str_cat3s(s, "Received: from ", local_host, " (")) return 0;
+    if (!str_cat4s(s, local_host, " [", local_ip, "])\n"
 		   "  by ")) return 0;
     if (!str_cat(s, &fixup_host)) return 0;
     if (!str_cats(s, " ([")) return 0;
@@ -184,18 +185,10 @@ int fixup_received(str* s)
 int build_received(str* s, const str* helo_domain, const char* proto)
 {
   if (!str_cats(s, "Received: from ")) return 0;
-  if (helo_domain && helo_domain->len) {
-    if (!str_cat(s, helo_domain)) return 0;
-    if (str_diffs(helo_domain, remote_host)) {
-      if (!str_cat3s(s, " (", remote_host, " [")) return 0;
-    }
-    else
-      if (!str_cats(s, " ([")) return 0;
-  }
-  else
-    if (!str_cat2s(s, remote_host, " ([")) return 0;
-  if (!str_cat6s(s, remote_ip, "])\n"
-		 "  by ", local_host, " ([", local_ip, "])\n"
+  if (!str_cat6s(s, (helo_domain && helo_domain->len > 0) ?
+		 helo_domain->s : remote_host,
+		 " (", remote_host, " [", remote_ip, "])\n")) return 0;
+  if (!str_cat5s(s, "  by ", local_host, " ([", local_ip, "])\n"
 		 "  with ")) return 0;
   if (!str_cat6s(s, proto, " via ", linkproto,
 		 "; ", date_string(), "\n")) return 0;

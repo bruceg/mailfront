@@ -7,6 +7,10 @@ Changes in version 0.91
 - Explicitly set $MAILDIR in imapfront-auth, to provide the variable for
   Courier-IMAP's imapd.  Thanks Bernhard Graf.
 
+- Fixed the generated Received: headers to always put the local host
+  name in the comment if tcpserver looked it up.  This fixes problems
+  with SpamAssassin flagging messages as having forged sender addresses.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
