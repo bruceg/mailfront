@@ -35,9 +35,10 @@ int sasl_auth(const char* prefix, const str* arg)
   int i;
 
   if ((s = str_findfirst(arg, SPACE)) != (unsigned)-1) {
-    if (str_copyb(&mechanism, arg->s, s)) return -1;
-    if (!str_truncate(&response, 0) ||
-	!base64_decode_line(arg->s+s, &response))
+    if (!str_copyb(&mechanism, arg->s, s)) return -1;
+    if (!str_truncate(&response, 0)) return -1;
+    while (arg->s[s] == SPACE) ++s;
+    if (!base64_decode_line(arg->s+s, &response))
       return SASL_RESP_BAD;
     i = sasl_start(mechanism.s, &response, &challenge);
   }
