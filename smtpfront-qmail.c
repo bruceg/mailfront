@@ -25,7 +25,7 @@ const response* handle_recipient(str* recip)
   const response* resp;
   if (relayclient)
     str_cats(recip, relayclient);
-  else
+  else if (!authenticated)
     if ((resp = qmail_validate_recipient(recip)) != 0) return resp;
   return qmail_recipient(recip);
 }
