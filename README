@@ -5,9 +5,8 @@ Version 0.74
 2002-02-12
 
 This is mailfront, a package containing customizeable network front-ends
-for mail servers.  Right now the only protocols that are handled are
-SMTP and POP3, but it may be extended to deal with QMQP, QMTP, and
-potentially IMAP.
+for mail servers.  It contains complete SMTP and POP3 front-ends as well
+as an authentication module for IMAP.
 
 Two SMTP back-ends are provided.  One delivers mail to qmail-queue,
 mimicking most of the behavior of qmail-smtpd, with the addition of

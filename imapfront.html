@@ -1,0 +1,26 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">MailFront</a></h2>
+
+<h1>IMAP Front End</h1>
+
+<hr>
+
+<h2>imapfront-auth</h2>
+
+<p>Usage: <tt>imapfront-auth PROGRAM [ ARGS ... ]</tt></p>
+
+<p><tt>imapfront-auth</tt> provides IMAP authentication using CVM
+modules.  The <tt>LOGIN</tt> command is authenticated via the CVM
+named by <tt>$CVM_SASL_PLAIN</tt>.  If authentication succeeds, it
+sets up the environment and executes <tt>PROGRAM</tt>.  It also offers
+RFC 1734 compliant AUTH support through <a
+href="cvm-sasl.html">cvm-sasl</a>. The environment is set up for use
+with Courier IMAP.</p>
+
+<p>Connections are timed out after <tt>$TIMEOUT</tt> seconds of
+inactivity, or 1200 seconds (20 minutes) if it is not set.</p>
+
+</body>
+</html>
