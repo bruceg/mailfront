@@ -4,6 +4,8 @@ Changes in version 0.71
 - Fixed missing lowercase conversion when handling validating domain
   names against rcpthosts and company.
 
+- Fixed a number of bugs in the SASL implementation.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
