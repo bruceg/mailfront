@@ -1,0 +1,7 @@
+iobytes.o
+mailrules.o
+netstring.o
+std-handle.o
+timeout.o
+qmqp-mainloop.o
+qmtp-respond.o

@@ -1,0 +1,9 @@
+qmqp.a
+qmail.a
+-lbg-cdb
+-lbg-dict
+-lbg-msg
+-lbg-iobuf
+-lbg-str
+-lbg-unix
+socket.lib
