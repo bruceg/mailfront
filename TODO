@@ -6,9 +6,6 @@
 
 - Add support for RFC 2554 authentication (aka SMTP AUTH) using CVM.
 
-- Handle $SMTPREJECT -- all commands are rejected with this message
-  (do this in an alternate back-end).
-
 - Add RFC 1893/2034 enhanced status codes to all responses.
 
 - Add support for RFC 2487 STARTTLS
