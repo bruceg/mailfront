@@ -4,6 +4,8 @@ Changes in version 0.74
 - Modified quit code in pop3front to properly tag only read messages as
   "read".
 
+- Implemented the obsolete LAST command.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
