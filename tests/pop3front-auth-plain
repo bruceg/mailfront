@@ -2,7 +2,7 @@ pfauth false <<EOF
 AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
 EOF
 
-export CVM_SASL_PLAIN=$src/cvm/cvm-unix
+export CVM_SASL_PLAIN=$tmp/cvm
 
 pfauth false <<EOF
 AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3x=

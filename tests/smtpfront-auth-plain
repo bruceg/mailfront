@@ -2,7 +2,7 @@ sfqmail <<EOF
 AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
 EOF
 
-export CVM_SASL_PLAIN=$src/cvm/cvm-unix
+export CVM_SASL_PLAIN=$tmp/cvm
 
 sfqmail <<EOF
 MAIL FROM: <user@remote>

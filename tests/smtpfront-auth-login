@@ -2,7 +2,7 @@ sfqmail <<EOF
 AUTH LOGIN
 EOF
 
-export CVM_SASL_LOGIN=$src/cvm/cvm-unix
+export CVM_SASL_LOGIN=$tmp/cvm
 
 sfqmail <<EOF
 MAIL FROM: <user@remote>
