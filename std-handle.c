@@ -161,27 +161,32 @@ int fixup_received(str* s)
       fixup_ip.len > 0 &&
       (strcasecmp(local_host, fixup_host.s) != 0 ||
        strcasecmp(local_ip, fixup_ip.s) != 0)) {
-    if (!str_cat5s(s, "Received: from ", local_host, " (", local_ip, ")\n"
+    if (!str_cat5s(s, "Received: from ", local_host, " ([", local_ip, "])\n"
 		   "  by ")) return 0;
     if (!str_cat(s, &fixup_host)) return 0;
-    if (!str_cats(s, " (")) return 0;
+    if (!str_cats(s, " ([")) return 0;
     if (!str_cat(s, &fixup_ip)) return 0;
-    if (!str_cat3s(s, "); ", date_string(), "\n")) return 0;
+    if (!str_cat3s(s, "]); ", date_string(), "\n")) return 0;
   }
   return 1;
 }
 
 int build_received(str* s, const str* helo_domain, const char* proto)
 {
-  if (!str_cat2s(s, "Received: from ", remote_host)) return 0;
-  if (helo_domain && helo_domain->len && str_diffs(helo_domain, remote_host)) {
-    if (!str_cats(s, " (HELO ")) return 0;
+  if (!str_cats(s, "Received: from ")) return 0;
+  if (helo_domain && helo_domain->len) {
     if (!str_cat(s, helo_domain)) return 0;
-    if (!str_catc(s, ')')) return 0;
+    if (str_diffs(helo_domain, remote_host)) {
+      if (!str_cat3s(s, " (", remote_host, " [")) return 0;
+    }
+    else
+      if (!str_cats(s, " ([")) return 0;
   }
-  if (!str_cat6s(s, " (", remote_ip, ")\n"
-		 "  by ", local_host, " (", local_ip)) return 0;
-  if (!str_cat5s(s, ") with ", proto, "; ", date_string(), "\n")) return 0;
+  else
+    if (!str_cat2s(s, remote_host, " ([")) return 0;
+  if (!str_cat5s(s, remote_ip, "])\n"
+		 "  by ", local_host, " ([", local_ip)) return 0;
+  if (!str_cat5s(s, "]) with ", proto, "; ", date_string(), "\n")) return 0;
   return 1;
 }
 

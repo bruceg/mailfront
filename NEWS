@@ -3,6 +3,9 @@ Changes in version 0.87
 
 - Fixed a bug that prevented looping email detection from working.
 
+- Fixed the Received: header generation to match the syntax described in
+  RFC 2821.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
