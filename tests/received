@@ -1,0 +1,36 @@
+sfecho2() {
+$src/smtpfront-echo 2>&1 >/dev/null <<EOF | \
+	sed -n -e 's/^.* Received: //p'
+MAIL FROM:<>
+RCPT TO:<test>
+DATA
+.
+EOF
+}
+
+sfecho2
+TESTREMOTEHOST= sfecho2
+TESTLOCALHOST= sfecho2
+
+sfecho3() {
+$src/smtpfront-echo 2>&1 >/dev/null <<EOF | \
+	sed -n -e 's/^.* Received: //p'
+EHLO ehlo.host
+MAIL FROM:<>
+RCPT TO:<test>
+DATA
+.
+EOF
+}
+
+sfecho3
+TESTREMOTEHOST= sfecho3
+TESTLOCALHOST= sfecho3
+
+<result>
+from remote.host (remote.host [5.6.7.8])  by local.host ([1.2.3.4])
+from 5.6.7.8 ([5.6.7.8])  by local.host ([1.2.3.4])
+from remote.host (remote.host [5.6.7.8])  by 1.2.3.4 ([1.2.3.4])
+from ehlo.host (remote.host [5.6.7.8])  by local.host ([1.2.3.4])
+from ehlo.host ([5.6.7.8])  by local.host ([1.2.3.4])
+from ehlo.host (remote.host [5.6.7.8])  by 1.2.3.4 ([1.2.3.4])

@@ -1,3 +1,5 @@
+#include <string.h>
+#include <msg/msg.h>
 #include "mailfront.h"
 
 static response r = { 250, 0 };
@@ -51,6 +53,16 @@ const response* backend_handle_data_start(void)
 void backend_handle_data_bytes(const char* bytes, unsigned long len)
 {
   databytes += len;
+  if (databytes == len) {
+    /* First line is always Received, log the first two lines. */
+    const char* ch;
+    ch = strchr(bytes, '\n');
+    str_copyb(&tmp, bytes, ch-bytes);
+    bytes = ch + 1;
+    ch = strchr(bytes, '\n');
+    str_catb(&tmp, bytes, ch-bytes);
+    msg1(tmp.s);
+  }
 }
 
 const response* backend_handle_data_end(void)
