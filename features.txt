@@ -20,8 +20,8 @@ Features of the smtpd-qmail back-end:
 
 - Verifies sender addresses against control/badmailfrom.
 
-- Verifies recipient addresses against control/rcpthosts and
-  control/morercpthosts.cdb.
+- Verifies recipient addresses against control/rcpthosts,
+  control/morercpthosts.cdb, and control/badrcptto.
 
 - Handles $RELAYCLIENT the same as qmail-smtpd.
 
