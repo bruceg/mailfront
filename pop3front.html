@@ -27,8 +27,12 @@ href="cvm-sasl.html">cvm-sasl</a>.</p>
 <p><tt>pop3front-maildir</tt> serves messages via POP3 out of a
 maildir.  If <tt>$MAILBOX</tt> is set, its contents are used as the
 path to the mailbox, otherwise the <tt>DEFAULT-MAILDIR</tt> argument
-must be present.  If <tt>$MAX_MESSAGES</tt> is set, the number of
-accessable messages will be limited to that number.</p>
+must be present.  If <tt>$MAX_MESSAGES</tt> is set, the total number
+of accessable messages will be limited to that number.  In addition,
+if either of <tt>$MAX_CUR_MESSAGES</tt> or <tt>$MAX_NEW_MESSAGES</tt>
+are set, the total number of accessable messages in the <tt>cur</tt>
+and <tt>new</tt> subdirectories respectively will each be limited to
+that number.</p>
 
 </body>
 </html>
