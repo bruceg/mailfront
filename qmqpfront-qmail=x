@@ -1,5 +1,8 @@
 qmqp.a
 qmail.a
+cvm-validate.o
+-lcvm-client
+-lbg-net
 -lbg-cdb
 -lbg-dict
 -lbg-msg

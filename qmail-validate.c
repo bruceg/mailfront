@@ -33,7 +33,7 @@ const response* backend_validate_init(void)
     return &resp_error;
   if ((mrh_fd = open("control/morercpthosts.cdb", O_RDONLY)) != -1)
     cdb_init(&mrh, mrh_fd);
-  return 0;
+  return cvm_validate_init();
 }
 
 const response* backend_validate_sender(str* sender)
@@ -68,13 +68,12 @@ const response* backend_validate_recipient(str* recipient)
     str_copyb(&tmp, recipient->s + at, recipient->len - at);
     str_lower(&tmp);
     for (;;) {
-      if (dict_get(&rh, &tmp)) return 0;
+      if (dict_get(&rh, &tmp)) break;
       /* NOTE: qmail-newmrh automatically lowercases the keys in this CDB */
-      if (mrh_fd != -1 && cdb_find(&mrh, tmp.s, tmp.len) == 1) return 0;
-      if ((at = str_findnext(&tmp, '.', 1)) <= 0) break;
+      if (mrh_fd != -1 && cdb_find(&mrh, tmp.s, tmp.len) == 1) break;
+      if ((at = str_findnext(&tmp, '.', 1)) <= 0) return &resp_rh;
       str_lcut(&tmp, at);
     }
-    return &resp_rh;
   }
-  return 0;
+  return cvm_validate_recipient(recipient);
 }

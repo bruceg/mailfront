@@ -5,6 +5,8 @@ Changes in version 0.86
 
 - SMTP front end now logs invalid commands.
 
+- Added a hook for CVM validation of recipient addresses.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

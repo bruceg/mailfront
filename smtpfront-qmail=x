@@ -1,5 +1,6 @@
 smtp.a
 qmail.a
+cvm-validate.o
 sasl-auth.o
 -lcvm-sasl
 -lcvm-client

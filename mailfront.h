@@ -23,6 +23,10 @@ extern const response* handle_data_start(const str* helo_domain,
 extern void handle_data_bytes(const char* bytes, unsigned len);
 extern const response* handle_data_end(void);
 
+/* From cvm-validate.c */
+extern const response* cvm_validate_init(void);
+extern const response* cvm_validate_recipient(const str*);
+
 /* From netstring.c */
 int get_netstring_len(ibuf* in, unsigned long* i);
 int get_netstring(ibuf* in, str* s);
