@@ -39,6 +39,8 @@ static str msg_list;
 static unsigned long* msg_offs;
 static unsigned long* msg_sizes;
 
+static long max_count;
+
 static long new_count;
 static long cur_count;
 static long del_count;
@@ -47,29 +49,30 @@ static long msg_bytes;
 static long del_bytes;
 static str tmp;
 
-static long scan_dir(const char* subdir, str* list)
+static long scan_dir(const char* subdir, str* list, long* count)
 {
   DIR* dir;
   direntry* entry;
-  long count;
   struct stat s;
   
-  if ((dir = opendir(subdir)) == 0) return -1;
-  count = 0;
-  while ((entry = readdir(dir)) != 0) {
+  if ((dir = opendir(subdir)) == 0) return 0;
+  *count = 0;
+  while (!(max_count > 0 && msg_count >= max_count) &&
+	 (entry = readdir(dir)) != 0) {
     if (entry->d_name[0] == '.') continue;
-    if (!str_copys(&tmp, subdir)) return -1;
-    if (!str_catc(&tmp, '/')) return -1;
-    if (!str_cats(&tmp, entry->d_name)) return -1;
+    if (!str_copys(&tmp, subdir)) return 0;
+    if (!str_catc(&tmp, '/')) return 0;
+    if (!str_cats(&tmp, entry->d_name)) return 0;
     if (stat(tmp.s, &s) == -1) continue;
     if (!S_ISREG(s.st_mode)) continue;
-    if (!str_cat(list, &tmp)) return -1;
-    if (!str_catc(list, 0)) return -1;
+    if (!str_cat(list, &tmp)) return 0;
+    if (!str_catc(list, 0)) return 0;
     msg_bytes += s.st_size;
-    ++count;
+    ++*count;
+    ++msg_count;
   }
   closedir(dir);
-  return count;
+  return 1;
 }
 
 static int scan_maildir(void)
@@ -79,10 +82,10 @@ static int scan_maildir(void)
 
   msg_bytes = 0;
   if (!str_truncate(&msg_list, 0)) return 0;
-  if ((cur_count = scan_dir("cur", &msg_list)) == -1) return 0;
-  if ((new_count = scan_dir("new", &msg_list)) == -1) return 0;
+  msg_count = 0;
+  if (!scan_dir("cur", &msg_list, &cur_count)) return 0;
+  if (!scan_dir("new", &msg_list, &new_count)) return 0;
 
-  msg_count = cur_count + new_count;
   del_count = 0;
   del_bytes = 0;
   
@@ -312,21 +315,24 @@ command commands[] = {
 
 int startup(int argc, char* argv[])
 {
-  const char* dir;
+  const char* tmp;
   static const char usage[] = "usage: pop3front-main [default-maildir]\n";
   if (argc > 2) {
     obuf_putsflush(&errbuf, usage);
     return 0;
   }
 
-  if ((dir = getenv("MAILBOX")) == 0) {
+  if ((tmp = getenv("MAX_MESSAGES")) != 0)
+    max_count = atol(tmp);
+
+  if ((tmp = getenv("MAILBOX")) == 0) {
     if (argc < 2) {
       obuf_putsflush(&errbuf, "pop3front-main: Mailbox not specified\n");
       return 0;
     }
-    dir = argv[1];
+    tmp = argv[1];
   }
-  if (chdir(dir) == -1) {
+  if (chdir(tmp) == -1) {
     respond("-ERR Could not chdir to maildir.");
     return 0;
   }

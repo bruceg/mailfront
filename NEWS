@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
+Changes in version 0.73
+
+- Added a "maximum message count" option to pop3front-maildir, which
+  limits the number of visible messages.
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 0.72
 
 - This version includes a one-off bug fix in the CVM client code.
