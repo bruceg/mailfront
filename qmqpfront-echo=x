@@ -1,0 +1,7 @@
+qmqp.a
+echo-backend.o
+sasl-auth.o
+-lcvm-sasl
+-lcvm-client
+-lbg
+socket.lib

@@ -1,6 +1,9 @@
 -------------------------------------------------------------------------------
 Changes in version 0.92
 
+- Added qmqpfront-echo and qmtpfront-echo test front-ends, for
+  completeness.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
