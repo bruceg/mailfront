@@ -7,7 +7,7 @@
 
 str line = {0,0,0};
 str domain_name = {0,0,0};
-unsigned long databytes;
+unsigned long maxdatabytes;
 unsigned maxhops;
 
 const char UNKNOWN[] = "unknown";
@@ -53,8 +53,8 @@ int smtp_mainloop(const char* welcome)
   }
   resp_welcome.message = str_welcome.s;
 
-  if ((tmp = getenv("DATABYTES")) != 0) databytes = strtoul(tmp, 0, 10);
-  else databytes = 0;
+  if ((tmp = getenv("DATABYTES")) != 0) maxdatabytes = strtoul(tmp, 0, 10);
+  else maxdatabytes = 0;
 
   if (!respond_resp(&resp_welcome, 1)) return 1;
   while (get_line())
