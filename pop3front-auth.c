@@ -26,6 +26,7 @@
 #include <unistd.h>
 #include "cvm/client.h"
 #include "iobuf/iobuf.h"
+#include "msg/msg.h"
 #include "str/str.h"
 #include "sasl-auth.h"
 #include "pop3.h"
@@ -60,6 +61,7 @@ static void cmd_auth(const str* s)
 
 static void cmd_user(const str* s)
 {
+  msg2("USER ", s->s);
   if (!str_copy(&user, s))
     respond(err_internal);
   else
