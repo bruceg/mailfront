@@ -125,18 +125,31 @@ accepted.</p>
 client transmits the sender address.  Otherwise rules are be tested when
 the client transmits the recipient address.</p>
 
-<h2>qmail Rules</h2>
+<h2>Examples</h2>
+
+<h3>qmail Rules</h3>
 
 <p>The following rules provide the functionality similar to that
 available in qmail-smtpd.  Please note that the qmail validation
 routines already provide this functionality.  These rules are listed for
-illustrative purposes only.
+illustrative purposes only.</p>
 
 <pre>
 d[[/var/qmail/control/badmailfrom]]:*:sorry, your envelope sender is in my badmailfrom list (#5.7.1)
 k*:[[@/var/qmail/control/rcpthosts]]
 k*:[[@/var/qmail/control/morercpthosts.cdb]]
-</pre></p>
+</pre>
+
+<h3>Abused Patterns</h3>
+
+<p>The following rules block old exploitable addresses that are still
+commonly probed: bang paths, multiple domains, and percent hacks.</p>
+
+<pre>
+d*:*!*: Sorry, we don't allow that here
+d*:*@*@*: Sorry, we don't allow that here
+d*:*%*: Sorry, percent hack not accepted here
+</pre>
 
 </body>
 </html>
