@@ -1,4 +1,9 @@
 -------------------------------------------------------------------------------
+Changes in version 0.92
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 0.91
 
 - Fixed a bug in the CVM lookup code that would cause failures if
