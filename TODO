@@ -1,15 +1,10 @@
-- Make the DATA command work within fixed-size limits, instead of
-  reading line-at-a-time.
-
 - Implement a session timeout in addition to the I/O timeout.
 
-- Do recipient lookups in morercpthosts.cdb.
+- Handle $LOCALIPHOST (all back-ends): rewrite envelope recipient
+  addresses of the form box@[a.b.c.d], where a.b.c.d is a local IP
+  address, to box@$LOCALIPHOST.
 
-- Make sure we actually handle PIPELINING properly.
-
-- Handle $LOCALIPHOST
-
-- SMTP AUTH
+- Add support for RFC 2554 authentication (aka SMTP AUTH) using CVM.
 
 - Handle $SMTPREJECT -- all commands are rejected with this message
   (do this in an alternate back-end).
