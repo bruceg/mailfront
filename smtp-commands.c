@@ -212,8 +212,6 @@ static int RCPT(void)
 
 static int RSET(void)
 {
-  saw_mail = 0;
-  saw_rcpt = 0;
   do_reset();
   return respond_resp(&resp_ok, 1);
 }
