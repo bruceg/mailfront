@@ -147,6 +147,9 @@ static void do_reset(void)
     respond_resp(resp, 1);
     exit(0);
   }
+  saw_rcpt = 0;
+  saw_mail = 0;
+  is_bounce = 0;
   handle_reset();
 }
 
