@@ -3,6 +3,12 @@ Changes in version 0.80
 
 - Fixed bug: setting $SMTPGREETING caused smtpfront to crash when issued
   HELO or EHLO commands.
+
+- Added sender and recipient pattern matching to all SMTP front-ends.
+  See mailrules.html for full details.
+
+Development of this version has been sponsored by Mitel Networks
+Corporation. http://www.mitel.com/ http://www.e-smith.com/
 -------------------------------------------------------------------------------
 Changes in version 0.77
 
