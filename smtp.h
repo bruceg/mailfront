@@ -1,15 +1,16 @@
 #ifndef MAIL_FRONT__SMTP__H__
 #define MAIL_FRONT__SMTP__H__
 
-#define CR 13
-#define LF 10
-#define SPACE ' '
-#define TAB 9
-#define COLON ':'
-#define LBRACE '<'
-#define RBRACE '>'
-#define PERIOD '.'
+#define CR ((char)13)
+#define LF ((char)10)
+#define SPACE ((char)32)
+#define TAB ((char)9)
+#define COLON ((char)':')
+#define LBRACE ((char)'<')
+#define RBRACE ((char)'>')
+#define PERIOD ((char)'.')
 
+#include "iobuf/iobuf.h"
 #include "str/str.h"
 
 extern unsigned long maxdatabytes;
@@ -18,7 +19,7 @@ extern str line;
 extern str domain_name;
 extern const char UNKNOWN[];
 
-extern int smtp_get_line(void);
+#define smtp_get_line() (ibuf_getstr_crlf(&inbuf, &line))
 extern int smtp_mainloop(const char* welcome);
 extern int smtp_dispatch(void);
 
