@@ -6,6 +6,7 @@ EOF
 
 cat <<EOF | cdbmake $tmp/list.cdb $tmp/list.tmp
 +3,0:a@a->
++2,0:@c->
 
 EOF
 
@@ -19,6 +20,9 @@ MAIL FROM:<a@a>
 MAIL FROM:<b@a>
 MAIL FROM:<a@b>
 MAIL FROM:<b@B>
+MAIL FROM:<c@c>
+MAIL FROM:<c@C>
+MAIL FROM:<d@d>
 EOF
 
 rm -f $tmp/rules $tmp/list.cdb $tmp/atlist.cdb
@@ -28,3 +32,6 @@ rm -f $tmp/rules $tmp/list.cdb $tmp/atlist.cdb
 553 DD^M
 250 ATLIST^M
 250 ATLIST^M
+250 LIST^M
+250 LIST^M
+553 DD^M

@@ -6,6 +6,7 @@ EOF
 
 cat >$tmp/list <<EOF
 a@a
+@c
 EOF
 
 cat >$tmp/atlist <<EOF
@@ -17,6 +18,9 @@ MAIL FROM:<a@a>
 MAIL FROM:<b@a>
 MAIL FROM:<a@b>
 MAIL FROM:<b@B>
+MAIL FROM:<c@c>
+MAIL FROM:<c@C>
+MAIL FROM:<d@d>
 EOF
 
 rm -f $tmp/rules $tmp/list $tmp/atlist
@@ -26,3 +30,6 @@ rm -f $tmp/rules $tmp/list $tmp/atlist
 553 DD^M
 250 ATLIST^M
 250 ATLIST^M
+250 LIST^M
+250 LIST^M
+553 DD^M

@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------
 Changes in version 0.88
 
+- Fixed handling of "@domain" entries in mailrules lists and CDB files.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/

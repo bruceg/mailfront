@@ -328,19 +328,28 @@ static int pattern_match(const str* pattern, const str* addr)
 }
 
 static int matches(const struct pattern* pattern,
-		   const str* addr, const str* domain)
+		   const str* addr, const str* atdomain)
 {
+  static str domain;
   if (pattern->cdb != 0) {
     if (pattern->pattern.s[2] == '@')
-      return cdb_find(pattern->cdb, domain->s, domain->len) != 0;
-    else
-      return cdb_find(pattern->cdb, addr->s, addr->len) != 0;
+      return cdb_find(pattern->cdb, atdomain->s+1, atdomain->len-1) != 0;
+    else {
+      if (cdb_find(pattern->cdb, addr->s, addr->len) != 0)
+	return 1;
+      return cdb_find(pattern->cdb, atdomain->s, atdomain->len) != 0;
+    }
   }
   else if (pattern->file != 0) {
-    if (pattern->pattern.s[2] == '@')
-      return dict_get(pattern->file, domain) != 0;
-    else
-      return dict_get(pattern->file, addr) != 0;
+    if (pattern->pattern.s[2] == '@') {
+      str_copyb(&domain, atdomain->s+1, atdomain->len-1);
+      return dict_get(pattern->file, &domain) != 0;
+    }
+    else {
+      if (dict_get(pattern->file, addr) != 0)
+	return 1;
+      return dict_get(pattern->file, atdomain) != 0;
+    }
   }
   else
     return pattern_match(&pattern->pattern, addr);
@@ -383,7 +392,7 @@ static void copy_addr(const str* addr,
   str_copy(saved, addr);
   str_lower(saved);
   if ((at = str_findlast(saved, '@')) != -1)
-    ++at, str_copyb(domain, saved->s + at, saved->len - at);
+    str_copyb(domain, saved->s + at, saved->len - at);
   else
     str_truncate(domain, 0);
 }
