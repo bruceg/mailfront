@@ -192,7 +192,7 @@ unsigned long rules_getenvu(const char* name)
   for (i = 0; i < envars.len; i += strlen(envars.s + i) + 1) {
     if (memcmp(envars.s + i, name, namelen) == 0 &&
 	envars.s[i + namelen] == '=')
-      val = min_u_s(val, envars.s + namelen + 1);
+      val = min_u_s(val, envars.s + i + namelen + 1);
   }
   return val;
 }
