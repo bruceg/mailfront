@@ -14,8 +14,4 @@ extern const char UNKNOWN[];
 extern int smtp_mainloop(const char* welcome);
 extern int smtp_dispatch(void);
 
-extern int smtp_auth_init(void);
-extern int smtp_auth_cap(str*);
-extern int smtp_auth(str*);
-
 #endif

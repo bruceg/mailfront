@@ -1,7 +1,7 @@
 smtp.a
 echo-backend.o
 log.o
-smtp-auth.o
+sasl-auth.o
 cvm-sasl/cvm-sasl.a
 cvm/client.a
 base64/base64.a

@@ -3,6 +3,7 @@
 #include "systime.h"
 #include "mailfront.h"
 #include "smtp.h"
+#include "sasl-auth.h"
 #include "iobuf/iobuf.h"
 
 int authenticated = 0;
@@ -118,7 +119,7 @@ static int EHLO(void)
   str_copy(&helo_domain, &arg);
   if (!respond(250, 0, domain_name.s)) return 0;
 
-  switch (smtp_auth_cap(&auth_resp)) {
+  switch (sasl_auth_cap(&auth_resp)) {
   case 0: break;
   case 1: if (!respond(250, 0, auth_resp.s)) return 0; break;
   default: return respond_resp(&resp_internal, 1);
@@ -270,9 +271,13 @@ static int VRFY(void)
 
 static int AUTH(void)
 {
+  int i;
   if (authenticated) return respond_resp(&resp_auth_already, 1);
   if (arg.len == 0) return respond_resp(&resp_needsparam, 1);
-  if (!smtp_auth(&arg)) return 0;
+  if ((i = sasl_auth("334 ", &arg)) != 0) {
+    const char* msg = sasl_auth_msg(&i);
+    return respond(i, 1, msg);
+  }
   if (authenticated) str_truncate(&helo_domain, 0);
   return 1;
 }

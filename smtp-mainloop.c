@@ -3,6 +3,7 @@
 #include "systime.h"
 #include "mailfront.h"
 #include "smtp.h"
+#include "sasl-auth.h"
 #include "iobuf/iobuf.h"
 
 str line = {0,0,0};
@@ -41,7 +42,7 @@ int smtp_mainloop(const char* welcome)
   if ((tmp = getenv("DATABYTES")) != 0) maxdatabytes = strtoul(tmp, 0, 10);
   else maxdatabytes = 0;
 
-  if (!smtp_auth_init()) return respond(421, 1, "Failed to initialize AUTH");
+  if (!sasl_auth_init()) return respond(421, 1, "Failed to initialize AUTH");
 
   if (!respond(220, 1, str_welcome.s)) return 1;
   while (smtp_get_line())
