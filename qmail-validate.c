@@ -9,7 +9,7 @@ static dict bmf;
 static dict rh;
 static str tmp;
 
-static int read_list(const char* filename, dict* d)
+static int read_dict(const char* filename, dict* d)
 {
   ibuf in;
 
@@ -34,8 +34,8 @@ const response* qmail_validate_init(void)
   static const response resp_error = {0,451,"Internal error."};
   
   if (chdir(conf_qmail) == -1) return &resp_no_chdir;
-  if (!read_list("control/badmailfrom", &bmf)) return &resp_error;
-  if (!read_list("control/rcpthosts", &rh)) return &resp_error;
+  if (!read_dict("control/badmailfrom", &bmf)) return &resp_error;
+  if (!read_dict("control/rcpthosts", &rh)) return &resp_error;
   return 0;
 }
 
