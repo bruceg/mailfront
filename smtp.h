@@ -6,6 +6,7 @@
 #include <str/str.h>
 
 extern unsigned long maxdatabytes;
+extern unsigned long saved_maxdatabytes;
 extern unsigned maxhops;
 extern str line;
 extern str domain_name;
@@ -17,6 +18,7 @@ extern int smtp_dispatch(void);
 
 /* State variables */
 extern int authenticated;
+extern const char* relayclient;
 
 extern int respond(unsigned number, int final, const char* msg);
 extern int respond_start(unsigned number, int nonfinal);
