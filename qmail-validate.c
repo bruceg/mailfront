@@ -1,10 +1,10 @@
 #include <unistd.h>
 #include "mailfront.h"
-#include "iobuf/iobuf.h"
-#include "dict/dict.h"
-#include "dict/load.h"
+#include <iobuf/iobuf.h>
+#include <dict/dict.h>
+#include <dict/load.h>
 #include "conf_qmail.h"
-#include "cdb/cdb.h"
+#include <cdb/cdb.h>
 
 static dict bmf;
 static dict rh;

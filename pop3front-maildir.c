@@ -29,10 +29,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include "direntry.h"
-#include "iobuf/iobuf.h"
-#include "msg/msg.h"
-#include "str/str.h"
+#include <sysdeps.h>
+#include <iobuf/iobuf.h>
+#include <msg/msg.h>
+#include <str/str.h>
 #include "pop3.h"
 
 typedef struct

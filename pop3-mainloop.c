@@ -24,8 +24,8 @@
  */
 #include <stdlib.h>
 #include <string.h>
-#include "iobuf/iobuf.h"
-#include "str/str.h"
+#include <iobuf/iobuf.h>
+#include <str/str.h>
 #include "pop3.h"
 
 const int msg_show_pid = 1;

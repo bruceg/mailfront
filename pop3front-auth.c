@@ -24,9 +24,9 @@
  */
 #include <stdlib.h>
 #include <unistd.h>
-#include "cvm/client.h"
-#include "iobuf/iobuf.h"
-#include "str/str.h"
+#include <cvm/client.h>
+#include <iobuf/iobuf.h>
+#include <str/str.h>
 #include "sasl-auth.h"
 #include "pop3.h"
 

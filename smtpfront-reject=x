@@ -1,7 +1,6 @@
 smtp.a
 sasl-stub.o
-iobuf/str.a
-str/str.a
-msg/msg.a
-iobuf/iobuf.a
-iopoll.o
+-liobuf/str
+-lstr/str
+-lmsg/msg
+-liobuf/iobuf

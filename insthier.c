@@ -1,5 +1,5 @@
 #include "conf_bin.c"
-#include "installer.h"
+#include <installer.h>
 
 void insthier(void) {
   int bin = opendir(conf_bin);

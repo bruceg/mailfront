@@ -1,5 +1,5 @@
 #include "sasl-auth.h"
-#include "cvm-sasl/cvm-sasl.h"
+#include <cvm-sasl/cvm-sasl.h>
 
 int sasl_auth_init(void)
 {

@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include "msg/msg.h"
+#include <msg/msg.h>
 #include "mailfront.h"
 #include "qmail.h"
-#include "fork.h"
+#include <sysdeps.h>
 #include "conf_qmail.h"
 
 static str buffer;

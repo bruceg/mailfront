@@ -1,10 +1,10 @@
 #include <string.h>
 #include <stdlib.h>
-#include "systime.h"
+#include <systime.h>
 #include "mailfront.h"
 #include "smtp.h"
 #include "sasl-auth.h"
-#include "iobuf/iobuf.h"
+#include <iobuf/iobuf.h>
 
 str line = {0,0,0};
 str domain_name = {0,0,0};

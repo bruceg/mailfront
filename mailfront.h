@@ -2,7 +2,7 @@
 #define MAIL_FRONT__MAILFRONT__H__
 
 #include "responses.h"
-#include "str/str.h"
+#include <str/str.h>
 #include "constants.h"
 
 /* Defined by a back-end module */

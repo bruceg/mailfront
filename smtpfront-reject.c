@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include "mailfront.h"
 #include "smtp.h"
-#include "iobuf/iobuf.h"
+#include <iobuf/iobuf.h>
 #include "qmail.h"
 
 const char program[] = "smtpfront-reject";

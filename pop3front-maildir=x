@@ -1,7 +1,5 @@
 pop3.a
-msg/msg.a
-iobuf/str.a
-iobuf/iobuf.a
-str/str.a
-iopoll.o
-setenv.o
+-lmsg/msg
+-liobuf/str
+-liobuf/iobuf
+-lstr/str

@@ -26,11 +26,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "setenv.h"
+#include <sysdeps.h>
 #include "sasl-auth.h"
-#include "cvm/client.h"
-#include "iobuf/iobuf.h"
-#include "str/str.h"
+#include <cvm/client.h>
+#include <iobuf/iobuf.h>
+#include <str/str.h>
 
 const char program[] = "imapfront-auth";
 const int msg_show_pid = 1;

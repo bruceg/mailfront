@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include "mailfront.h"
 #include "smtp.h"
-#include "iobuf/iobuf.h"
-#include "msg/msg.h"
+#include <iobuf/iobuf.h>
+#include <msg/msg.h>
 
 const int msg_show_pid = 1;
 

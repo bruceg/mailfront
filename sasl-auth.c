@@ -1,10 +1,10 @@
 #include <string.h>
 #include "constants.h"
 #include "sasl-auth.h"
-#include "base64/base64.h"
-#include "cvm-sasl/cvm-sasl.h"
-#include "iobuf/iobuf.h"
-#include "str/str.h"
+#include <base64/base64.h>
+#include <cvm-sasl/cvm-sasl.h>
+#include <iobuf/iobuf.h>
+#include <str/str.h>
 
 int sasl_auth_init(void)
 {

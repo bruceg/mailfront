@@ -2,8 +2,8 @@
 #define MAIL_FRONT__SMTP__H__
 
 #include "responses.h"
-#include "iobuf/iobuf.h"
-#include "str/str.h"
+#include <iobuf/iobuf.h>
+#include <str/str.h>
 
 extern unsigned long maxdatabytes;
 extern unsigned maxhops;
