@@ -7,6 +7,9 @@ Changes in version 0.92
 - Added qmqpfront-echo and qmtpfront-echo test front-ends, for
   completeness.
 
+- Fixed bug in pattern handling that would cause a bogus "out of memory"
+  error if the patterns file had a blank line.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

@@ -1,5 +1,6 @@
 cat >$tmp/patterns <<EOF
 # comment
+
 /before
 # comment
 EOF

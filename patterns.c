@@ -57,8 +57,8 @@ static int patterns_read(const char* filename)
     die1sys(111, "Could not rewind patterns file");
   memset(patterns, 0, count * sizeof *patterns);
   for (i = 0; i < count && ibuf_getstr(&in, &line, LF); ) {
-    if (line.s[0] != T_COMMENT) {
-      str_rstrip(&line);
+    str_rstrip(&line);
+    if (line.len > 0 && line.s[0] != T_COMMENT) {
       if (line.s[0] == T_RESPONSE) {
 	currmsg = responses.s + responses.len;
 	str_catb(&responses, line.s+1, line.len);
