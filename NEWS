@@ -1,8 +1,9 @@
 -------------------------------------------------------------------------------
 Changes in version 0.70
 
-- Added a POP3 authenticator and maildir handler.  If you can believe
-  it, the maildir portion is actually smaller than qmail-pop3d!
+- Added a POP3 authenticator and maildir handler, complete with support
+  for the RFC 1734 AUTH command.  If you can believe it, the maildir
+  portion is actually smaller than qmail-pop3d, and just as functional!
 
 - Fixed the AUTH PLAIN mechanism in the cvm-sasl library.
 

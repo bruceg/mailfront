@@ -1,3 +1,5 @@
+- Use lib/cli for all executables
+
 - smtpfront:
 
   - Implement a session timeout in addition to the I/O timeout.
@@ -12,11 +14,14 @@
 
   - Segment the SMTP code into seperate files
 
-- pop3front-maildir:
+- pop3front:
 
-  - Handle the TOP command
+  - Add support for CAPA command (RFC 2449)
 
   - Properly re-parse flags in cmd_quit
+
+  - Split the generic protocol handling bits from pop3front-maildir (low
+    priority -- who wants anything but maildir?)
 
 - Write a IMAP authenticator? imapfront-auth (to be used intially as a
   front-end for Courier IMAP)
