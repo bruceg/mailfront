@@ -1,0 +1,26 @@
+cat >$tmp/rules <<EOF
+ksomebody:*::123
+EOF
+
+MAILRULES=$tmp/rules sfecho <<EOF
+EHLO hostname
+MAIL FROM:<somebody>
+MAIL FROM:<somebody> SIZE
+MAIL FROM:<somebody> SIZE=
+MAIL FROM:<somebody> SIZE=100
+MAIL FROM:<somebody> SIZE=123
+MAIL FROM:<somebody> SIZE=124
+RCPT TO:<nobody@nowhere>
+EOF
+<result>
+250-unknown^M
+250-SIZE 0^M
+250-8BITMIME^M
+250 PIPELINING^M
+250 OK^M
+250 OK^M
+250 OK^M
+250 OK^M
+250 OK^M
+552 The message would exceed the maximum message size.^M
+503 You must send MAIL FROM: first^M
