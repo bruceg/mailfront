@@ -1,7 +1,7 @@
 #include "mailfront.h"
 #include "smtp.h"
 
-const char program[] = "smtpfront-test";
+const char program[] = "smtpfront-echo";
 
 int main(void)
 {
