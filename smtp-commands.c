@@ -30,18 +30,6 @@ static RESPONSE(unimp, 500, "Not implemented.");
 static int saw_mail = 0;
 static int saw_rcpt = 0;
 
-static int get_line_nostrip(void)
-{
-  if (!ibuf_getstr(&inbuf, &line, NL)) return 0;
-  if (inbuf.count == 0) return 0;
-  /* Strip a single CR immediately before the final NL */
-  if (line.s[line.len-2] == CR) {
-    line.s[line.len-2] = NL;
-    str_truncate(&line, line.len-1);
-  }
-  return 1;
-}
-  
 static int parse_addr_arg(void)
 {
   unsigned start;
@@ -145,13 +133,85 @@ static int RSET(void)
   return respond_resp(&resp_ok, 1);
 }
 
+static char data_buf[4096];
+static unsigned long data_bytes;
+static unsigned data_bufpos;
+static void data_start(void)
+{
+  data_bytes = data_bufpos = 0;
+}
+static void data_byte(char ch)
+{
+  data_buf[data_bufpos++] = ch;
+  ++data_bytes;
+  if (data_bufpos >= sizeof data_buf) {
+    handle_data_bytes(data_buf, data_bufpos);
+    data_bufpos = 0;
+  }
+}
+static void data_end(void)
+{
+  if (data_bufpos) handle_data_bytes(data_buf, data_bufpos);
+}
+
+static int copy_body(unsigned* count_rec, unsigned* count_dt)
+{
+  int in_header = 1;		/* True until a blank line is seen */
+  int sawcr = 0;		/* Was the last character a CR */
+  unsigned linepos = 0;		/* The number of bytes since the last LF */
+  int in_rec = 1;		/* True if we might be seeing Received: */
+  int in_dt = 1;		/* True if we might be seeing Delivered-To: */
+  int sawperiod = 0;		/* True if the first character was a period */
+  char ch;
+
+  *count_rec = *count_dt = 0;
+  data_start();
+  while (ibuf_getc(&inbuf, &ch)) {
+    switch (ch) {
+    case NL:
+      if (sawperiod && linepos == 0) { data_end(); return 1; }
+      data_byte(ch);
+      if (linepos == 0) in_header = 0;
+      sawcr = sawperiod = linepos = 0;
+      in_rec = in_dt = in_header;
+      break;
+    case CR:
+      if (sawcr) { data_byte(CR); ++linepos; }
+      sawcr = 1;
+      break;
+    default:
+      if (ch == PERIOD && !sawperiod && linepos == 0)
+	sawperiod = 1;
+      else {
+	if (in_header) {
+	  if (in_rec) {
+	    if (ch != "received:"[linepos] &&
+		ch != "RECEIVED:"[linepos])
+	      in_rec = 0;
+	    else if (linepos >= 8)
+	      ++*count_rec, in_rec = 0;
+	  }
+	  if (in_dt) {
+	    if (ch != "delivered-to:"[linepos] &&
+		ch != "DELIVERED-TO:"[linepos])
+	      in_dt = 0;
+	    else if (linepos >= 12)
+	      ++*count_dt, in_dt = 0;
+	  }
+	}
+	if (sawcr) { data_byte(CR); ++linepos; sawcr = 0; }
+	data_byte(ch); ++linepos;
+      }
+    }
+  }
+  return 0;
+}
+
 static int DATA(void)
 {
   const response* resp;
-  unsigned long bytes;
   unsigned received;
   unsigned deliveredto;
-  int inbody;
   
   if (!saw_mail) return respond_resp(&resp_no_mail, 1);
   if (!saw_rcpt) return respond_resp(&resp_no_rcpt, 1);
@@ -160,30 +220,11 @@ static int DATA(void)
   if (!build_received()) return 0;
   handle_data_bytes(line.s, line.len);
 
-  bytes = received = deliveredto = inbody = 0;
-  for (;;) {
-    unsigned offset = 0;
-    if (!get_line_nostrip()) {
-      handle_reset();
-      return 0;
-    }
-    bytes += line.len;
-    if (line.s[0] == PERIOD) {
-      if (line.len == 2) break;
-      offset = 1;
-    }
-    handle_data_bytes(line.s+offset, line.len-offset);
-    if (!inbody) {
-      if (line.len == offset + 1)
-	inbody = 1;
-      else if (strncasecmp(line.s+offset, "Received:", 9) == 0)
-	++received;
-      else if (strncasecmp(line.s+offset, "Delivered-To:", 13) == 0)
-	++deliveredto;
-    }
-    if (resp != 0) return respond_resp(resp, 1);
+  if (!copy_body(&received, &deliveredto)) {
+    handle_reset();
+    return 0;
   }
-  if (databytes && bytes > databytes) {
+  if (maxdatabytes && data_bytes > maxdatabytes) {
     handle_reset();
     return respond_resp(&resp_too_long, 1);
   }
