@@ -9,7 +9,7 @@ struct response
 };
 typedef struct response response;
 
-extern const response resp_reject_domain;
+extern const response resp_oom;
 #define RESPONSE(NAME,CODE,MSG) const response resp_##NAME = {0,CODE,MSG}
 
 #endif

@@ -1,3 +1,3 @@
 #include "responses.h"
 
-const response resp_reject_domain = { 0, 550, "Domain name rejected." };
+const response resp_oom = { 0, 451, "Out of memory." };
