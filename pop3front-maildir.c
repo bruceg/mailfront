@@ -107,6 +107,13 @@ static void make_msg(msg* msg, const char* filename)
 	  msg->read = 1;
 }
 
+static int fn_compare(const str_sortentry* a, const str_sortentry* b)
+{
+  int at = atoi(a->str+4);
+  int bt = atoi(b->str+4);
+  return at - bt;
+}
+
 static int scan_maildir(void)
 {
   long pos;
@@ -117,6 +124,7 @@ static int scan_maildir(void)
   msg_count = 0;
   if (!scan_dir("cur", &msg_filenames, &cur_count, max_cur_count)) return 0;
   if (!scan_dir("new", &msg_filenames, &new_count, max_new_count)) return 0;
+  if (!str_sort(&msg_filenames, 0, -1, fn_compare)) return 0;
 
   del_count = 0;
   del_bytes = 0;
