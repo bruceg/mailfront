@@ -1,3 +1,5 @@
+- Write install document.
+
 - Use lib/cli for all executables
 
 - smtpfront:
@@ -7,10 +9,6 @@
 
   - Implement a session timeout in addition to the I/O timeout.
 
-  - Handle $LOCALIPHOST (all back-ends): rewrite envelope recipient
-    addresses of the form box@[a.b.c.d], where a.b.c.d is a local IP
-    address, to box@$LOCALIPHOST.
-
   - Add RFC 1893/2034 enhanced status codes to all responses.
 
   - Add support for RFC 2487 STARTTLS
@@ -18,6 +16,13 @@
   - Segment the SMTP code into seperate files
 
   - Add some information about authentication into the headers (?)
+
+  - Export CVM data after authentication, to allow programs like
+    qmail-qfilter to pick it up.
+
+  - Handle $LOCALIPHOST (all back-ends): rewrite envelope recipient
+    addresses of the form box@[a.b.c.d], where a.b.c.d is a local IP
+    address, to box@$LOCALIPHOST. (low priority)
 
 - pop3front:
 
