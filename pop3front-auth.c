@@ -30,6 +30,8 @@
 #include "sasl-auth.h"
 #include "pop3.h"
 
+const char program[] = "pop3front-auth";
+
 static const char* cvm;
 static char** nextcmd;
 static const char* domain;
@@ -42,7 +44,7 @@ static void do_exec(void)
     respond(err_internal);
   else {
     execvp(nextcmd[0], nextcmd);
-    respond("-ERR Could not execute second stage.");
+    respond("-ERR Could not execute second stage");
   }
   _exit(1);
 }
@@ -67,7 +69,7 @@ static void cmd_user(const str* s)
 static void cmd_pass(const str* s)
 {
   if (user.len == 0)
-    respond("-ERR Send USER first.");
+    respond("-ERR Send USER first");
   else {
     int cr;
     const char* credentials[2] = { s->s, 0 };
@@ -75,7 +77,7 @@ static void cmd_pass(const str* s)
       do_exec();
     str_truncate(&user, 0);
     if (cr == CVME_PERMFAIL)
-      respond("-ERR Authentication failed.");
+      respond("-ERR Authentication failed");
     else
       respond(err_internal);
   }
@@ -106,7 +108,7 @@ int startup(int argc, char* argv[])
   cvm = argv[1];
   nextcmd = argv+2;
   if (!sasl_auth_init()) {
-    respond("-ERR Could not initialize SASL AUTH.");
+    respond("-ERR Could not initialize SASL AUTH");
     return 0;
   }
   return 1;
