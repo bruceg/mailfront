@@ -1,6 +1,7 @@
 smtp.a
 qmail.a
 log.o
+cdb/cdb.a
 dict/dict.a
 iobuf/str.a
 str/str.a

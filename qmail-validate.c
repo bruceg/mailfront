@@ -3,6 +3,7 @@
 #include "iobuf/iobuf.h"
 #include "dict/dict.h"
 #include "conf_qmail.h"
+#include "cdb/cdb.h"
 
 static dict bmf;
 static dict rh;
@@ -51,6 +52,20 @@ const response* qmail_validate_sender(const str* sender)
   return 0;
 }
 
+static int cdb_lookup(const char* filename, const str* domain)
+{
+  int fd;
+  int result = 0;
+  if ((fd = open(filename, O_RDONLY)) != -1) {
+    struct cdb db;
+    cdb_init(&db, fd);
+    if (cdb_find(&db, domain->s, domain->len) == 1) result = 1;
+    cdb_free(&db);
+    close(fd);
+  }
+  return result;
+}
+
 const response* qmail_validate_recipient(const str* recipient)
 {
   static const response resp = {0,553,"Sorry, that domain isn't in my list of allowed rcpthosts."};
@@ -59,7 +74,9 @@ const response* qmail_validate_recipient(const str* recipient)
   if ((at = str_findlast(recipient, '@')) > 0) {
     ++at;
     str_copyb(&tmp, recipient->s + at, recipient->len - at);
-    if (!dict_get(&rh, &tmp)) return &resp;
+    if (dict_get(&rh, &tmp)) return 0;
+    if (cdb_lookup("control/morercpthosts.cdb", &tmp)) return 0;
+    return &resp;
   }
   return 0;
 }
