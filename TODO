@@ -2,6 +2,8 @@
 
 - smtpfront:
 
+  - Fix badmailfrom handling of matching "@domain"
+
   - When verifying senders, check if $DOMAIN(?) is set, and only allow
     sender addresses from that domain.
 
