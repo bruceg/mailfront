@@ -4,3 +4,4 @@ log.o
 iobuf/str.a
 str/str.a
 iobuf/iobuf.a
+iopoll.o
