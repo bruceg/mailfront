@@ -92,8 +92,7 @@ const response* handle_recipient(str* recip)
 {
   const response* resp;
   const response* hresp;
-  if (is_bounce && rcpt_count > 0) return &resp_badbounce;
-  ++rcpt_count;
+  if (++rcpt_count > 1 && is_bounce) return &resp_badbounce;
   if ((resp = rules_validate_recipient(recip)) != 0) {
     if (!number_ok(resp))
       return resp;
