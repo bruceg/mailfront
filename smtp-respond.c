@@ -30,9 +30,20 @@ int respond(unsigned number, int final, const char* msg)
     respond_end();
 }
 
+static int respond_b(unsigned number, int final,
+		     const char* msg, long len)
+{
+  return respond_start(number, final) &&
+    obuf_write(&outbuf, msg, len) &&
+    respond_end();
+}
+
 int respond_resp(const response* resp, int final)
 {
-  if (resp->prev && !respond_resp(resp->prev, 0)) return 0;
-  if (resp->number >= 400) msg1(resp->message);
-  return respond(resp->number, final, resp->message);
+  const char* nl;
+  const char* start;
+  for (start = nl = resp->message; (nl=strchr(start, '\n')) != 0; start = nl+1)
+    if (!respond_b(resp->number, 0, start, nl-start))
+      return 0;
+  return respond(resp->number, final, start);
 }

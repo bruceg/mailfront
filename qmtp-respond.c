@@ -52,7 +52,5 @@ int respond(unsigned number, int final, const char* msg)
 
 int respond_resp(const response* resp, int final)
 {
-  if (resp->prev && !respond_resp(resp->prev, 0)) return 0;
-  if (resp->number >= 400) msg1(resp->message);
   return respond(resp->number, final, resp->message);
 }

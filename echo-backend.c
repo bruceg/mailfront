@@ -1,6 +1,6 @@
 #include "mailfront.h"
 
-static response r = { 0, 250, 0 };
+static response r = { 250, 0 };
 static str tmp;
 
 static unsigned long databytes = 0;

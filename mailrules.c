@@ -11,9 +11,9 @@
 #include <iobuf/iobuf.h>
 #include <str/str.h>
 
-static const response resp_erropen = {0,421,"Could not open $MAILRULES file"};
-static const response resp_syntax = {0,421,"Syntax error in $MAILRULES" };
-static const response resp_erropenref = {0,421,"Error opening file referenced from $MAILRULES" };
+static const response resp_erropen = {421,"Could not open $MAILRULES file"};
+static const response resp_syntax = {421,"Syntax error in $MAILRULES" };
+static const response resp_erropenref = {421,"Error opening file referenced from $MAILRULES" };
 
 #define NUL 0
 
@@ -211,7 +211,7 @@ static const char* parse_char(const char* ptr, char* out)
   case 0: return ptr;
   case '\\':
     switch (*++ptr) {
-    case 'n': *out = NUL; break;
+    case 'n': *out = '\n'; break;
     case '0': case '1': case '2': case '3':
     case '4': case '5': case '6': case '7':
       o = *ptr - '0';
@@ -346,20 +346,10 @@ static int matches(const struct pattern* pattern,
     return pattern_match(&pattern->pattern, addr);
 }
 
-static void free_response(const response* resp)
-{
-  if (resp == 0) return;
-  free_response(resp->prev);
-  free((void*)resp);
-}
-
 static const response* build_response(int type, const str* message)
 {
-  static response resp_nomsg = { 0, 0, 0 };
-  static response* resp = 0;
-  response* next;
+  static response resp;
   unsigned code;
-  int i;
   const char* defmsg;
 
   switch (type) {
@@ -370,23 +360,9 @@ static const response* build_response(int type, const str* message)
   default:  code = 451; defmsg = "Temporary failure"; break;
   }
 
-  if (message->len == 0) {
-    resp_nomsg.number = code;
-    resp_nomsg.message = defmsg;
-    return &resp_nomsg;
-  }
-
-  if (resp != 0) free_response(resp);
-  for (resp = 0, i = 0; i != -1; i = str_findnext(message, 0, i)) {
-    if (i != 0) ++i;
-    next = malloc(sizeof *next);
-    next->prev = resp;
-    next->number = code;
-    next->message = message->s + i;
-    resp = next;
-  }
-
-  return resp;
+  resp.number = code;
+  resp.message = (message->len == 0) ? defmsg : message->s;
+  return &resp;
 }
 
 static const response* apply_rule(const struct rule* rule)

@@ -16,8 +16,7 @@ static str addr;
 static str params;
 static str helo_domain;
 
-static const response resp_ehlo0 = { 0,           250, "8BITMIME" };
-static const response resp_ehlo  = { &resp_ehlo0, 250, "PIPELINING" };
+static RESPONSE(ehlo,250,"8BITMIME\nPIPELINING");
 static RESPONSE(no_mail, 503, "You must send MAIL FROM: first");
 static RESPONSE(vrfy, 252, "Send some mail, I'll try my best.");
 static RESPONSE(help, 214, "Help not available.");

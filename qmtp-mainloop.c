@@ -12,7 +12,7 @@
 
 unsigned long maxdatabytes;
 
-static const response resp_accepted = {0,250,"Message accepted"};
+static RESPONSE(accepted,256,"Message accepted");
 
 static const response* resp;
 

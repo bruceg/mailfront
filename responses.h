@@ -3,13 +3,12 @@
 
 struct response 
 {
-  const struct response* prev;
   unsigned number;
   const char* message;
 };
 typedef struct response response;
 
 extern const response resp_oom;
-#define RESPONSE(NAME,CODE,MSG) const response resp_##NAME = {0,CODE,MSG}
+#define RESPONSE(NAME,CODE,MSG) const response resp_##NAME = {CODE,MSG}
 
 #endif

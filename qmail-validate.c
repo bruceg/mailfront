@@ -21,8 +21,8 @@ static int lower(str* s)
 
 const response* backend_validate_init(void)
 {
-  static const response resp_no_chdir = {0,451,"Could not change to the qmail directory."};
-  static const response resp_error = {0,451,"Internal error."};
+  static RESPONSE(no_chdir,451,"Could not change to the qmail directory.");
+  static RESPONSE(error,451,"Internal error.");
   
   if (chdir(conf_qmail) == -1) return &resp_no_chdir;
   if (!dict_load_list(&bmf, "control/badmailfrom", 0, lower))
@@ -38,23 +38,23 @@ const response* backend_validate_init(void)
 
 const response* backend_validate_sender(str* sender)
 {
-  static const response resp = {0,553,"Sorry, your envelope sender is in my badmailfrom list."};
+  static RESPONSE(badmailfrom,553,"Sorry, your envelope sender is in my badmailfrom list.");
   int at;
   str_copy(&tmp, sender);
   str_lower(&tmp);
-  if (dict_get(&bmf, &tmp) != 0) return &resp;
+  if (dict_get(&bmf, &tmp) != 0) return &resp_badmailfrom;
   if ((at = str_findlast(sender, '@')) > 0) {
     str_copyb(&tmp, sender->s + at, sender->len - at);
     str_lower(&tmp);
-    if (dict_get(&bmf, &tmp)) return &resp;
+    if (dict_get(&bmf, &tmp)) return &resp_badmailfrom;
   }
   return 0;
 }
 
 const response* backend_validate_recipient(str* recipient)
 {
-  static const response resp_rh = {0,553,"Sorry, that domain isn't in my list of allowed rcpthosts."};
-  static const response resp_bmt = {0,553,"Sorry, that address is in my badrcptto list."};
+  static RESPONSE(rh,553,"Sorry, that domain isn't in my list of allowed rcpthosts.");
+  static RESPONSE(bmt,553,"Sorry, that address is in my badrcptto list.");
   int at;
 
   str_copy(&tmp, recipient);

@@ -8,8 +8,8 @@
 #include "conf_qmail.h"
 
 static str buffer;
-static const response resp_str = {0,451,"Could not perform string operation."};
-static const response resp_no_write = {0,451,"Writing data to qmail-queue failed."};
+static RESPONSE(str,451,"Could not perform string operation.");
+static RESPONSE(no_write,451,"Writing data to qmail-queue failed.");
 static unsigned long databytes;
 
 static char* qqargs[2] = { 0, 0 };
@@ -48,9 +48,9 @@ const response* backend_handle_recipient(str* recipient)
 
 const response* backend_handle_data_start(void)
 {
-  static const response resp_no_pipe = {0,451,"Could not open pipe to qmail-queue."};
-  static const response resp_no_fork = {0,451,"Could not start qmail-queue."};
-  static const response resp_no_chdir = {0,451,"Could not change to the qmail directory."};
+  static RESPONSE(no_pipe,451,"Could not open pipe to qmail-queue.");
+  static RESPONSE(no_fork,451,"Could not start qmail-queue.");
+  static RESPONSE(no_chdir,451,"Could not change to the qmail directory.");
 
   int mpipe[2];
   int epipe[2];
@@ -146,7 +146,7 @@ static void parse_status(int status, response* resp)
 
 const response* backend_handle_data_end(void)
 {
-  static const response resp_qq_crashed = {0,451,"qmail-queue crashed."};
+  static RESPONSE(qq_crashed,451,"qmail-queue crashed.");
   static response resp;
 
   int status;
