@@ -1,0 +1,53 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">MailFront</a></h2>
+<h2><a href="smtpfront.html">SMTP Front Ends</a></h2>
+
+<h1>Mailfront Patterns Specification</h1>
+
+<hr>
+
+<p>The pattern matching feature of mailfront provides an ability for
+rejecting messages based on simple patterns in their content.  If
+<tt>$PATTERNS</tt> is set, the named file is loaded and and parsed (see
+below), and pattern matching is enabled.  No more than
+<tt>$PATTERNS_LINEMAX</tt> bytes (defaults to 256) are added to the line
+buffer before the pattern matching is done.  If any pattern matches, the
+message data is rejected with a message taken from
+<tt>$PATTERNS_RESP</tt> (defaults to "<tt>This message contains
+prohibited content</tt>").<p>
+
+<p>The patterns file contains a list of standard glob-style patterns.
+Each line of the file starts with a control character, which is
+<i>not</i> part of the pattern itself.  Blank lines and lines beginning
+with "<tt>#</tt>" are ignored as comments.  Lines beginning with
+"<tt>=</tt>" set the response given when a message is rejected,
+effective for all following patterns, until another response line is
+seen.  Lines beginning with "<tt>\</tt>" match only immediately after a
+blank line.  Lines beginning with any other character match any
+non-blank line.</p>
+
+<p>The following patterns list is a much simplified version of Russell
+Nelson's <a
+href="http://qmail.org/qmail-smtpd-viruscan-1.1.patch">qmail-smtpd virus
+scan patch</a>.  In particular, it doesn't actually do any kind of
+checking if the blank line really marked a MIME boundary or not.</p>
+
+<pre>
+=We don't accept email with executable content (#5.3.4)
+\TVqQAAMAA*
+\TVpQAAIAA*
+\TVpAALQAc*
+\TVpyAXkAX*
+\TVrmAU4AA*
+\TVrhARwAk*
+\TVoFAQUAA*
+\TVoAAAQAA*
+\TVoIARMAA*
+\TVouARsAA*
+\TVrQAT8AA*
+</pre>
+
+</body>
+</html>

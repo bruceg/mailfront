@@ -31,6 +31,10 @@ extern const response* cvm_validate_recipient(const str*);
 int get_netstring_len(ibuf* in, unsigned long* i);
 int get_netstring(ibuf* in, str* s);
 
+/* From patterns.c */
+void patterns_init(void);
+const response* patterns_check(const char* block, unsigned len);
+
 /* Defined by a back-end module */
 extern const response* backend_validate_init(void);
 extern const response* backend_validate_sender(str*);

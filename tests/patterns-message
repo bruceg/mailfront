@@ -1,0 +1,23 @@
+cat >$tmp/patterns <<EOF
+=response 1
+=response 2
+/*
+=response 3
+EOF
+
+PATTERNS=$tmp/patterns sfecho <<EOF
+MAIL FROM:<>
+RCPT TO:<nobody>
+DATA
+before
+
+after
+.
+EOF
+
+rm -f $tmp/patterns
+<result>
+250 Sender=''.^M
+250 Recipient='nobody'.^M
+354 End your message with a period.^M
+554 response 2^M

@@ -230,6 +230,7 @@ const response* handle_data_start(const str* helo_domain,
   if ((maxhops = rules_getenvu("MAXHOPS")) == 0)
     maxhops = 100;
   
+  patterns_init();
   data_bytes = 0;
   count_rec = 0;
   count_dt = 0;
@@ -245,10 +246,15 @@ void handle_data_bytes(const char* bytes, unsigned len)
 {
   unsigned i;
   const char* p;
+  const response* r;
   data_bytes += len;
   if (data_response) return;
   if (maxdatabytes && data_bytes > maxdatabytes) {
     data_response = &resp_too_long;
+    return;
+  }
+  if ((r = patterns_check(bytes, len)) != 0) {
+    data_response = r;
     return;
   }
   for (i = 0, p = bytes; in_header && i < len; ++i, ++p) {

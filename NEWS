@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------
 Changes in version 0.88
 
+- Added support for content pattern rejection.
+
 - Fixed handling of "@domain" entries in mailrules lists and CDB files.
 
 - Added patch from Marcelo Augusto <maugusto@stetnet.com.br> to allow
