@@ -317,7 +317,7 @@ int main(int argc, char* argv[])
 {
   set_timeout();
   if (!startup(argc, argv)) return 0;
-  respond(0, "imapfront ready.");
+  respond(0, "OK imapfront ready.");
   while (ibuf_getstr_crlf(&inbuf, &line)) {
     if (parse_line())
       dispatch_line();
