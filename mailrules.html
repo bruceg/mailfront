@@ -58,7 +58,9 @@ suffixed with this string.  Only useful for "k" rules.
 
 <li><b>Environment</b>: Environment variables to set as a result of
 matching this rule.  This field contains a list of assignments seperated
-by commas.  Each assignment is formatted as <tt>NAME="VALUE"</tt>.
+by commas.  Each assignment is formatted as <tt>NAME=VALUE</tt>.  If a
+value needs to contain a comma, it must be quoted as follows:
+<tt>\.</tt>.
 
 </dl>
 
