@@ -2,11 +2,5 @@ qmtp.a
 qmail.a
 cvm-validate.o
 -lcvm-client
--lbg-net
--lbg-cdb
--lbg-dict
--lbg-msg
--lbg-iobuf
--lbg-str
--lbg-unix
+-lbg
 socket.lib

@@ -1,14 +1,7 @@
 smtp.a
 echo-backend.o
 sasl-auth.o
--lbg-cdb
--lbg-dict
 -lcvm-sasl
 -lcvm-client
--lbg-base64
--lbg-net
--lbg-msg
--lbg-str
--lbg-iobuf
--lbg-unix
+-lbg
 socket.lib

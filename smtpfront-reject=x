@@ -1,8 +1,3 @@
 smtp.a
 sasl-stub.o
--lbg-cdb
--lbg-dict
--lbg-str
--lbg-msg
--lbg-iobuf
--lbg-unix
+-lbg

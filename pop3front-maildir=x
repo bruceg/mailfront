@@ -1,5 +1,2 @@
 pop3.a
--lbg-msg
--lbg-iobuf
--lbg-str
--lbg-unix
+-lbg

@@ -1,11 +1,6 @@
 sasl-auth.o
 timeout.o
 -lcvm-sasl
--lbg-base64
 -lcvm-client
--lbg-msg
--lbg-iobuf
--lbg-str
--lbg-net
--lbg-unix
+-lbg
 socket.lib
