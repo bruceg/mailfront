@@ -17,7 +17,7 @@ static RESPONSE(manyrcpt, 550, "Too many recipients");
 const char UNKNOWN[] = "unknown";
 
 static int is_bounce = 0;
-static int rcpt_count = 0;
+static unsigned rcpt_count = 0;
 
 static str received;
 
