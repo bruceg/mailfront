@@ -4,8 +4,6 @@
   addresses of the form box@[a.b.c.d], where a.b.c.d is a local IP
   address, to box@$LOCALIPHOST.
 
-- Add support for RFC 2554 authentication (aka SMTP AUTH) using CVM.
-
 - Add RFC 1893/2034 enhanced status codes to all responses.
 
 - Add support for RFC 2487 STARTTLS

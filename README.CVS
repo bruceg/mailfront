@@ -1,7 +1,11 @@
 To get the pieces not included in this CVS tree, you need to run:
+	cvs co cvm
+	cvs co -d base64 lib/base64
 	cvs co -d cdb lib/cdb
+	cvs co -d cvm-sasl lib/cvm-sasl
 	cvs co -d dict lib/dict
 	cvs co -d iobuf lib/iobuf
+	cvs co -d socket lib/socket
 	cvs co -d str lib/str
 You will also need a copy of SPAC in the path, available at:
 	http://untroubled.org/spac/
