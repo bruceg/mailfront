@@ -63,8 +63,9 @@ want this header added.
 <tt>$HEADER_ADD</tt>.
 
 <li>If <tt>$CVM_LOOKUP</tt> is set, recipients are sent to the named CVM
-to see if they are valid.  If <tt>$LOOKUP_SECRET</tt> is set, its value
-is sent as a single credential to the CVM.</tt>
+to see if they are valid.  If <tt>CVM_LOOKUP_SECRET</tt> or
+<tt>$LOOKUP_SECRET</tt> are set and not empty, the value is sent as a
+single credential to the CVM.</tt>
 
 <li>Supports RFC 1870 SMTP Service Extension for Message Size
 Declaration.

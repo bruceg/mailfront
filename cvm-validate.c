@@ -11,8 +11,15 @@ static RESPONSE(failed,451,"Sorry, I could not verify that recipient (internal t
 const response* cvm_validate_init(void)
 {
   cvm_lookup = getenv("CVM_LOOKUP");
-  if ((lookup_secret = getenv("LOOKUP_SECRET")) == 0)
-    lookup_secret = "";
+  if ((lookup_secret = getenv("CVM_LOOKUP_SECRET")) == 0)
+    lookup_secret = getenv("LOOKUP_SECRET");
+  /* Match the behavior of the current CVM code base: If
+   * $CVM_LOOKUP_SECRET is set to an empty string, treat it as if no
+   * lookup secret is required.  (If $CVM_LOOKUP_SECRET is unset, the
+   * module will not operate in lookup mode).
+   */
+  if (lookup_secret != 0 && *lookup_secret == 0)
+    lookup_secret = 0;
   return 0;
 }
 
