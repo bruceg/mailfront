@@ -7,6 +7,11 @@ void handle_reset(void)
 {
 }
 
+const response* validate_sender(str* sender)
+{
+  return 0;
+}
+
 const response* handle_sender(str* sender)
 {
   str_copys(&tmp, "Sender='");
@@ -14,6 +19,11 @@ const response* handle_sender(str* sender)
   str_cats(&tmp, "'.");
   r.message = tmp.s;
   return &r;
+}
+
+const response* validate_recipient(str* recipient)
+{
+  return 0;
 }
 
 const response* handle_recipient(str* recipient)

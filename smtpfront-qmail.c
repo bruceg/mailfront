@@ -6,27 +6,35 @@
 
 const char program[] = "smtpfront-qmail";
 
-static const char* relayclient;
-
 void handle_reset(void)
 {
   qmail_reset();
 }
 
+const response* validate_sender(str* sender)
+{
+  return qmail_validate_sender(sender);
+}
+
 const response* handle_sender(str* sender)
 {
-  const response* resp;
-  if ((resp = qmail_validate_sender(sender)) != 0) return resp;
   return qmail_sender(sender);
+}
+
+const response* validate_recipient(str* recip)
+{
+  if (relayclient != 0) {
+    str_cats(recip, relayclient);
+    return 0;
+  }
+  else if (authenticated)
+    return 0;
+  else
+    return qmail_validate_recipient(recip);
 }
 
 const response* handle_recipient(str* recip)
 {
-  const response* resp;
-  if (relayclient)
-    str_cats(recip, relayclient);
-  else if (!authenticated)
-    if ((resp = qmail_validate_recipient(recip)) != 0) return resp;
   return qmail_recipient(recip);
 }
 
@@ -48,9 +56,6 @@ const response* handle_data_end(void)
 int main(void)
 {
   const response* resp;
-
-  relayclient = getenv("RELAYCLIENT");
-  
   if ((resp = qmail_validate_init()) != 0) { respond_resp(resp, 1); return 1; }
   return smtp_mainloop();
 }

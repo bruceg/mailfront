@@ -6,6 +6,8 @@
 #include "constants.h"
 
 /* Defined by a back-end module */
+extern const response* validate_sender(str*);
+extern const response* validate_recipient(str*);
 extern void handle_reset(void);
 extern const response* handle_sender(str*);
 extern const response* handle_recipient(str*);
