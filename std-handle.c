@@ -247,7 +247,7 @@ void handle_data_bytes(const char* bytes, unsigned len)
     data_response = &resp_too_long;
     return;
   }
-  for (i = 0, p = bytes; i < len; ++i, ++p) {
+  for (i = 0, p = bytes; in_header && i < len; ++i, ++p) {
     char ch = *p;
     if (ch == LF) {
       if (linepos == 0) in_header = 0;
