@@ -25,7 +25,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "iobuf/iobuf.h"
-#include "msg/msg.h"
 #include "str/str.h"
 #include "pop3.h"
 
@@ -54,6 +53,7 @@ static void dispatch_line(void)
 
   for (c = commands; c->name != 0; ++c) {
     if (str_diffs(&cmd, c->name) == 0) {
+      log(c->sanitized ? c->sanitized : line.s);
       if (arg.len == 0) {
 	if (c->fn0 == 0)
 	  respond(err_syntax);
@@ -69,6 +69,7 @@ static void dispatch_line(void)
       return;
     }
   }
+  log(line.s);
   respond(err_unimpl);
 }
 
@@ -85,7 +86,6 @@ int main(int argc, char* argv[])
   if (!startup(argc, argv)) return 0;
   respond(ok);
   while (ibuf_getstr_crlf(&inbuf, &line)) {
-    log(line.s);
     if (!parse_line())
       respond(err_internal);
     else

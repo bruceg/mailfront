@@ -9,6 +9,7 @@ struct command
   const char* name;
   void (*fn0)(void);
   void (*fn1)(const struct str* s);
+  const char* sanitized;
 };
 typedef struct command command;
 

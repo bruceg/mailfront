@@ -383,17 +383,17 @@ static void cmd_uidl_one(const str* arg)
 }
 
 command commands[] = {
-  { "DELE", 0,        cmd_dele },
-  { "LAST", cmd_last, 0 },
-  { "LIST", cmd_list, cmd_list_one },
-  { "NOOP", cmd_noop, 0 },
-  { "QUIT", cmd_quit, 0 },
-  { "RETR", 0,        cmd_top },
-  { "RSET", cmd_rset, 0 },
-  { "STAT", cmd_stat, 0 },
-  { "TOP",  0,        cmd_top },
-  { "UIDL", cmd_uidl, cmd_uidl_one },
-  { 0,      0,        0 }
+  { "DELE", 0,        cmd_dele,     0 },
+  { "LAST", cmd_last, 0,            0 },
+  { "LIST", cmd_list, cmd_list_one, 0 },
+  { "NOOP", cmd_noop, 0,            0 },
+  { "QUIT", cmd_quit, 0,            0 },
+  { "RETR", 0,        cmd_top,      0 },
+  { "RSET", cmd_rset, 0,            0 },
+  { "STAT", cmd_stat, 0,            0 },
+  { "TOP",  0,        cmd_top,      0 },
+  { "UIDL", cmd_uidl, cmd_uidl_one, 0 },
+  { 0,      0,        0,            0 }
 };
 
 extern void report_io_bytes(void);
