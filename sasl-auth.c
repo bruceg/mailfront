@@ -79,6 +79,7 @@ int sasl_auth2(const char* prefix,
       str_cats(&response, cvm_fact_domain);
     }
     msg4("SASL AUTH ", mechanism, " ", response.s);
+    cvm_setenv();
   }
   else
     msg3("SASL AUTH ", mechanism, " failed");

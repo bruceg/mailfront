@@ -47,9 +47,6 @@
 
   - Add some information about authentication into the headers (?)
 
-  - Export CVM data after authentication, to allow programs like
-    qmail-qfilter to pick it up.
-
   - Handle $LOCALIPHOST (all back-ends): rewrite envelope recipient
     addresses of the form box@[a.b.c.d], where a.b.c.d is a local IP
     address, to box@$LOCALIPHOST. (low priority)

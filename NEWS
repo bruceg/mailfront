@@ -11,6 +11,8 @@ Changes in version 0.88
 
 - Added support for IMAP string literals in imapfront-auth.
 
+- smtpfront now exports CVM environment variables after authentication.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
