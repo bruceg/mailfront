@@ -169,7 +169,7 @@ static int copy_body(void)
     case LF:
       if (sawperiod && linepos == 0) { data_end(); return 1; }
       data_byte(ch);
-      sawcr = linepos = 0;
+      sawperiod = sawcr = linepos = 0;
       break;
     case CR:
       if (sawcr) { data_byte(CR); ++linepos; }
@@ -179,6 +179,7 @@ static int copy_body(void)
       if (ch == PERIOD && !sawperiod && linepos == 0)
 	sawperiod = 1;
       else {
+	sawperiod = 0;
 	if (sawcr) { data_byte(CR); ++linepos; sawcr = 0; }
 	data_byte(ch); ++linepos;
       }
