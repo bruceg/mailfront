@@ -10,6 +10,9 @@
 <p>The POP3 front end is composed of two pieces: an authentication
 front end and a transfer back-end.</p>
 
+<p>Connections are timed out after <tt>$TIMEOUT</tt> seconds of
+inactivity, or 1200 seconds (20 minutes) if it is not set.</p>
+
 <h2>pop3front-auth</h2>
 
 <p>Usage: <tt>pop3front-auth CVM PROGRAM [ ARGS ... ]</tt></p>

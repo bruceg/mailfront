@@ -22,7 +22,7 @@ int smtp_mainloop(const char* welcome)
   
   timeout = 0;
   if ((tmp = getenv("TIMEOUT")) != 0) timeout = strtoul(tmp, 0, 10);
-  if (timeout == 0) timeout = 1200;
+  if (timeout <= 0) timeout = 1200;
   inbuf.io.timeout = timeout * 1000;
   outbuf.io.timeout = timeout * 1000;
 

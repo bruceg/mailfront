@@ -75,10 +75,13 @@ static void dispatch_line(void)
 int main(int argc, char* argv[])
 {
   const char* tmp;
-  if ((tmp = getenv("TIMEOUT")) != 0)
-    timeout = strtoul(tmp, 0, 10);
+
+  timeout = 0;
+  if ((tmp = getenv("TIMEOUT")) != 0) timeout = strtoul(tmp, 0, 10);
+  if (timeout <= 0) timeout = 1200;
   inbuf.io.timeout = timeout * 1000;
   outbuf.io.timeout = timeout * 1000;
+
   if (!startup(argc, argv)) return 0;
   respond(ok);
   while (ibuf_getstr_crlf(&inbuf, &line)) {
