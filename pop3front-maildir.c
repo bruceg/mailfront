@@ -234,6 +234,19 @@ static void cmd_dele(const str* arg)
   respond(ok);
 }
 
+static void cmd_last(void)
+{
+  long last;
+  long i;
+  for (last = i = 0; i < msg_count; i++)
+    if (msgs[i].read)
+      last = i + 1;
+  if (!str_copys(&tmp, "+OK ") ||
+      !str_cati(&tmp, last))
+    respond(err_internal);
+  respond(tmp.s);
+}
+
 static void cmd_list(void)
 {
   long i;
@@ -369,6 +382,7 @@ static void cmd_uidl_one(const str* arg)
 
 command commands[] = {
   { "DELE", 0,        cmd_dele },
+  { "LAST", cmd_last, 0 },
   { "LIST", cmd_list, cmd_list_one },
   { "NOOP", cmd_noop, 0 },
   { "QUIT", cmd_quit, 0 },
