@@ -1,0 +1,181 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">MailFront</a></h2>
+<h2><a href="smtpfront.html">SMTP Front Ends</a></h2>
+
+<h1>Mail Rules Specification v2</h1>
+
+<hr>
+
+<p>This document makes the following changes over the existing version:
+<ol>
+
+<li>The rule syntax is extended to allow specification when the rule is
+to be applied.  This change is completely backwards compatible with
+existing rules.
+
+<li>The pattern syntax is extended to allow negation of results.  This
+change is backwards compatible except in the (unlikely) case where a
+pattern would otherwise start with a "<tt>!</tt>".  No workaround is
+available at this time.
+
+</ol> These two changes correct two of the biggest problems with the
+original specification.</p>
+
+<h2>Selection</h2>
+
+<p>The use of mail rules is controlled by the environment variable
+<tt>$MAILRULES</tt>.  This variable specifies the path to the mail rules
+file.  If <tt>$MAILRULES</tt> is set but the path that it points to
+cannot be opened, processing will fail with a temporary error.  There is
+no default value -- if it is not set, mail rules processing is
+disabled.</p>
+
+<p>The rules listed are applied <i>before</i> any other sender or
+recipient processing is done (such as checking against qmail's
+badmailfrom file).</p>
+
+<h2>Syntax</h2>
+
+<p>Each rule in the file occupies a single line and has exactly the same
+format.  Each line starts with one of the following prefixes: <dl>
+
+<dt><tt>k</tt> <dd>Accept the sender or recipient.
+<dt><tt>z</tt> <dd>Reject the sender or recipient with a temporary error
+code.
+<dt><tt>d</tt> <dd>Reject the sender or recipient with a permanent error
+code.
+<dt><tt>p</tt> <dd>Pass the sender or recipient on to the next
+processing state (ie <tt>$RELAYCLIENT</tt> or back-end validation).
+
+</dl> Additionally, each line may be prefixed with one of the following
+selectors, which explicitly list when the rule will be applied: <dl>
+
+<dt><tt>s</tt> <dd>Sender valication
+
+<dt><tt>r</tt> <dd>Recipient validation
+
+</dl> Empty lines and lines starting with any other character are
+ignored.  The remainder of the line consists of a series of fields
+seperated by colons (":").  The fields are: <ol>
+
+<li><b>Sender</b>: A pattern applied to the envelope sender address.
+
+<li><b>Recipient</b>: A pattern applied to the envelope recipient
+address.
+
+<li><b>Response</b>: The response message that will be given to the
+client with the numerical code.  The default for this message depends on
+the line's prefix.
+
+<li><b>Data Bytes</b>: Reduces the maximum message size to the lesser of
+the current limit (as set at startup by <tt>$DATABYTES</tt>) and the
+specified number.  This message size limit is reset to its original
+value before after each message.  If empty or missing, no changes are
+made.
+
+<li><b>Relay Client</b>: If present, the current recipient address is
+suffixed with this string.  Only useful for "k" rules.
+
+<li><b>Environment</b>: Environment variables to set as a result of
+matching this rule.  This field contains a list of assignments seperated
+by commas.  Each assignment is formatted as <tt>NAME="VALUE"</tt>.
+
+</dl>
+
+</ol></p>
+
+<h2>Escaping</h2>
+
+<p>The following escape sequences are recognized in all the fields: <ul>
+
+<li><tt>\n</tt> newline (replaced with a CR+LF pair on output)
+
+<li><tt>\###</tt> character with octal value ### (exactly 3 digits)
+
+<li><tt>\\</tt> backslash
+
+<li><tt>\:</tt> colon
+
+</ul></p>
+
+<h2>Patterns</h2>
+
+<h3>Pattern Syntax</h3>
+
+<p>A pattern is a string of stars and non-stars.  It matches any
+concatenation of strings matched by all the stars and non-stars in the
+same order.  A non-star matches itself.  A star before the end of
+pattern matches any string that does not include the next character in
+pattern. A star at the end of pattern matches any string.  Patterns
+containing only "<tt>*</tt>" match anything.  <b>Note:</b> An empty
+pattern matches <i>only</i> the empty string.</p>
+
+<p>Prefixing the pattern with a <tt>!</tt> inverts the result of the
+match.  That is, if the pattern match does <i>not</i> succeed, the rule
+will succeed instead of failing.</p>
+
+<h3>Special Patterns</h3>
+
+<p>The following patterns are treated specially: <dl>
+
+<dt><tt>[[@<i>filename</i>]]</tt> <dd>Matches the domain portion of the
+address against the control file named <tt><i>filename</i></tt>.
+Typical uses would be "<tt>[[@rcpthosts]]</tt>" and
+"<tt>[[@morercpthosts.cdb]]</tt>" in the recipient field.
+
+<dt><tt>[[<i>filename</i>]]</tt> <dd>Matches the entire address against
+the control file named <tt><i>filename</i></tt>.  A typical use would be
+"<tt>[[badmailfrom]]</tt>" in the sender field.
+
+</dl> If <tt><i>filename</i></tt> ends with <tt>.cdb</tt>, the control
+file is opened as a CDB file.  Addresses are translated to lower-case
+before doing CDB lookups.  Otherwise, control files are plain text
+lists, with one entry per line.  Empty lines and lines starting with
+"<tt>#</tt>" are ignored.  Lines starting with "<tt>@</tt>" match only
+the domain portion of the address.  All comparisons are case
+insensitive.  Missing CDB files are silently ignored.  Missing text
+files cause an error message at startup.</p>
+
+<h2>Semantics</h2>
+
+<p>Each rule is applied in the order they are listed in the rules file
+until one matches.  At that point, the command that triggered the rule
+search is accepted, deferred, or rejected depending on the rule type.
+If the sender is not accepted, no recipients can be accepted, as usual.
+As long as at least one recipient is accepted the message data may be
+accepted.</p>
+
+<p>Rules with a recipient pattern of <tt>*</tt> will be tested when the
+client transmits the sender address.  Otherwise rules are be tested when
+the client transmits the recipient address.</p>
+
+<h2>Examples</h2>
+
+<h3>qmail Rules</h3>
+
+<p>The following rules provide the functionality similar to that
+available in qmail-smtpd.  Please note that the qmail validation
+routines already provide this functionality.  These rules are listed for
+illustrative purposes only.</p>
+
+<pre>
+d[[/var/qmail/control/badmailfrom]]:*:sorry, your envelope sender is in my badmailfrom list (#5.7.1)
+k*:[[@/var/qmail/control/rcpthosts]]
+k*:[[@/var/qmail/control/morercpthosts.cdb]]
+</pre>
+
+<h3>Abused Patterns</h3>
+
+<p>The following rules block old exploitable addresses that are still
+commonly probed: bang paths, multiple domains, and percent hacks.</p>
+
+<pre>
+d*:*!*: Sorry, we don't allow that here
+d*:*@*@*: Sorry, we don't allow that here
+d*:*%*: Sorry, percent hack not accepted here
+</pre>
+
+</body>
+</html>
