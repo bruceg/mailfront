@@ -2,6 +2,8 @@
 
 - Add echo/reject back-ends for QMQP and QMTP, and add tests using them.
 
+- Add variable substitution to pattern variable setting (ie x=${y} etc)
+
 - Add negation to patterns:
   - Each leading ! increments a counter (parsed when parsing the rules,
     not when using the pattern)
