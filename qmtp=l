@@ -1,5 +1,6 @@
 iobytes.o
 mailrules.o
+netstring.o
 std-handle.o
 timeout.o
 qmtp-mainloop.o

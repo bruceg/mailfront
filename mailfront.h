@@ -2,6 +2,7 @@
 #define MAIL_FRONT__MAILFRONT__H__
 
 #include "responses.h"
+#include <iobuf/iobuf.h>
 #include <str/str.h>
 #include "constants.h"
 
@@ -21,6 +22,10 @@ extern const response* handle_data_start(const str* helo_domain,
 					     const char* protocol);
 extern void handle_data_bytes(const char* bytes, unsigned len);
 extern const response* handle_data_end(void);
+
+/* From netstring.c */
+int get_netstring_len(ibuf* in, unsigned long* i);
+int get_netstring(ibuf* in, str* s);
 
 /* Defined by a back-end module */
 extern const response* backend_validate_init(void);
