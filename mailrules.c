@@ -303,11 +303,13 @@ const response* rules_add(const char* l)
   if ((l = parse_pattern(l, ':', &r->sender)) != 0 && *l == ':')
     if ((l = parse_pattern(l+1, ':', &r->recipient)) != 0 && *l == ':')
       if ((l = parse_str(l+1, ':', &r->response)) != 0 && *l == ':')
-	if ((l = parse_uint(l+1, ':', &databytes)) != 0 && *l == ':') {
+	if ((l = parse_uint(l+1, ':', &databytes)) != 0) {
 	  str_copys(&r->environment, "DATABYTES=");
 	  str_catu(&r->environment, databytes);
 	  str_catc(&r->environment, 0);
-	  if ((l = parse_str(l+1, ':', &r->relayclient)) != 0 && *l == ':')
+	  if (*l == ':'
+	      && (l = parse_str(l+1, ':', &r->relayclient)) != 0
+	      && *l == ':')
 	    parse_env(l+1, &r->environment);
 	}
 
