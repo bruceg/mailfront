@@ -1,4 +1,4 @@
-/* pop3front-main.c -- POP3 main program
+/* pop3front-maildir.c -- POP3 main program
  * Copyright (C) 2001  Bruce Guenter <bruceg@em.ca> or FutureQuest, Inc.
  * Development of this program was sponsored by FutureQuest, Inc.
  *
@@ -31,6 +31,7 @@
 #include <unistd.h>
 #include "direntry.h"
 #include "iobuf/iobuf.h"
+#include "msg/msg.h"
 #include "str/str.h"
 #include "pop3.h"
 
@@ -397,20 +398,18 @@ command commands[] = {
 
 static void report_bytes(void)
 {
-  if (str_copys(&tmp, "pop3front-maildir: bytes in: ") &&
+  if (str_copys(&tmp, "bytes in: ") &&
       str_catu(&tmp, inbuf.io.offset) &&
       str_cats(&tmp, " bytes out: ") &&
-      str_catu(&tmp, outbuf.io.offset) &&
-      str_catc(&tmp, '\n'))
-    obuf_putsflush(&errbuf, tmp.s);
+      str_catu(&tmp, outbuf.io.offset))
+    msg1(tmp.s);
 }
 
 int startup(int argc, char* argv[])
 {
   const char* tmp;
-  static const char usage[] = "usage: pop3front-main [default-maildir]\n";
   if (argc > 2) {
-    obuf_putsflush(&errbuf, usage);
+    msg3("usage: ", program, " [default-maildir]");
     return 0;
   }
 
@@ -420,7 +419,7 @@ int startup(int argc, char* argv[])
   
   if ((tmp = getenv("MAILBOX")) == 0) {
     if (argc < 2) {
-      obuf_putsflush(&errbuf, "pop3front-main: Mailbox not specified\n");
+      error1("Mailbox not specified");
       return 0;
     }
     tmp = argv[1];
