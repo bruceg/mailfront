@@ -18,6 +18,17 @@ delivery details in a protocol-independant fashion.</p>
 
 <p>The following features are common to all SMTP front-ends: <ul>
 
+<li>Validates senders and recipients according to <a
+href="mailrules.html">mail rules</a> processing.
+
+<li>If <tt>$RELAYCLIENT</tt> is set, all recipient addresses not
+rejected by mail rules are allowed, and its contents are appended to
+each recipient address.  Back-end validation is omitted.
+
+<li>Handles RFC 2554 SMTP authentication.  After authentication all
+recipients not rejected by mail rules are allowed, and back-end
+validation is omitted.
+
 <li>Automatically handles either bare NL or RFC 821/2821 compliant
 CR/NL end-of-line conventions.
 
@@ -54,8 +65,7 @@ data to the client.</p>
 <dt><tt>smtpfront-qmail</tt> <dd><p>Uses the <a
 href="qmail-validate.html">qmail validation features</a> to validate
 addresses, and the <a href="qmail-backend.html">qmail backend</a> to
-deliver messages.  Also uses SMTP AUTH through <a
-href="cvm-sasl.html">cvm-sasl</a> to enable relaying.</p>
+deliver messages.</p>
 
 <dt><tt>smtpfront-reject</tt> <dd><p>If <tt>$SMTPREJECT</tt> is set,
 all SMTP commands are rejected with this message.  If the message
