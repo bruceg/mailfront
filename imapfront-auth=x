@@ -3,6 +3,7 @@ timeout.o
 -lcvm-sasl/cvm-sasl
 -lbase64/base64
 -lcvm/client
+-lmsg/msg
 -liobuf/str
 -liobuf/iobuf
 -lstr/str

@@ -3,7 +3,9 @@
 #include "sasl-auth.h"
 #include <base64/base64.h>
 #include <cvm-sasl/cvm-sasl.h>
+#include <cvm/client.h>
 #include <iobuf/iobuf.h>
+#include <msg/msg.h>
 #include <str/str.h>
 
 int sasl_auth_init(void)
@@ -57,6 +59,9 @@ int sasl_auth2(const char* prefix,
 	!base64_decode_line(response64.s, &response))
       return SASL_RESP_BAD;
   }
+  if (i == SASL_AUTH_OK)
+    msg6("SASL AUTH ", mechanism,
+	 " username=", cvm_fact_username, "@", cvm_fact_domain);
   return i;
 }
 
