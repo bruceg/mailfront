@@ -10,4 +10,4 @@ EOF
 +OK ^M
 Yes.
 +OK ^M
--ERR Authentication failed.^M
+-ERR Authentication failed^M

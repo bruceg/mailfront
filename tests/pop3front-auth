@@ -5,5 +5,5 @@ QUIT AGAIN
 EOF
 <result>
 +OK ^M
--ERR Syntax error.^M
+-ERR Syntax error^M
 +OK ^M
