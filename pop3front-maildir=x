@@ -3,3 +3,4 @@ pop3.a
 -liobuf/str
 -liobuf/iobuf
 -lstr/str
+-lunix/sig

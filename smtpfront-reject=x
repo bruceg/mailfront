@@ -4,3 +4,4 @@ sasl-stub.o
 -lstr/str
 -lmsg/msg
 -liobuf/iobuf
+-lunix/sig

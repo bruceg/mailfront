@@ -24,17 +24,33 @@
  */
 #include <stdlib.h>
 #include <sysdeps.h>
+#include <unistd.h>
 #include <iobuf/iobuf.h>
+#include <unix/sig.h>
 
 unsigned long timeout;
+unsigned long session_timeout;
+
+static void handle_alarm(int unused)
+{
+  exit(0);
+}
 
 void set_timeout(void)
 {
   const char* tmp;
 
   timeout = 0;
-  if ((tmp = getenv("TIMEOUT")) != 0) timeout = strtoul(tmp, 0, 10);
+  if ((tmp = getenv("TIMEOUT")) != 0)
+    timeout = strtoul(tmp, 0, 10);
   if (timeout <= 0) timeout = 1200;
   inbuf.io.timeout = timeout * 1000;
   outbuf.io.timeout = timeout * 1000;
+
+  session_timeout = 0;
+  if ((tmp = getenv("SESSION_TIMEOUT")) != 0)
+    session_timeout = strtoul(tmp, 0, 10);
+  if (session_timeout <= 0) timeout = 86400;
+  sig_alarm_catch(handle_alarm);
+  alarm(session_timeout);
 }

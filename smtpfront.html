@@ -24,8 +24,10 @@ CR/NL end-of-line conventions.
 <li>Rejects messages that exceed <tt>$DATABYTES</tt> bytes in the
 body.
 
-<li>Times out connections after <tt>$TIMEOUT</tt> seconds of
-inactivity (defaults to 1200 seconds).
+<li>Times out connections after <tt>$TIMEOUT</tt> seconds of inactivity
+(defaults to 1200 seconds or 20 minutes), or <tt>$SESSION_TIMEOUT</tt>
+seconds after the connection was established (defaults to 86400 seconds
+or 24 hours).
 
 <li>Counts the number of "<tt>Received:</tt>" and
 "<tt>Delivered-To:</tt>" headers, and rejects the message if more than

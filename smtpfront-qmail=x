@@ -12,4 +12,5 @@ sasl-auth.o
 -liobuf/str
 -lstr/str
 -liobuf/iobuf
+-lunix/sig
 socket.lib

@@ -11,7 +11,9 @@
 front end and a transfer back-end.</p>
 
 <p>Connections are timed out after <tt>$TIMEOUT</tt> seconds of
-inactivity, or 1200 seconds (20 minutes) if it is not set.</p>
+inactivity (defaults to 1200 seconds or 20 minutes), or
+<tt>$SESSION_TIMEOUT</tt> seconds after the connection was established
+(defaults to 86400 seconds or 24 hours).</p>
 
 <h2>pop3front-auth</h2>
 

@@ -12,6 +12,9 @@ Changes in version 0.75
 - smtpfront rejects bounce messages with multiple recipients.  See
   http://www.ornl.gov/its/archives/mailing-lists/qmail/2001/12/msg00405.html
 
+- Added a session timeout, controlled by $SESSION_TIMEOUT, defaults to
+  24 hours.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

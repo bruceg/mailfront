@@ -8,4 +8,5 @@ sasl-auth.o
 -liobuf/iobuf
 -lstr/str
 -lnet/socket
+-lunix/sig
 socket.lib

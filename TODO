@@ -23,8 +23,6 @@
   - When verifying senders, check if $DOMAIN(?) is set, and only allow
     sender addresses from that domain.
 
-  - Implement a session timeout in addition to the I/O timeout.
-
   - Add RFC 1893/2034 enhanced status codes to all responses.
 
   - Add support for RFC 2487 STARTTLS

@@ -20,7 +20,9 @@ href="cvm-sasl.html">cvm-sasl</a>. The environment is set up for use
 with Courier IMAP.</p>
 
 <p>Connections are timed out after <tt>$TIMEOUT</tt> seconds of
-inactivity, or 1200 seconds (20 minutes) if it is not set.</p>
+inactivity (defaults to 1200 seconds or 20 minutes), or
+<tt>$SESSION_TIMEOUT</tt> seconds after the connection was established
+(defaults to 86400 seconds or 24 hours).</p>
 
 </body>
 </html>
