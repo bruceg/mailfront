@@ -12,6 +12,8 @@ Changes in version 0.81
 - Fixed bug: all bounces following the first in a single connection
   would be rejected.
 
+- Fixed bug: The "*" pattern failed to match the empty string.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

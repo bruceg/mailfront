@@ -315,7 +315,7 @@ static int pattern_match(const str* pattern, const str* addr)
   const char* p;
   const char* a;
   if (pattern->len == 0) return addr->len == 0;
-  for (p = pattern->s, a = addr->s; *p != 0 && *a != 0; ++p, ++a) {
+  for (p = pattern->s, a = addr->s; *p != 0; ++p, ++a) {
     if (*p == '*') {
       if (*++p == 0) return 1;
       while (*a != 0 && *a != *p) ++a;
@@ -323,6 +323,7 @@ static int pattern_match(const str* pattern, const str* addr)
     }
     else
       if (*p != *a) return 0;
+    if (!*a) break;
   }
   return *p == 0 && *a == 0;
 }
