@@ -125,15 +125,43 @@ static long msgnum(const str* arg)
   return 0;
 }
 
-static int openmsg(const str* arg, ibuf* in)
+static void dump_msg(long num, long bodylines)
 {
-  long i;
-  if ((i = msgnum(arg)) == 0) return 0;
-  if (!ibuf_open(in, msg_list.s+msg_offs[i-1], 0)) {
-    respond("-ERR Could not open that message.");
-    return 0;
+  ibuf in;
+  static char buf[4096];
+  int in_header;
+
+  if (!msgnum_check(num)) return;
+
+  if (!ibuf_open(&in, msg_list.s+msg_offs[num-1], 0))
+    return respond("-ERR Could not open that message.");
+  respond(ok);
+
+  in_header = 1;
+  while (ibuf_read(&in, buf, 4096) || in.count) {
+    const char* ptr = buf;
+    const char* end = buf + in.count;
+    while (ptr < end) {
+      const char* lfptr;
+      if ((lfptr = memchr(ptr, LF, end-ptr)) == 0) {
+	obuf_write(&outbuf, ptr, end-ptr);
+	ptr = end;
+      }
+      else {
+	if (in_header) {
+	  if (lfptr == ptr) in_header = 0;
+	}
+	else if (bodylines >= 0)
+	  if (--bodylines < 0) break;
+	obuf_write(&outbuf, ptr, lfptr-ptr);
+	obuf_puts(&outbuf, CRLF);
+	ptr = lfptr + 1;
+      }
+    }
   }
-  return 1;
+  ibuf_close(&in);
+  obuf_puts(&outbuf, CRLF);
+  respond(".");
 }
 
 /* Commands ******************************************************************/
@@ -154,8 +182,7 @@ static void cmd_list(void)
       obuf_putu(&outbuf, i+1);
       obuf_putc(&outbuf, SPACE);
       obuf_putu(&outbuf, msg_sizes[i]);
-      obuf_putc(&outbuf, CR);
-      obuf_putc(&outbuf, LF);
+      obuf_puts(&outbuf, CRLF);
     }
   }
   respond(".");
@@ -198,37 +225,6 @@ static void cmd_quit(void)
   exit(0);
 }
 
-static void cmd_retr(const str* arg)
-{
-  ibuf in;
-  char buf[4096];
-  unsigned pos;
-  const char* ptr;
-
-  if (!openmsg(arg, &in)) return;
-  respond(ok);
-  
-  while (ibuf_read(&in, buf, 4096) || in.count) {
-    pos = 0;
-    while (pos < in.count) {
-      if ((ptr = memchr(buf+pos, LF, in.count-pos)) != 0) {
-	obuf_write(&outbuf, buf+pos, ptr-(buf+pos));
-	obuf_putc(&outbuf, CR);
-	obuf_putc(&outbuf, LF);
-	pos = ptr - buf + 1;
-      }
-      else {
-	obuf_write(&outbuf, buf+pos, in.count-pos);
-	pos = in.count;
-      }
-    }
-  }
-  ibuf_close(&in);
-  obuf_putc(&outbuf, CR);
-  obuf_putc(&outbuf, LF);
-  respond(".");
-}
-
 static void cmd_rset(void)
 {
   if (!scan_maildir()) {
@@ -249,6 +245,20 @@ static void cmd_stat(void)
     respond(tmp.s);
 }
 
+static void cmd_top(const str* arg)
+{
+  long num;
+  long lines;
+  char* end;
+
+  if ((num = strtol(arg->s, &end, 10)) <= 0) return respond(err_syntax);
+  while (*end == SPACE) ++end;
+  if (*end == 0) return dump_msg(num, -1);
+  if ((lines = strtol(end, &end, 10)) < 0 || *end != 0)
+    return respond(err_syntax);
+  dump_msg(num, lines);
+}
+
 static void cmd_uidl(void)
 {
   long i;
@@ -263,8 +273,7 @@ static void cmd_uidl(void)
       if ((end = str_findnext(&msg_list, ':', pos)) == -1)
 	end = msg_offs[i+1] - 1;
       obuf_write(&outbuf, msg_list.s+pos, end-pos);
-      obuf_putc(&outbuf, CR);
-      obuf_putc(&outbuf, LF);
+      obuf_puts(&outbuf, CRLF);
     }
   }
   respond(".");
@@ -293,9 +302,10 @@ command commands[] = {
   { "LIST", cmd_list, cmd_list_one },
   { "NOOP", cmd_noop, 0 },
   { "QUIT", cmd_quit, 0 },
-  { "RETR", 0,        cmd_retr },
+  { "RETR", 0,        cmd_top },
   { "RSET", cmd_rset, 0 },
   { "STAT", cmd_stat, 0 },
+  { "TOP",  0,        cmd_top },
   { "UIDL", cmd_uidl, cmd_uidl_one },
   { 0,      0,        0 }
 };
