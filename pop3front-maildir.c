@@ -187,6 +187,23 @@ static void dump_msg(long num, long bodylines)
   respond(".");
 }
 
+/* Mark a maildir filename with the named flag */
+static int add_flag(str* fn, char flag)
+{
+  int c;
+  /* If the filename has no flags, append them */
+  if ((c = str_findfirst(fn, ':')) == -1)
+    if (!str_cats(fn, ":2,")) return 0;
+  /* If it has a colon (start of flags), see if they are a type we
+   * recognize, and bail out if they aren't */
+  if (fn->s[++c] != '2' || fn->s[++c] != ',') return 1;
+  /* Scan through the flag characters and return success
+   * if the message is already marked with the flag */
+  for (++c; fn->s[c]; ++c)
+    if (fn->s[c] == flag) return 1;
+  return str_catc(fn, flag);
+}
+
 /* Commands ******************************************************************/
 static void cmd_dele(const str* arg)
 {
@@ -242,16 +259,13 @@ static void cmd_quit(void)
     /* Logic: 
      * 1. move all messages into "cur"
      * 2. tag all read messages without flags with a read flag (:2,S)
+     * Note: no real opportunity to report errors,
+     * so just continue when we hit one.
      */
     else {
       if (!str_copys(&tmp, "cur/")) continue;
       if (!str_cats(&tmp, fn+4)) continue;
-      if (msgs[i].read) {
-	int c;
-	if ((c = str_findfirst(&tmp, ':')) == -1 ||
-	    (tmp.s[c+1] == '2' && str_truncate(&tmp, c)))
-	  if (!str_cats(&tmp, ":2,S")) continue;
-      }
+      if (msgs[i].read && !add_flag(&tmp, 'S')) continue;
       rename(fn, tmp.s);
     }
   }
