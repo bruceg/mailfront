@@ -70,9 +70,6 @@ const response* handle_init(void)
     str_strip(&fixup_ip);
   }
 
-  if ((tmp = getenv("DATABYTES")) != 0) maxdatabytes = strtoul(tmp, 0, 10);
-  else maxdatabytes = 0;
-
   if ((tmp = getenv("MAXRCPTS")) != 0) maxrcpts = strtoul(tmp, 0, 10);
   else maxrcpts = 0;
 
@@ -216,6 +213,7 @@ const response* handle_data_start(const str* helo_domain,
 {
   const response* resp;
   const char* tmp;
+  maxdatabytes = rules_getenvu("DATABYTES");
   if (is_bounce && rcpt_count > 1) return &resp_badbounce;
   resp = backend_handle_data_start();
   if (response_ok(resp)) {

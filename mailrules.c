@@ -31,7 +31,6 @@ struct rule
   struct pattern sender;
   struct pattern recipient;
   str response;
-  unsigned long databytes;
   str relayclient;
   str environment;
   struct rule* next;
@@ -170,6 +169,31 @@ const char* rules_getenv(const char* name)
   return s;
 }
 
+static unsigned long min_u_s(unsigned long u, const char* s)
+{
+  unsigned long newu;
+  newu = strtoul(s, (char**)&s, 10);
+  if (*s == 0 && (u == 0 || newu < u))
+    u = newu;
+  return u;
+}
+
+/* Returns the smallest non-zero value set */
+unsigned long rules_getenvu(const char* name)
+{
+  unsigned i;
+  unsigned namelen;
+  unsigned long val;
+  namelen = strlen(name);
+  val = min_u_s(0, getenv(name));
+  for (val = 0, i = 0; i < envars.len; i += strlen(envars.s + i) + 1) {
+    if (memcmp(envars.s + i, name, namelen) == 0 &&
+	envars.s[i + namelen] == '=')
+      val = min_u_s(val, envars.s + namelen + 1);
+  }
+  return val;
+}
+
 int rules_exportenv(void)
 {
   unsigned i;
@@ -254,6 +278,7 @@ static void parse_env(const char* ptr, str* out)
 const response* rules_add(const char* l)
 {
   struct rule* r;
+  unsigned long databytes;
   
   if (*l != 'k' && *l != 'd' && *l != 'z' && *l != 'p') return 0;
   r = alloc_rule();
@@ -262,9 +287,13 @@ const response* rules_add(const char* l)
   if ((l = parse_str(l, ':', &r->sender.pattern)) != 0 && *l == ':')
     if ((l = parse_str(l+1, ':', &r->recipient.pattern)) != 0 && *l == ':')
       if ((l = parse_str(l+1, ':', &r->response)) != 0 && *l == ':')
-	if ((l = parse_uint(l+1, ':', &r->databytes)) != 0 && *l == ':')
+	if ((l = parse_uint(l+1, ':', &databytes)) != 0 && *l == ':') {
+	  str_copys(&r->environment, "DATABYTES=");
+	  str_catu(&r->environment, databytes);
+	  str_catc(&r->environment, 0);
 	  if ((l = parse_str(l+1, ':', &r->relayclient)) != 0 && *l == ':')
 	    parse_env(l+1, &r->environment);
+	}
 
   if (l == 0) return &resp_syntax;
   append_rule(r);
@@ -276,7 +305,6 @@ const response* rules_add(const char* l)
 }
 
 static int loaded = 0;
-static unsigned long saved_maxdatabytes;
 
 const response* rules_init(void)
 {
@@ -287,7 +315,6 @@ const response* rules_init(void)
   
   if ((path = getenv("MAILRULES")) == 0) return 0;
   loaded = 1;
-  saved_maxdatabytes = maxdatabytes;
 
   if (!ibuf_open(&in, path, 0)) return &resp_erropen;
   while (ibuf_getstr(&in, &rule, LF)) {
@@ -303,7 +330,6 @@ const response* rules_init(void)
 const response* rules_reset(void)
 {
   if (!loaded) return 0;
-  maxdatabytes = saved_maxdatabytes;
   str_truncate(&envars, 0);
   return 0;
 }
@@ -379,9 +405,6 @@ static const response* apply_rule(const struct rule* rule)
   const response* resp;
   resp = build_response(rule->code, &rule->response);
   apply_environment(&rule->environment);
-  if (rule->databytes > 0 &&
-      (maxdatabytes == 0 || rule->databytes < maxdatabytes))
-    maxdatabytes = rule->databytes;
   return resp;
 }
 
