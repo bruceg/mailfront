@@ -3,6 +3,8 @@ Changes in version 0.77
 
 - Added missing imapfront-auth to insthier.
 
+- Made smtpfront-qmail handle wildcards in badrcptto.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

@@ -69,6 +69,9 @@ const response* qmail_validate_recipient(const str* recipient)
   str_lower(&tmp);
   if (dict_get(&brt, &tmp) != 0) return &resp_bmt;
   if ((at = str_findlast(recipient, '@')) > 0) {
+    str_copyb(&tmp, recipient->s + at, recipient->len - at);
+    str_lower(&tmp);
+    if (dict_get(&brt, &tmp)) return &resp_bmt;
     ++at;
     str_copyb(&tmp, recipient->s + at, recipient->len - at);
     str_lower(&tmp);
