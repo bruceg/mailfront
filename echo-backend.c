@@ -3,6 +3,8 @@
 static response r = { 0, 250, 0 };
 static str tmp;
 
+static unsigned long databytes = 0;
+
 const response* backend_validate_init(void)
 {
   return 0;
@@ -10,6 +12,7 @@ const response* backend_validate_init(void)
 
 void backend_handle_reset(void)
 {
+  databytes = 0;
 }
 
 const response* backend_validate_sender(str* sender)
@@ -44,8 +47,6 @@ const response* backend_handle_data_start(void)
 {
   return 0;
 }
-
-static unsigned long databytes = 0;
 
 void backend_handle_data_bytes(const char* bytes, unsigned long len)
 {
