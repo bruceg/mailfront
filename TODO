@@ -1,6 +1,11 @@
+- Handle timeouts in all modules.
+
 - Use lib/cli for all executables
 
 - smtpfront:
+
+  - When verifying senders, check if $DOMAIN(?) is set, and only allow
+    sender addresses from that domain.
 
   - Implement a session timeout in addition to the I/O timeout.
 
