@@ -1,0 +1,343 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">MailFront</a></h2>
+<h2><a href="smtpfront.html">SMTP Front Ends</a></h2>
+<h2><a href="mailrules.html">Mail Rules Specification</a></h2>
+
+<h1>Mail Rules Specification v2</h1>
+
+<hr>
+
+<p>The first mail rules specification is lacking in several areas: <ul>
+
+<li>There is no way to select rules based on the state of environment
+variables (such as <tt>$RELAYCLIENT</tt> or <tt>$TCPREMOTEIP</tt>.
+
+<li>There is no way to select rules based on the SMTP authentication
+state.
+
+<li>It is difficult to seperate sender processing from recipient
+processing.
+
+<li>The dictionary and CDB lookups don't support wildcarding (minor).
+
+</ul> This document proposes an improved mail rules specification that
+addresses these problems.</p>
+
+<h2>Selection</h2>
+
+<p>The use of mail rules is controlled by the environment variable
+<tt>$MAILRULES</tt>.  This variable specifies the path to the compiled
+mail rules file.  If <tt>$MAILRULES</tt> is set but the path that it
+points to cannot be opened, processing will fail with a temporary error.
+There is no default value -- if it is not set, mail rules processing is
+disabled.</p>
+
+<p>The rules listed are applied <i>before</i> any other sender or
+recipient processing is done (such as checking against qmail's
+badmailfrom file).</p>
+
+<h2>Compiled File Format</h2>
+
+<p>The mail rules must be compiled to a binary format.  The binary file
+contains a signature header followed by rules, and terminated with a
+32-bit CRC check code of all the data in the file.  All numbers are
+unsigned 32-bit LSB unless otherwise indicated.  A string consisists of
+a length number followed by that many bytes of data.</p>
+
+<h3>Signature Header</h3>
+
+<ol>
+
+<li>Unique signature string.
+
+<li>Rule count.
+
+</ol>
+
+<h3>Rule</h3>
+
+<ol>
+
+  <li>Rule size: total number of bytes in this rule.
+
+  <li>Rule type: single byte code indicating what type of rule this is
+  and when it should get executed.  The format of remainder of the data
+  in the rule is dependant on this value. <ul>
+
+    <li>0: Connection/Setup
+
+    <li>1: Sender validation
+
+    <li>2: Recipient validation
+
+  </ul>
+
+  <li>Conditions: count of the number of conditions (C).
+
+  <li>(C) conditions containing:<ol>
+
+    <li>Negation flag: single byte boolean
+
+    <li>Comparison type: single byte code: <ul>
+
+      <li>0: Is defined
+
+      <li>1: Exact match
+
+      <li>2: Pattern match
+
+      <li>3: File lookup, whole string
+
+      <li>4: File lookup, domain portion
+
+      <li>5: CDB lookup, whole string
+
+      <li>6: CDB lookup, domain portion
+
+    </ul>
+
+    <li>Variable name: string
+
+    <li>Comparison value: string
+
+  </ol>
+
+  <li>Assignments: count of the number of assignments (A).
+
+  <li>(A) assignments containing:<ol>
+
+    <li>Set (1) / unset (0) flag byte
+
+    <li>Variable name
+
+    <li>Assigned value
+
+  </ol>
+
+  <li>Action: single byte code indicating the action this rule is to
+  take: <ul>
+
+    <li>0: NO-OP
+
+    <li>1: PASS
+
+    <li>2: ACCEPT, followed by message string.
+
+    <li>3: DEFER, followed by message string.
+
+    <li>4: REJECT, followed by message string.
+
+    <li>5: DEFER-ALL, followed by message string.
+
+    <li>6: REJECT-ALL, followed by message string.
+
+  </ul>
+
+  <li>Message: string containing the response message.
+
+</ol>
+
+<h2>Variables</h2>
+
+<p>The following variables are internally defined. <ul>
+
+<li><tt>authenticated</tt>: Defined if SMTP authentication has
+succeeded.
+
+<li><tt>sender</tt>: The envelope sender address.
+
+<li><tt>recipient</tt>: The current envelope recipient address.
+
+<li><tt>databytes</tt>: The current maximum message size.
+
+</ul> All other variable names are taken from environment variables.</p>
+
+<h2>Variable Substitution</h2>
+
+<p>Response messages and assignment values undergo variable substition.
+All instances of <tt>$NAME</tt> or <tt>${NAME}</tt> in these strings are
+replaced with the contents of the named variable.</p>
+
+<h2>Pattern Syntax</h2>
+
+<p>A pattern is a string of stars and non-stars.  It matches any
+concatenation of strings matched by all the stars and non-stars in the
+same order.  A non-star matches itself.  A star before the end of
+pattern matches any string that does not include the next character in
+pattern. A star at the end of pattern matches any string.  Patterns
+containing only "<tt>*</tt>" match anything.  <b>Note:</b> An empty
+pattern matches <i>only</i> the empty string.</p>
+
+<h2>Semantics</h2>
+
+<p>Each rule is applied in the order they are listed in the rules file
+until one matches.  At that point, the command that triggered the rule
+search is accepted, deferred, or rejected depending on the rule type.
+If the sender is not accepted, no recipients can be accepted, as usual.
+As long as at least one recipient is accepted the message data may be
+accepted.</p>
+
+<h2>Text File Format</h2>
+
+<h3>Syntax</h3>
+
+<p>Rules are seperated into sections by one of the following lines: <dl>
+
+  <dt><tt>[connect]</tt> <dd>Connection validation
+
+  <dt><tt>[sender]</tt> <dd>Sender validation
+
+  <dt><tt>[recipient]</tt> <dd>Recipient validation
+
+</dl>
+
+<p>Each rule in the file occupies a series of lines.  Empty lines are
+used to seperate rules within the file.  Lines starting with
+"<tt>#</tt>" are ignored.  The rule contains the following sections:
+<ol>
+
+<li><b>Conditions</b>: a list of zero or more conditions.  Each
+condition has a format from the following list.  All conditions must be
+true for the rule to execute.  A rule with no conditions always
+matches. <ul>
+
+  <li><tt>!CONDITION</tt> True if the condition (one of the below) is
+  false.
+
+  <li><tt>VAR=VALUE</tt> True if the variable named <tt>VAR</tt> is
+  defined and matches "<tt>VALUE</tt>" exactly.
+
+  <li><tt>VAR~PATTERN</tt> True if the variable <tt>VAR</tt> is defined
+  and matches the pattern "<tt>PATTERN</tt>".
+
+  <li><tt>VAR</tt> True if the variable <tt>VAR</tt> is defined (even if
+  it has been assigned an empty string).
+
+  </ul> Sender-only rules must contain the condition
+  "<tt>!recipient</tt>".
+
+<li><b>Action</b>: One of the following: <dl>
+
+<dt><tt>:ACCEPT</tt> <dd>Accept the sender or recipient.
+
+<dt><tt>:DEFER</tt> <dd>Reject the sender or recipient with a temporary
+error code.
+
+<dt><tt>:REJECT</tt> <dd>Reject the sender or recipient with a permanent
+error code.
+
+<dt><tt>:DEFER-ALL</tt> <dd>Reject the message with a temporary error
+(rejects all past and future recipients, and resets the state).
+
+<dt><tt>:REJECT-ALL</tt> <dd>Reject the message with a permanent error.
+
+<dt><tt>:PASS</tt> <dd>Pass the sender or recipient on to the next
+processing state (ie <tt>$RELAYCLIENT</tt> or back-end validation).
+
+</dl> The action may be followed by another colon ("<tt>:</tt>") and a
+response message that will be given to the client.  The default for this
+message depends on the action.
+
+<li><b>Assignments</b>: A list of environment variables to set or unset
+as a result of matching this rule, one per line.  Each assignment is
+formatted as <tt>NAME=VALUE</tt> (note, no quotes, the value ends at the
+end of the line).  The special names <tt>databytes</tt>,
+<tt>sender</tt>, and <tt>recipient</tt> are handled specially.
+Assignment to <tt>recipient</tt> when handling a sender, and vice versa
+has no effect.
+
+</ol></p>
+
+<h3>Escaping</h3>
+
+<p>The following escape sequences are recognized in all the fields: <ul>
+
+<li><tt>\n</tt> newline (replaced with a CR+LF pair on output)
+
+<li><tt>\###</tt> character with octal value ### (exactly 3 digits)
+
+<li><tt>\\</tt> backslash
+
+<li><tt>\:</tt> colon
+
+</ul></p>
+
+<h3>Special Patterns</h3>
+
+<p>The following patterns are treated specially: <dl>
+
+<dt><tt>[[@<i>filename</i>]]</tt> <dd>Matches the domain portion of the
+address against the control file named <tt><i>filename</i></tt>.
+Typical uses would be "<tt>recipient~[[@rcpthosts]]</tt>" and
+"<tt>recipient~[[@morercpthosts.cdb]]</tt>".
+
+<dt><tt>[[<i>filename</i>]]</tt> <dd>Matches the entire address against
+the control file named <tt><i>filename</i></tt>.  A typical use would be
+"<tt>sender~[[badmailfrom]]</tt>".
+
+</dl> If <tt><i>filename</i></tt> ends with <tt>.cdb</tt>, the control
+file is opened as a CDB file.  Addresses are translated to lower-case
+before doing CDB lookups.  Otherwise, control files are plain text
+lists, with one entry per line.  Empty lines and lines starting with
+"<tt>#</tt>" are ignored.  Lines starting with "<tt>@</tt>" match only
+the domain portion of the address.  All comparisons are case
+insensitive.  Missing CDB files are silently ignored.  Missing text
+files cause an error message at startup.</p>
+
+<h3>Examples</h3>
+
+<h4>qmail Rules</h4>
+
+<p>The following rules provide the functionality available in
+qmail-smtpd:
+
+<pre>
+[sender]
+sender~[[/var/qmail/control/badmailfrom]]
+:REJECT:Sorry, your envelope sender is in my badmailfrom list (#5.7.1)
+
+[recipient]
+$RELAYCLIENT
+:ACCEPT:Accepted
+recipient=${recipient}$RELAYCLIENT
+
+authenticated
+:ACCEPT:Accepted
+
+recipient~[[@/var/qmail/control/rcpthosts]]
+:ACCEPT:Accepted
+
+recipient~[[@/var/qmail/control/morercpthosts.cdb]]
+:ACCEPT:Accepted
+
+:REJECT:Sorry, that domain isn't in my list of allowed rcpthosts
+</pre></p>
+
+<h2>Missing Features</h2>
+
+<p>The following features are absent from this description, and could be
+added: <ul>
+
+<li>Extended variable expansion: Borrow the following parameter/variable
+expansion features from bash: <dl>
+
+<dt><tt>${parameter:-word}</tt>
+<dt><tt>${parameter:+word}</tt>
+<dt><tt>${parameter:offset}</tt>
+<dt><tt>${parameter:offset:length}</tt>
+<dt><tt>${#parameter}</tt>
+<dt><tt>${parameter#word}</tt>
+<dt><tt>${parameter##word}</tt>
+<dt><tt>${parameter%word}</tt>
+<dt><tt>${parameter%%word}</tt>
+<dt><tt>${parameter/pattern/string}</tt>
+<dt><tt>${parameter//pattern/string}</tt>
+
+</dl>
+
+</ul></p>
+
+</body>
+</html>
