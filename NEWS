@@ -1,4 +1,14 @@
 -------------------------------------------------------------------------------
+Changes in version 0.81
+
+- Fixed bug: the qmail backend didn't honour $QMAILQUEUE.
+
+- Fixed bug: environment variables set multiple times in mail rules
+  would use the first value.
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 0.80
 
 - Fixed bug: setting $SMTPGREETING caused smtpfront to crash when issued

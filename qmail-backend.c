@@ -56,7 +56,7 @@ const response* qmail_data_start(void)
   int mpipe[2];
   int epipe[2];
 
-  if (qqargs[0] == 0) qqargs[0] = rules_getenv("QMAILQUEUE");
+  qqargs[0] = rules_getenv("QMAILQUEUE");
   if (qqargs[0] == 0) qqargs[0] = "bin/qmail-queue";
 
   if (chdir(conf_qmail) == -1) return &resp_no_chdir;
