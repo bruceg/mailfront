@@ -151,6 +151,7 @@ static int RCPT(void)
   msg2("RCPT ", arg.s);
   if (!saw_mail) return respond_resp(&resp_no_mail, 1);
   parse_addr_arg();
+  if (is_bounce && saw_rcpt > 0) return respond_resp(&resp_badbounce, 1);
   if ((resp = handle_recipient(&addr)) == 0) resp = &resp_rcpt_ok;
   if (resp->number >= 200 && resp->number < 300)
     if (++saw_rcpt > 1 && is_bounce) resp = &resp_badbounce;
