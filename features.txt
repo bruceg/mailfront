@@ -14,6 +14,8 @@ Features common to all SMTP back-ends:
 
 - All error responses are logged.
 
+- Handles RFC 1869 extended parameters on RCPT TO: and MAIL FROM:
+
 Features of the smtpd-qmail back-end:
 
 - Delivers messages through $QMAILQUEUE, or qmail-queue if it's not set.

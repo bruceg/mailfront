@@ -8,6 +8,7 @@
 static str cmd;
 static str arg;
 static str addr;
+static str params;
 static str helo_domain;
 
 static       response resp_helo = { 0, 250, 0 };
@@ -29,23 +30,31 @@ static RESPONSE(unimp, 500, "Not implemented.");
 
 static int saw_mail = 0;
 static int saw_rcpt = 0;
+static const char* smtp_mode = "SMTP";
 
 static int parse_addr_arg(void)
 {
   unsigned start;
   unsigned len;
-
-  str_truncate(&addr, 0);
+  unsigned end;
+  
+  if (!str_truncate(&addr, 0)) return 0;
+  if (!str_truncate(&params, 0)) return 0;
+  
   for (start = 0; start < arg.len &&
 	 (arg.s[start] != LBRACE && arg.s[start] != COLON); ++start) ;
   if (arg.s[start] != LBRACE)
     for (++start; start < arg.len &&
 	   (arg.s[start] == SPACE || arg.s[start] == TAB); ++start) ;
-  if (arg.s[start] == '<') ++start;
+  if (arg.s[start] == LBRACE) ++start;
   if (start >= arg.len) return 1;
-  len = arg.len - start;
-  if (arg.s[arg.len-1] == '>') --len;
-  return str_copyb(&addr, arg.s+start, len);
+  if ((end = str_findnext(&arg, RBRACE, start)) == (unsigned)-1) end = arg.len;
+  len = end - start;
+  if (!str_copyb(&addr, arg.s+start, len)) return 0;
+  if (arg.s[end] == RBRACE) ++end;
+  while (arg.s[end] == SPACE) ++end;
+  if (!str_copyb(&params, arg.s+end, arg.len-end)) return 0;
+  return 1;
 }
 
 static int build_received(void)
@@ -73,7 +82,9 @@ static int build_received(void)
   if ((env = getenv("TCPLOCALIP")) == 0) env = UNKNOWN;
   if (!str_cats(&line, " (")) return 0;
   if (!str_cats(&line, env)) return 0;
-  if (!str_cats(&line, ") with SMTP; ")) return 0;
+  if (!str_cats(&line, ") with ")) return 0;
+  if (!str_cats(&line, smtp_mode)) return 0;
+  if (!str_cats(&line, "; ")) return 0;
   if (!str_cats(&line, datebuf)) return 0;
   if (!str_catc(&line, NL)) return 0;
   return 1;
@@ -100,6 +111,7 @@ static int HELO(void)
 
 static int EHLO(void)
 {
+  smtp_mode = "ESMTP";
   str_copy(&helo_domain, &arg);
   resp_ehlo0.message = domain_name.s;
   return respond_resp(&resp_ehlo, 1);
