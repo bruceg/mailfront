@@ -113,35 +113,35 @@ void backend_handle_data_bytes(const char* bytes, unsigned long len)
 
 static void parse_status(int status, response* resp)
 {
-  const char* str;
+  const char* message;
   switch (status) {
-  case 11: str = "Address too long."; break;
-  case 31: str = "Message refused."; break;
-  case 51: str = "Out of memory."; break;
-  case 52: str = "Timeout."; break;
-  case 53: str = "Write error (queue full?)."; break;
-  case 54: str = "Unable to read the message or envelope."; break;
-  case 55: str = "Unable to read a configuration file."; break;
-  case 56: str = "Network problem."; break;
-  case 61: str = "Problem with the qmail home directory."; break;
-  case 62: str = "Problem with the qmail queue directory."; break;
-  case 63: str = "Problem with queue/pid."; break;
-  case 64: str = "Problem with queue/mess."; break;
-  case 65: str = "Problem with queue/intd."; break;
-  case 66: str = "Problem with queue/todo."; break;
-  case 71: str = "Message refused by mail server."; break;
-  case 72: str = "Connection to mail server timed out."; break;
-  case 73: str = "Connection to mail server rejected."; break;
-  case 74: str = "Communication with mail server failed."; break;
-  case 81: str = "Internal qmail-queue bug."; break;
-  case 91: str = "Envelope format error."; break;
+  case 11: message = "Address too long."; break;
+  case 31: message = "Message refused."; break;
+  case 51: message = "Out of memory."; break;
+  case 52: message = "Timeout."; break;
+  case 53: message = "Write error (queue full?)."; break;
+  case 54: message = "Unable to read the message or envelope."; break;
+  case 55: message = "Unable to read a configuration file."; break;
+  case 56: message = "Network problem."; break;
+  case 61: message = "Problem with the qmail home directory."; break;
+  case 62: message = "Problem with the qmail queue directory."; break;
+  case 63: message = "Problem with queue/pid."; break;
+  case 64: message = "Problem with queue/mess."; break;
+  case 65: message = "Problem with queue/intd."; break;
+  case 66: message = "Problem with queue/todo."; break;
+  case 71: message = "Message refused by mail server."; break;
+  case 72: message = "Connection to mail server timed out."; break;
+  case 73: message = "Connection to mail server rejected."; break;
+  case 74: message = "Communication with mail server failed."; break;
+  case 81: message = "Internal qmail-queue bug."; break;
+  case 91: message = "Envelope format error."; break;
   default:
-    str = (status <= 40)
+    message = (status <= 40)
       ? "Permanent qmail-queue failure."
       : "Temporary qmail-queue failure.";
   }
   resp->number = (status <= 40) ? 554 : 451;
-  resp->message = str;
+  resp->message = message;
 }
 
 const response* backend_handle_data_end(void)

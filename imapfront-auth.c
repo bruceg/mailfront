@@ -46,17 +46,17 @@ static char** nextcmd;
 static str tag;
 static str line;
 static str cmd;
-static str args[MAX_ARGC];
-static int argc;
+static str line_args[MAX_ARGC];
+static int line_argc;
 
-void log_start(const char* tag)
+void log_start(const char* tagstr)
 {
   obuf_puts(&errbuf, program);
   obuf_putc(&errbuf, '[');
   obuf_putu(&errbuf, getpid());
   obuf_puts(&errbuf, "]: ");
-  if (tag) {
-    obuf_puts(&errbuf, tag);
+  if (tagstr) {
+    obuf_puts(&errbuf, tagstr);
     obuf_putc(&errbuf, ' ');
   }
 }
@@ -64,9 +64,9 @@ void log_start(const char* tag)
 void log_str(const char* msg) { obuf_puts(&errbuf, msg); }
 void log_end(void) { obuf_putsflush(&errbuf, "\n"); }
 
-void log(const char* tag, const char* msg)
+void log(const char* tagstr, const char* msg)
 {
-  log_start(tag);
+  log_start(tagstr);
   log_str(msg);
   log_end();
 }
@@ -74,8 +74,7 @@ void log(const char* tag, const char* msg)
 void respond_start(int tagged)
 {
   const char* tagstr;
-  if (tagged) tagstr = tag.s;
-  else tagstr = "*";
+  tagstr = tagged ? tag.s : "*";
   log_start(tagstr);
   if (!obuf_puts(&outbuf, tagstr) ||
       !obuf_putc(&outbuf, ' '))
@@ -152,8 +151,8 @@ static int parse_line(void)
   if (!cmd.len) RESPOND(1, "BAD Syntax error");
 
   /* Parse out the command-line args */
-  for (argc = 0; argc < MAX_ARGC; ++argc) {
-    arg = &args[argc];
+  for (line_argc = 0; line_argc < MAX_ARGC; ++line_argc) {
+    arg = &line_args[line_argc];
     str_truncate(arg, 0);
     for (; i < line.len && isspace(*ptr); ++i, ++ptr) ;
     if (i >= line.len) break;
@@ -267,7 +266,7 @@ static void dispatch_line(void)
   str_upper(&cmd);
   for (c = commands; c->name != 0; ++c) {
     if (str_diffs(&cmd, c->name) == 0) {
-      if (argc == 0) {
+      if (line_argc == 0) {
 	if (c->fn0 == 0)
 	  respond(1, "BAD Syntax error: command requires arguments");
 	else
@@ -277,7 +276,7 @@ static void dispatch_line(void)
 	if (c->fn1 == 0)
 	  respond(1, "BAD Syntax error: command requires no arguments");
 	else
-	  c->fn1(argc, args);
+	  c->fn1(line_argc, line_args);
       }
       return;
     }

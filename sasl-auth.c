@@ -13,15 +13,15 @@ int sasl_auth_init(void)
   return sasl_init();
 }
 
-int sasl_auth_cap(str* line)
+int sasl_auth_cap(str* caps)
 {
   const sasl_mechanism* smech;
   if (!sasl_mechanisms) return 0;
 
-  if (!str_truncate(line, 0) ||
-      !str_copys(line, "AUTH")) return -1;
+  if (!str_truncate(caps, 0) ||
+      !str_copys(caps, "AUTH")) return -1;
   for (smech = sasl_mechanisms; smech != 0; smech = smech->next)
-    if (!str_catc(line, ' ') ||	!str_cats(line, smech->name)) return -1;
+    if (!str_catc(caps, ' ') ||	!str_cats(caps, smech->name)) return -1;
   return 1;
 }
 

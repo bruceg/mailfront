@@ -18,9 +18,9 @@ int respond_end(void)
   return obuf_putsflush(&outbuf, CRLF);
 }
 
-int respond_str(const char* str)
+int respond_str(const char* s)
 {
-  return obuf_puts(&outbuf, str);
+  return obuf_puts(&outbuf, s);
 }
 
 int respond(unsigned number, int final, const char* msg)

@@ -8,12 +8,12 @@
 const int msg_show_pid = 1;
 
 static str respstr;
-static unsigned number;
+static unsigned saved_number;
 static int was_final;
 
 int respond_start(unsigned n, int f)
 {
-  number = n;
+  saved_number = n;
   was_final = f;
   return 1;
 }
@@ -22,8 +22,8 @@ int respond_end(void)
 {
   if (was_final) {
     char c;
-    if (number >= 500) c = 'D';
-    else if (number >= 400 || number < 200) c = 'Z';
+    if (saved_number >= 500) c = 'D';
+    else if (saved_number >= 400 || saved_number < 200) c = 'Z';
     else c = 'K';
     obuf_putu(&outbuf, respstr.len+1);
     obuf_putc(&outbuf, ':');
@@ -36,9 +36,9 @@ int respond_end(void)
   return 1;
 }
 
-int respond_str(const char* str)
+int respond_str(const char* s)
 {
-  return str_cats(&respstr, str);
+  return str_cats(&respstr, s);
 }
 
 int respond(unsigned number, int final, const char* msg)

@@ -4,7 +4,6 @@
 
 #include "mailfront.h"
 #include "mailrules.h"
-#include "smtp.h"
 
 #include <cdb/cdb.h>
 #include <dict/dict.h>
@@ -282,7 +281,7 @@ static unsigned long saved_maxdatabytes;
 const response* rules_init(void)
 {
   const char* path;
-  str line = {0,0,0};
+  str rule = {0,0,0};
   ibuf in;
   const response* r;
   
@@ -291,13 +290,13 @@ const response* rules_init(void)
   saved_maxdatabytes = maxdatabytes;
 
   if (!ibuf_open(&in, path, 0)) return &resp_erropen;
-  while (ibuf_getstr(&in, &line, LF)) {
-    str_strip(&line);
-    if (line.len == 0) continue;
-    if ((r = rules_add(line.s)) != 0) return r;
+  while (ibuf_getstr(&in, &rule, LF)) {
+    str_strip(&rule);
+    if (rule.len == 0) continue;
+    if ((r = rules_add(rule.s)) != 0) return r;
   }
   ibuf_close(&in);
-  str_free(&line);
+  str_free(&rule);
   return 0;
 }
 

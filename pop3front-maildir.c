@@ -91,20 +91,20 @@ static long scan_dir(const char* subdir, str* list, long* countptr, long max)
   return 1;
 }
 
-static void make_msg(msg* msg, const char* filename)
+static void make_msg(msg* m, const char* filename)
 {
   struct stat s;
   const char* c;
-  msg->filename = filename;
+  m->filename = filename;
   if (stat(filename, &s) == -1)
-    msg->size = 0, msg->deleted = 1;
+    m->size = 0, m->deleted = 1;
   else
-    msg->size = s.st_size, msg->deleted = 0;
-  msg->read = 0;
+    m->size = s.st_size, m->deleted = 0;
+  m->read = 0;
   if ((c = strchr(filename, ':')) != 0)
     if (c[1] == '2' && c[2] == ',')
       if (strchr(c+3, 'S') != 0)
-	msg->read = 1;
+	m->read = 1;
 }
 
 static int fn_compare(const str_sortentry* a, const str_sortentry* b)
@@ -348,9 +348,9 @@ static void cmd_uidl(void)
   long i;
   respond(ok);
   for (i = 0; i < msg_count; i++) {
-    msg* msg = &msgs[i];
-    if (!msg->deleted) {
-      const char* fn = msg->filename + 4;
+    msg* m = &msgs[i];
+    if (!m->deleted) {
+      const char* fn = m->filename + 4;
       const char* end;
       obuf_putu(&outbuf, i+1);
       obuf_putc(&outbuf, SPACE);
@@ -400,24 +400,24 @@ extern void report_io_bytes(void);
 
 int startup(int argc, char* argv[])
 {
-  const char* tmp;
+  const char* env;
   if (argc > 2) {
     msg3("usage: ", program, " [default-maildir]");
     return 0;
   }
 
-  if ((tmp = getenv("MAX_MESSAGES")) != 0)     max_count = atol(tmp);
-  if ((tmp = getenv("MAX_CUR_MESSAGES")) != 0) max_cur_count = atol(tmp);
-  if ((tmp = getenv("MAX_NEW_MESSAGES")) != 0) max_new_count = atol(tmp);
+  if ((env = getenv("MAX_MESSAGES")) != 0)     max_count = atol(env);
+  if ((env = getenv("MAX_CUR_MESSAGES")) != 0) max_cur_count = atol(env);
+  if ((env = getenv("MAX_NEW_MESSAGES")) != 0) max_new_count = atol(env);
   
-  if ((tmp = getenv("MAILBOX")) == 0) {
+  if ((env = getenv("MAILBOX")) == 0) {
     if (argc < 2) {
       error1("Mailbox not specified");
       return 0;
     }
-    tmp = argv[1];
+    env = argv[1];
   }
-  if (chdir(tmp) == -1) {
+  if (chdir(env) == -1) {
     respond("-ERR Could not chdir to maildir");
     return 0;
   }

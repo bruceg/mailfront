@@ -115,7 +115,7 @@ const response* handle_recipient(str* recip)
 
 const char UNKNOWN[] = "unknown";
 
-int build_received(str* line, const str* helo_domain, const char* proto)
+int build_received(str* s, const str* helo_domain, const char* proto)
 {
   const char* env;
   char datebuf[32];
@@ -123,28 +123,28 @@ int build_received(str* line, const str* helo_domain, const char* proto)
   struct tm* tm = gmtime(&now);
   strftime(datebuf, sizeof datebuf - 1, "%d %b %Y %H:%M:%S -0000", tm);
 
-  if (!str_copys(line, "Received: from ")) return 0;
+  if (!str_copys(s, "Received: from ")) return 0;
   if ((env = getenv("TCPREMOTEHOST")) == 0) env = UNKNOWN;
-  if (!str_cats(line, env)) return 0;
+  if (!str_cats(s, env)) return 0;
   if (helo_domain && helo_domain->len && str_diffs(helo_domain, env)) {
-    if (!str_cats(line, " (HELO ")) return 0;
-    if (!str_cat(line, helo_domain)) return 0;
-    if (!str_catc(line, ')')) return 0;
+    if (!str_cats(s, " (HELO ")) return 0;
+    if (!str_cat(s, helo_domain)) return 0;
+    if (!str_catc(s, ')')) return 0;
   }
   if ((env = getenv("TCPREMOTEIP")) == 0) env = UNKNOWN;
-  if (!str_cats(line, " (")) return 0;
-  if (!str_cats(line, env)) return 0;
-  if (!str_cats(line, ")\n  by ")) return 0;
+  if (!str_cats(s, " (")) return 0;
+  if (!str_cats(s, env)) return 0;
+  if (!str_cats(s, ")\n  by ")) return 0;
   if ((env = getenv("TCPLOCALHOST")) == 0) env = UNKNOWN;
-  if (!str_cats(line, env)) return 0;
+  if (!str_cats(s, env)) return 0;
   if ((env = getenv("TCPLOCALIP")) == 0) env = UNKNOWN;
-  if (!str_cats(line, " (")) return 0;
-  if (!str_cats(line, env)) return 0;
-  if (!str_cats(line, ") with ")) return 0;
-  if (!str_cats(line, proto)) return 0;
-  if (!str_cats(line, "; ")) return 0;
-  if (!str_cats(line, datebuf)) return 0;
-  if (!str_catc(line, '\n')) return 0;
+  if (!str_cats(s, " (")) return 0;
+  if (!str_cats(s, env)) return 0;
+  if (!str_cats(s, ") with ")) return 0;
+  if (!str_cats(s, proto)) return 0;
+  if (!str_cats(s, "; ")) return 0;
+  if (!str_cats(s, datebuf)) return 0;
+  if (!str_catc(s, '\n')) return 0;
   return 1;
 }
 

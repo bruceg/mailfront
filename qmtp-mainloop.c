@@ -120,9 +120,9 @@ static void get_package(ibuf* in)
 
 int qmtp_mainloop(void)
 {
-  const response* resp;
-  if ((resp = handle_init()) != 0) {
-    respond_resp(resp, 1);
+  const response* r;
+  if ((r = handle_init()) != 0) {
+    respond_resp(r, 1);
     return 1;
   }
   alarm(3600);
