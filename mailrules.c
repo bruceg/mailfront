@@ -172,9 +172,12 @@ const char* rules_getenv(const char* name)
 static unsigned long min_u_s(unsigned long u, const char* s)
 {
   unsigned long newu;
-  newu = strtoul(s, (char**)&s, 10);
-  if (*s == 0 && (u == 0 || newu < u))
-    u = newu;
+  if (s != 0) {
+    if ((newu = strtoul(s, (char**)&s, 10)) != 0 &&
+	*s == 0 &&
+	(u == 0 || newu < u))
+      u = newu;
+  }
   return u;
 }
 
@@ -186,7 +189,7 @@ unsigned long rules_getenvu(const char* name)
   unsigned long val;
   namelen = strlen(name);
   val = min_u_s(0, getenv(name));
-  for (val = 0, i = 0; i < envars.len; i += strlen(envars.s + i) + 1) {
+  for (i = 0; i < envars.len; i += strlen(envars.s + i) + 1) {
     if (memcmp(envars.s + i, name, namelen) == 0 &&
 	envars.s[i + namelen] == '=')
       val = min_u_s(val, envars.s + namelen + 1);
