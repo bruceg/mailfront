@@ -5,16 +5,16 @@
 #include "smtp.h"
 #include "iobuf/iobuf.h"
 
+int authenticated = 0;
+
 static str cmd;
 static str arg;
 static str addr;
 static str params;
 static str helo_domain;
 
-static       response resp_helo = { 0, 250, 0 };
-static       response resp_ehlo0 = { 0,          250, 0 };
-static const response resp_ehlo1 = { &resp_ehlo0, 250, "8BITMIME" };
-static const response resp_ehlo =  { &resp_ehlo1, 250, "PIPELINING" };
+static const response resp_ehlo0 = { 0,           250, "8BITMIME" };
+static const response resp_ehlo  = { &resp_ehlo0, 250, "PIPELINING" };
 static RESPONSE(no_mail, 503, "You must send MAIL FROM: first");
 static RESPONSE(vrfy, 252, "Send some mail, I'll try my best.");
 static RESPONSE(help, 214, "Help not available.");
@@ -27,6 +27,9 @@ static RESPONSE(too_long, 552, "Sorry, that message exceeds the maximum message 
 static RESPONSE(ok, 250, "OK");
 static RESPONSE(hops, 554, "This message is looping, too many hops.");
 static RESPONSE(unimp, 500, "Not implemented.");
+static RESPONSE(internal, 451, "Internal error.");
+static RESPONSE(needsparam, 501, "That command requires a parameter.");
+static RESPONSE(auth_already, 503, "You are already authenticated.");
 
 static int saw_mail = 0;
 static int saw_rcpt = 0;
@@ -86,7 +89,7 @@ static int build_received(void)
   if (!str_cats(&line, smtp_mode)) return 0;
   if (!str_cats(&line, "; ")) return 0;
   if (!str_cats(&line, datebuf)) return 0;
-  if (!str_catc(&line, NL)) return 0;
+  if (!str_catc(&line, '\n')) return 0;
   return 1;
 }
   
@@ -105,15 +108,22 @@ static int HELP(void)
 static int HELO(void)
 {
   str_copy(&helo_domain, &arg);
-  resp_helo.message = domain_name.s;
-  return respond_resp(&resp_helo, 1);
+  return respond(250, 1, domain_name.s);
 }
 
 static int EHLO(void)
 {
+  static str auth_resp;
   smtp_mode = "ESMTP";
   str_copy(&helo_domain, &arg);
-  resp_ehlo0.message = domain_name.s;
+  if (!respond(250, 0, domain_name.s)) return 0;
+
+  switch (smtp_auth_cap(&auth_resp)) {
+  case 0: break;
+  case 1: if (!respond(250, 0, auth_resp.s)) return 0; break;
+  default: return respond_resp(&resp_internal, 1);
+  }
+
   return respond_resp(&resp_ehlo, 1);
 }
 
@@ -180,7 +190,7 @@ static int copy_body(unsigned* count_rec, unsigned* count_dt)
   data_start();
   while (ibuf_getc(&inbuf, &ch)) {
     switch (ch) {
-    case NL:
+    case LF:
       if (sawperiod && linepos == 0) { data_end(); return 1; }
       data_byte(ch);
       if (linepos == 0) in_header = 0;
@@ -258,6 +268,15 @@ static int VRFY(void)
   return respond_resp(&resp_vrfy, 1);
 }
 
+static int AUTH(void)
+{
+  if (authenticated) return respond_resp(&resp_auth_already, 1);
+  if (arg.len == 0) return respond_resp(&resp_needsparam, 1);
+  if (!smtp_auth(&arg)) return 0;
+  if (authenticated) str_truncate(&helo_domain, 0);
+  return 1;
+}
+
 typedef int (*dispatch_fn)(void);
 struct dispatch 
 {
@@ -275,6 +294,7 @@ static struct dispatch dispatch_table[] = {
   { "RCPT", RCPT },
   { "RSET", RSET },
   { "VRFY", VRFY },
+  { "AUTH", AUTH },
   { 0, 0 }
 };
 

@@ -12,12 +12,12 @@ unsigned maxhops;
 
 const char UNKNOWN[] = "unknown";
 
-static int get_line(void)
+int smtp_get_line(void)
 {
   unsigned len;
-  if (!ibuf_getstr(&inbuf, &line, NL)) return 0;
+  if (!ibuf_getstr(&inbuf, &line, LF)) return 0;
   if (inbuf.count == 0) return 0;
-  /* Strip the trailing NL */
+  /* Strip the trailing LF */
   len = line.len-1;
   /* Strip a trailing CRs if present */
   if (line.s[len-1] == CR) --len;
@@ -27,7 +27,6 @@ static int get_line(void)
 
 int smtp_mainloop(const char* welcome)
 {
-  static response resp_welcome = { 0, 220, 0 };
   static str str_welcome;
   
   unsigned long timeout;
@@ -51,13 +50,14 @@ int smtp_mainloop(const char* welcome)
     str_catc(&str_welcome, ' ');
     str_cats(&str_welcome, welcome);
   }
-  resp_welcome.message = str_welcome.s;
 
   if ((tmp = getenv("DATABYTES")) != 0) maxdatabytes = strtoul(tmp, 0, 10);
   else maxdatabytes = 0;
 
-  if (!respond_resp(&resp_welcome, 1)) return 1;
-  while (get_line())
+  if (!smtp_auth_init()) return respond(421, 1, "Failed to initialize AUTH");
+
+  if (!respond(220, 1, str_welcome.s)) return 1;
+  while (smtp_get_line())
     if (!smtp_dispatch()) return 1;
   return 0;
 }
