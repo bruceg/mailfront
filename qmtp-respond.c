@@ -15,6 +15,8 @@ int respond_start(unsigned n, int f)
 {
   saved_number = n;
   was_final = f;
+  if (respstr.len > 0 && respstr.s[respstr.len-1] != LF)
+    if (!str_catc(&respstr, LF)) return 0;
   return 1;
 }
 
