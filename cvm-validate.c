@@ -11,7 +11,8 @@ static RESPONSE(failed,451,"Sorry, I could not verify that recipient (internal t
 const response* cvm_validate_init(void)
 {
   cvm_lookup = getenv("CVM_LOOKUP");
-  lookup_secret = getenv("LOOKUP_SECRET");
+  if ((lookup_secret = getenv("LOOKUP_SECRET")) == 0)
+    lookup_secret = "";
   return 0;
 }
 
