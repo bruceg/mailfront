@@ -1,5 +1,3 @@
-- Handle timeouts in all modules.
-
 - Use lib/cli for all executables
 
 - smtpfront:
