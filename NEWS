@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
+Changes in version 0.71
+
+- Fixed missing lowercase conversion when handling validating domain
+  names against rcpthosts and company.
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 0.70
 
 - Added a POP3 authenticator and maildir handler, complete with support
