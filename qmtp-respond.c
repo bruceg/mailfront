@@ -11,7 +11,7 @@ static str respstr;
 static unsigned saved_number;
 static int was_final;
 
-int respond_start(unsigned n, int f)
+static int respond_start(unsigned n, int f)
 {
   saved_number = n;
   was_final = f;
@@ -20,7 +20,7 @@ int respond_start(unsigned n, int f)
   return 1;
 }
 
-int respond_end(void)
+static int respond_end(void)
 {
   if (was_final) {
     char c;
@@ -38,7 +38,7 @@ int respond_end(void)
   return 1;
 }
 
-int respond_str(const char* s)
+static int respond_str(const char* s)
 {
   return str_cats(&respstr, s);
 }
