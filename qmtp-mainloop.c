@@ -59,13 +59,13 @@ static void get_body(ibuf* in)
   --bodylen;
   if (!ibuf_getc(in, &nl)) die1(111, "EOF while reading body NL");
   if (nl != LF) die1(111, "Cannot handle non-LF line terminator");
-  resp = std_handle_data_start(0, "QMTP");
+  if (response_ok(resp)) resp = handle_data_start(0, "QMTP");
   while (bodylen > 0) {
     unsigned long len = sizeof buf;
     if (len > bodylen) len = bodylen;
     if (!ibuf_read(in, buf, len) && in->count == 0)
       die1(111, "EOF while reading body");
-    if (response_ok(resp)) std_handle_data_bytes(buf, in->count);
+    if (response_ok(resp)) handle_data_bytes(buf, in->count);
     bodylen -= in->count;
   }
   if (!ibuf_getc(in, &nl)) die1(111, "EOF while reading comma");
@@ -79,7 +79,7 @@ static void get_sender(ibuf* in)
   case 0: die1(111, "Invalid sender netstring");
   }
   if (response_ok(resp))
-    resp = std_handle_sender(&line);
+    resp = handle_sender(&line);
 }
 
 static void get_recips(ibuf* in)
@@ -102,18 +102,18 @@ static void get_recips(ibuf* in)
     if (j + len > line.len) die1(111, "Netstring length too long");
     if (line.s[j+len] != ',') die1(111, "Netstring missing comma");
     str_copyb(&tmp, line.s+j, len);
-    resp = std_handle_recipient(&tmp);
+    resp = handle_recipient(&tmp);
     i = j + len;
   }
 }
 
 static void get_package(ibuf* in)
 {
-  handle_reset();
+  resp = handle_reset();
   get_body(in);
   get_sender(in);
   get_recips(in);
-  if (response_ok(resp)) resp = std_handle_data_end();
+  if (response_ok(resp)) resp = handle_data_end();
   if (!resp) resp = &resp_accepted;
   if (!respond_resp(resp, 1)) die1(111, "EOF while sending response");
 }
@@ -121,7 +121,7 @@ static void get_package(ibuf* in)
 int qmtp_mainloop(void)
 {
   const response* resp;
-  if ((resp = std_handle_init()) != 0) {
+  if ((resp = handle_init()) != 0) {
     respond_resp(resp, 1);
     return 1;
   }

@@ -29,7 +29,7 @@ int smtp_mainloop(void)
   }
   str_cats(&str_welcome, " ESMTP");
 
-  if ((resp = std_handle_init()) != 0) { respond_resp(resp, 1); return 1; }
+  if ((resp = handle_init()) != 0) { respond_resp(resp, 1); return 1; }
 
   if (!sasl_auth_init()) return respond(421, 1, "Failed to initialize AUTH");
 

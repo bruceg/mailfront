@@ -9,42 +9,42 @@ const char program[] = "smtpfront-reject";
 
 static response resp = {0,451,"You are not allowed to use this mail server."};
 
-void handle_reset(void)
+void backend_handle_reset(void)
 {
   relayclient = 0;
   authenticated = 0;
 }
 
-const response* validate_sender(str* unused)
+const response* backend_validate_sender(str* unused)
 {
   return &resp;
 }
 
-const response* validate_recipient(str* unused)
+const response* backend_validate_recipient(str* unused)
 {
   return &resp;
 }
 
-const response* handle_sender(str* unused)
+const response* backend_handle_sender(str* unused)
 {
   return &resp;
 }
 
-const response* handle_recipient(str* unused)
+const response* backend_handle_recipient(str* unused)
 {
   return &resp;
 }
 
-const response* handle_data_start(void)
+const response* backend_handle_data_start(void)
 {
   return &resp;
 }
 
-void handle_data_bytes(const char* unused1, unsigned long unused2)
+void backend_handle_data_bytes(const char* unused1, unsigned long unused2)
 {
 }
 
-const response* handle_data_end(void)
+const response* backend_handle_data_end(void)
 {
   return &resp;
 }

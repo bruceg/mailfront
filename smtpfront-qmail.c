@@ -6,22 +6,22 @@
 
 const char program[] = "smtpfront-qmail";
 
-void handle_reset(void)
+void backend_handle_reset(void)
 {
   qmail_reset();
 }
 
-const response* validate_sender(str* sender)
+const response* backend_validate_sender(str* sender)
 {
   return qmail_validate_sender(sender);
 }
 
-const response* handle_sender(str* sender)
+const response* backend_handle_sender(str* sender)
 {
   return qmail_sender(sender);
 }
 
-const response* validate_recipient(str* recip)
+const response* backend_validate_recipient(str* recip)
 {
   if (relayclient != 0) {
     str_cats(recip, relayclient);
@@ -33,22 +33,22 @@ const response* validate_recipient(str* recip)
     return qmail_validate_recipient(recip);
 }
 
-const response* handle_recipient(str* recip)
+const response* backend_handle_recipient(str* recip)
 {
   return qmail_recipient(recip);
 }
 
-const response* handle_data_start(void)
+const response* backend_handle_data_start(void)
 {
   return qmail_data_start();
 }
 
-void handle_data_bytes(const char* bytes, unsigned long len)
+void backend_handle_data_bytes(const char* bytes, unsigned long len)
 {
   qmail_data_bytes(bytes, len);
 }
 
-const response* handle_data_end(void)
+const response* backend_handle_data_end(void)
 {
   return qmail_data_end();
 }

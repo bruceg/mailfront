@@ -26,7 +26,7 @@ unsigned maxhops = 0;
 extern void set_timeout(void);
 extern void report_io_bytes(void);
 
-const response* std_handle_init(void)
+const response* handle_init(void)
 {
   const char* tmp;
 
@@ -46,13 +46,13 @@ const response* std_handle_init(void)
   return rules_init();
 }
 
-const response* std_handle_reset(void)
+const response* handle_reset(void)
 {
   const response* resp;
   is_bounce = 0;
   rcpt_count = 0;
   if ((resp = rules_reset()) != 0) return resp;
-  handle_reset();
+  backend_handle_reset();
   return 0;
 }
 
@@ -66,18 +66,18 @@ int response_ok(const response* resp)
   return resp == 0 || number_ok(resp);
 }
 
-const response* std_handle_sender(str* sender)
+const response* handle_sender(str* sender)
 {
   const response* resp;
   const response* tmpresp;
   /* Logic:
    * if rules_validate_sender returns a response, use it
-   * else if validate_sender returns a response, use it
+   * else if backend_validate_sender returns a response, use it
    */
   if (((resp = rules_validate_sender(sender)) == 0 &&
-       (resp = validate_sender(sender)) == 0) ||
+       (resp = backend_validate_sender(sender)) == 0) ||
       number_ok(resp)) {
-    tmpresp = handle_sender(sender);
+    tmpresp = backend_handle_sender(sender);
     if (resp == 0 || (tmpresp != 0 && !number_ok(tmpresp)))
       resp = tmpresp;
   }
@@ -85,7 +85,7 @@ const response* std_handle_sender(str* sender)
   return resp;
 }
 
-const response* std_handle_recipient(str* recip)
+const response* handle_recipient(str* recip)
 {
   const response* resp;
   const response* hresp;
@@ -99,11 +99,11 @@ const response* std_handle_recipient(str* recip)
     str_cats(recip, relayclient);
   else if (authenticated)
     resp = 0;
-  else if ((resp = validate_recipient(recip)) != 0) {
+  else if ((resp = backend_validate_recipient(recip)) != 0) {
     if (!number_ok(resp))
       return resp;
   }
-  if ((hresp = handle_recipient(recip)) != 0) {
+  if ((hresp = backend_handle_recipient(recip)) != 0) {
     if (!number_ok(hresp))
       return hresp;
     else 
@@ -157,16 +157,16 @@ static int in_rec;	      /* True if we might be seeing Received: */
 static int in_dt;	  /* True if we might be seeing Delivered-To: */
 static const response* data_response;
 
-const response* std_handle_data_start(const str* helo_domain,
+const response* handle_data_start(const str* helo_domain,
 				      const char* protocol)
 {
   const response* resp;
   if (is_bounce && rcpt_count > 1) return &resp_badbounce;
-  resp = handle_data_start();
+  resp = backend_handle_data_start();
   if (response_ok(resp)) {
     if (!build_received(&received, helo_domain, protocol))
       return &resp_internal;
-    handle_data_bytes(received.s, received.len);
+    backend_handle_data_bytes(received.s, received.len);
   }
   data_bytes = 0;
   count_rec = 0;
@@ -179,7 +179,7 @@ const response* std_handle_data_start(const str* helo_domain,
   return resp;
 }
 
-void std_handle_data_bytes(const char* bytes, unsigned len)
+void handle_data_bytes(const char* bytes, unsigned len)
 {
   unsigned i;
   const char* p;
@@ -225,12 +225,12 @@ void std_handle_data_bytes(const char* bytes, unsigned len)
       }
     }
   }
-  handle_data_bytes(bytes, len);
+  backend_handle_data_bytes(bytes, len);
 }
 
-const response* std_handle_data_end(void)
+const response* handle_data_end(void)
 {
   if (data_response)
     return data_response;
-  return handle_data_end();
+  return backend_handle_data_end();
 }

@@ -3,16 +3,16 @@
 static response r = { 0, 250, 0 };
 static str tmp;
 
-void handle_reset(void)
+void backend_handle_reset(void)
 {
 }
 
-const response* validate_sender(str* sender)
+const response* backend_validate_sender(str* sender)
 {
   return 0;
 }
 
-const response* handle_sender(str* sender)
+const response* backend_handle_sender(str* sender)
 {
   str_copys(&tmp, "Sender='");
   str_cat(&tmp, sender);
@@ -21,12 +21,12 @@ const response* handle_sender(str* sender)
   return &r;
 }
 
-const response* validate_recipient(str* recipient)
+const response* backend_validate_recipient(str* recipient)
 {
   return 0;
 }
 
-const response* handle_recipient(str* recipient)
+const response* backend_handle_recipient(str* recipient)
 {
   str_copys(&tmp, "Recipient='");
   str_cat(&tmp, recipient);
@@ -35,19 +35,19 @@ const response* handle_recipient(str* recipient)
   return &r;
 }
 
-const response* handle_data_start(void)
+const response* backend_handle_data_start(void)
 {
   return 0;
 }
 
 static unsigned long databytes = 0;
 
-void handle_data_bytes(const char* bytes, unsigned long len)
+void backend_handle_data_bytes(const char* bytes, unsigned long len)
 {
   databytes += len;
 }
 
-const response* handle_data_end(void)
+const response* backend_handle_data_end(void)
 {
   str_copys(&tmp, "Received ");
   str_catu(&tmp, databytes);
