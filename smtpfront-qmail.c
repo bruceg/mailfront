@@ -4,7 +4,7 @@
 #include "iobuf/iobuf.h"
 #include "qmail.h"
 
-const char program[] = "smtpd-qmail";
+const char program[] = "smtpfront-qmail";
 
 static const char* relayclient;
 
