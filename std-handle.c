@@ -37,7 +37,6 @@ static const char* remote_host;
 static const char* remote_ip;
 static str fixup_host;
 static str fixup_ip;
-static const char* header_add;
 static const char* linkproto;
 
 const char* getprotoenv(const char* name)
@@ -70,12 +69,7 @@ const response* handle_init(void)
     if (!str_copys(&fixup_ip, tmp)) return &resp_oom;
     str_strip(&fixup_ip);
   }
-  header_add = getenv("HEADER_ADD");
 
-  maxhops = 0;
-  if ((tmp = getenv("MAXHOPS")) != 0) maxhops = strtoul(tmp, 0, 10);
-  if (maxhops == 0) maxhops = 100;
-  
   if ((tmp = getenv("DATABYTES")) != 0) maxdatabytes = strtoul(tmp, 0, 10);
   else maxdatabytes = 0;
 
@@ -161,8 +155,9 @@ static const char* date_string(void)
 
 int add_header_add(str* s)
 {
-  if (header_add != 0) {
-    if (!str_cats(s, header_add)) return 0;
+  const char* add = rules_getenv("HEADER_ADD");
+  if (add != 0) {
+    if (!str_cats(s, add)) return 0;
     if (!str_catc(s, '\n')) return 0;
   }
   return 1;
@@ -220,6 +215,7 @@ const response* handle_data_start(const str* helo_domain,
 				      const char* protocol)
 {
   const response* resp;
+  const char* tmp;
   if (is_bounce && rcpt_count > 1) return &resp_badbounce;
   resp = backend_handle_data_start();
   if (response_ok(resp)) {
@@ -230,6 +226,11 @@ const response* handle_data_start(const str* helo_domain,
       return &resp_internal;
     backend_handle_data_bytes(received.s, received.len);
   }
+
+  maxhops = 0;
+  if ((tmp = rules_getenv("MAXHOPS")) != 0) maxhops = strtoul(tmp, 0, 10);
+  if (maxhops == 0) maxhops = 100;
+  
   data_bytes = 0;
   count_rec = 0;
   count_dt = 0;

@@ -1,0 +1,32 @@
+cat >$tmp/rules <<EOF
+ka:b:K1:::MAXHOPS=1
+EOF
+
+MAILRULES=$tmp/rules sfecho <<EOF
+MAIL FROM:<a>
+RCPT TO:<b>
+DATA
+Received: hop1
+Received: hop2
+.
+EOF
+MAILRULES=$tmp/rules sfecho <<EOF
+MAIL FROM:<a>
+RCPT TO:<c>
+DATA
+Received: hop1
+Received: hop1
+.
+EOF
+
+rm -f $tmp/rules
+
+<result>
+250 Sender='a'.^M
+250 K1^M
+354 End your message with a period.^M
+554 This message is looping, too many hops.^M
+250 Sender='a'.^M
+250 Recipient='c'.^M
+354 End your message with a period.^M
+250 Received 146 bytes.^M

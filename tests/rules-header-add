@@ -1,0 +1,28 @@
+cat >$tmp/rules <<EOF
+ka:b:K1:::HEADER_ADD="X-Header: testing!!!"
+EOF
+
+MAILRULES=$tmp/rules sfecho <<EOF
+MAIL FROM:<a>
+RCPT TO:<b>
+DATA
+.
+EOF
+MAILRULES=$tmp/rules sfecho <<EOF
+MAIL FROM:<a>
+RCPT TO:<c>
+DATA
+.
+EOF
+
+rm -f $tmp/rules
+
+<result>
+250 Sender='a'.^M
+250 K1^M
+354 End your message with a period.^M
+250 Received 139 bytes.^M
+250 Sender='a'.^M
+250 Recipient='c'.^M
+354 End your message with a period.^M
+250 Received 116 bytes.^M
