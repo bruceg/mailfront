@@ -14,4 +14,5 @@
 
 - Write a POP3 back-end: pop3front-maildir
 
-- Write a IMAP authenticator: imapfront-auth
+- Write a IMAP authenticator? imapfront-auth (to be used intially as a
+  front-end for Courier IMAP)
