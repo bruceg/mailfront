@@ -18,7 +18,8 @@ static int respond_start(unsigned number, int final)
 
 static int respond_end(void)
 {
-  msg1(line.s);
+  if (line.s[0] >= '4')
+    msg1(line.s);
   return obuf_putstr(&outbuf, &line) &&
     obuf_putsflush(&outbuf, CRLF);
 }
