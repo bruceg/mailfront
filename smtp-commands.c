@@ -133,7 +133,13 @@ static int MAIL(void)
   const response* resp;
   handle_reset();
   parse_addr_arg();
-  if ((resp = handle_sender(&addr)) == 0) resp = &resp_mail_ok;
+  if ((resp = handle_sender(&addr)) == 0) {
+    resp = &resp_mail_ok;
+    log_start();
+    log_s("MAIL ");
+    log_s(arg.s);
+    log_end();
+  }
   if (resp->number >= 200 && resp->number < 300) saw_mail = 1;
   return respond_resp(resp, 1);
 }
@@ -143,7 +149,13 @@ static int RCPT(void)
   const response* resp;
   if (!saw_mail) return respond_resp(&resp_no_mail, 1);
   parse_addr_arg();
-  if ((resp = handle_recipient(&addr)) == 0) resp = &resp_rcpt_ok;
+  if ((resp = handle_recipient(&addr)) == 0) {
+    resp = &resp_rcpt_ok;
+    log_start();
+    log_s("RCPT ");
+    log_s(arg.s);
+    log_end();
+  }
   if (resp->number >= 200 && resp->number < 300) ++saw_rcpt;
   return respond_resp(resp, 1);
 }
@@ -278,7 +290,11 @@ static int AUTH(void)
     const char* msg = sasl_auth_msg(&i);
     return respond(i, 1, msg);
   }
-  if (authenticated) str_truncate(&helo_domain, 0);
+  else {
+    authenticated = 1;
+    str_truncate(&helo_domain, 0);
+    respond(235, 1, "Authentication succeeded.");
+  }
   return 1;
 }
 
