@@ -39,7 +39,7 @@
   - When verifying senders, check if $DOMAIN(?) is set, and only allow
     sender addresses from that domain.
 
-  - Add RFC 1893/2034 enhanced status codes to all responses.
+  - Add RFC 2034/3463 enhanced status codes to all responses.
 
   - Add support for RFC 2487 STARTTLS
 
