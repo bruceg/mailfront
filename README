@@ -1,8 +1,8 @@
 mailfront
 Mail server network protocol front-ends
 Bruce Guenter <bruceg@em.ca>
-Version 0.73
-2002-01-11
+Version 0.74
+2002-01-31
 
 This is mailfront, a package containing customizeable network front-ends
 for mail servers.  Right now the only protocols that are handled are
@@ -25,10 +25,10 @@ Development versions of mailfront are available via anonymous CVS.
 Set your CVSROOT to ":pserver:cvs@bruce-guenter.dyndns.org:/CVS",
 login with an empty password, and check out the "mailfront" module.
 
-This project was initiated to scratch an itch at FutureQuest, Inc.   We
-are releasing it as an open-source project because we felt it would be
-useful to others, as well as to repay our debt of gratitude to the
-larger open-source community for the excellent packages we have used.
+This project was initiated at FutureQuest, Inc.  We are releasing it
+as an open-source project because we felt it would be useful to others,
+as well as to repay our debt of gratitude to the larger open-source
+community for the excellent packages we have enjoyed.
 
 For more details, you may contact FutureQuest, Inc. at:
 FutureQuest, Inc.
