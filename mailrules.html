@@ -24,10 +24,19 @@ badmailfrom file).</p>
 <h2>Syntax</h2>
 
 <p>Each rule in the file occupies a single line and has exactly the same
-format.  Each line starts with one of "k", "d", or "z" corresponding to
-accept, defer, or reject.  Empty lines and lines starting with any other
-character are ignored.  The remainder of the line consists of a series
-of fields seperated by colons (":").  The fields are: <ol>
+format.  Each line starts with one of the following prefixes: <dl>
+
+<dt><tt>k</tt> <dd>Accept the sender or recipient (mnemonic: Ok).
+<dt><tt>d</tt> <dd>Reject the sender or recipient with a temporary error
+code (mnemonic: defer).
+<dt><tt>z</tt> <dd>Reject the sender or recipient with a permanent error
+code (mnemonic: zap).
+<dt><tt>p</tt> <dd>Pass the sender or recipient on to the next
+processing state (ie <tt>$RELAYCLIENT</tt> or back-end validation).
+
+</dl> Empty lines and lines starting with any other character are
+ignored.  The remainder of the line consists of a series of fields
+seperated by colons (":").  The fields are: <ol>
 
 <li><b>Sender</b>: A pattern applied to the envelope sender address.
 

@@ -3,6 +3,7 @@ k*:one@one:KK
 d*:two@two:DD
 z*:three@three:ZZ
 zx@y:four@four:ZZZ
+p*:five@five:PP
 EOF
 
 MAILRULES=$tmp/rules sfecho <<EOF
@@ -11,6 +12,7 @@ RCPT TO:<one@one>
 RCPT TO:<two@two>
 RCPT TO:<three@three>
 RCPT TO:<four@four>
+RCPT TO:<five@five>
 EOF
 
 rm -f $tmp/rules
@@ -21,4 +23,4 @@ rm -f $tmp/rules
 451 DD^M
 553 ZZ^M
 250 Recipient='four@four'.^M
-
+250 Recipient='five@five'.^M

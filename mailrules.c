@@ -254,7 +254,7 @@ const response* rules_add(const char* l)
 {
   struct rule* r;
   
-  if (*l != 'k' && *l != 'd' && *l != 'z') return 0;
+  if (*l != 'k' && *l != 'd' && *l != 'z' && *l != 'p') return 0;
   r = alloc_rule();
   r->code = *l++;
 
@@ -361,6 +361,7 @@ static const response* build_response(int type, const str* message)
   const char* defmsg;
 
   switch (type) {
+  case 'p': return 0;
   case 'k': code = 250; defmsg = "OK"; break;
   case 'z': code = 553; defmsg = "Rejected"; break;
   default: code = 451; defmsg = "Temporary failure";
