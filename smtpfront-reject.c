@@ -11,6 +11,18 @@ static response resp = {0,451,"You are not allowed to use this mail server."};
 
 void handle_reset(void)
 {
+  relayclient = 0;
+  authenticated = 0;
+}
+
+const response* validate_sender(str* unused)
+{
+  return &resp;
+}
+
+const response* validate_recipient(str* unused)
+{
+  return &resp;
 }
 
 const response* handle_sender(str* unused)
