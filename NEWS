@@ -10,6 +10,8 @@ Changes in version 0.89
  
 - Drop connections after $MAXNOTIMPL unimplemented commands are given.
 
+- The qmail home directory may be overridden with $QMAILHOME.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

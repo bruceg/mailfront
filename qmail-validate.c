@@ -23,8 +23,11 @@ const response* backend_validate_init(void)
 {
   static RESPONSE(no_chdir,451,"Could not change to the qmail directory.");
   static RESPONSE(error,451,"Internal error.");
+  const char* qh;
   
-  if (chdir(conf_qmail) == -1) return &resp_no_chdir;
+  if ((qh = getenv("QMAILHOME")) == 0)
+    qh = conf_qmail;
+  if (chdir(qh) == -1) return &resp_no_chdir;
   if (!dict_load_list(&bmf, "control/badmailfrom", 0, lower))
     return &resp_error;
   if (!dict_load_list(&rh, "control/rcpthosts", 0, lower))

@@ -55,11 +55,14 @@ const response* backend_handle_data_start(void)
 
   int mpipe[2];
   int epipe[2];
+  const char* qh;
 
   qqargs[0] = rules_getenv("QMAILQUEUE");
   if (qqargs[0] == 0) qqargs[0] = "bin/qmail-queue";
 
-  if (chdir(conf_qmail) == -1) return &resp_no_chdir;
+  if ((qh = rules_getenv("QMAILHOME")) == 0)
+    qh = conf_qmail;
+  if (chdir(qh) == -1) return &resp_no_chdir;
 
   if (pipe(mpipe) == -1) return &resp_no_pipe;
   if (pipe(epipe) == -1) {
