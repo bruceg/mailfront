@@ -34,13 +34,20 @@
 #include "str/str.h"
 #include "pop3.h"
 
+typedef struct
+{
+  const char* filename;
+  unsigned long size;
+  int read;
+  int deleted;
+} msg;
+
 #define MSG_DELETED ((unsigned long)-1)
 
 const char program[] = "pop3front-maildir";
 
-static str msg_list;
-static unsigned long* msg_offs;
-static unsigned long* msg_sizes;
+static str msg_filenames;
+static msg* msgs;
 
 static long max_count;
 static long max_new_count;
@@ -89,28 +96,27 @@ static int scan_maildir(void)
   long i;
 
   msg_bytes = 0;
-  if (!str_truncate(&msg_list, 0)) return 0;
+  if (!str_truncate(&msg_filenames, 0)) return 0;
   msg_count = 0;
-  if (!scan_dir("cur", &msg_list, &cur_count, max_cur_count)) return 0;
-  if (!scan_dir("new", &msg_list, &new_count, max_new_count)) return 0;
+  if (!scan_dir("cur", &msg_filenames, &cur_count, max_cur_count)) return 0;
+  if (!scan_dir("new", &msg_filenames, &new_count, max_new_count)) return 0;
 
   del_count = 0;
   del_bytes = 0;
   
-  if (msg_offs) free(msg_offs);
-  if (msg_sizes) free(msg_sizes);
-  if ((msg_offs = malloc((msg_count+1) * sizeof msg_offs[0])) == 0) return 0;
-  if ((msg_sizes = malloc(msg_count * sizeof msg_sizes[0])) == 0) return 0;
+  if (msgs != 0) free(msgs);
+  if ((msgs = malloc(msg_count * sizeof msgs[0])) == 0) return 0;
 
-  for (i = pos = 0; i < msg_count; pos += strlen(msg_list.s+pos)+1, ++i) {
+  for (i = pos = 0; i < msg_count; pos += strlen(msg_filenames.s+pos)+1, ++i) {
+    msg* msg = &msgs[i];
     struct stat s;
-    msg_offs[i] = pos;
-    if (stat(msg_list.s+pos, &s) == -1)
-      msg_sizes[i] = MSG_DELETED;
+    msg->filename = msg_filenames.s + pos;
+    if (stat(msg->filename, &s) == -1)
+      msg->size = 0, msg->deleted = 1;
     else
-      msg_sizes[i] = s.st_size;
+      msg->size = s.st_size, msg->deleted = 0;
+    msg->read = 0;
   }
-  msg_offs[i] = pos;
   return 1;
 }
 
@@ -118,7 +124,7 @@ static int msgnum_check(long i)
 {
   if (i > msg_count)
     respond("-ERR Message number out of range");
-  else if (msg_sizes[i-1] == MSG_DELETED)
+  else if (msgs[i-1].deleted)
     respond("-ERR Message was deleted");
   else
     return 1;
@@ -145,7 +151,7 @@ static void dump_msg(long num, long bodylines)
   
   if (!msgnum_check(num)) return;
 
-  if (!ibuf_open(&in, msg_list.s+msg_offs[num-1], 0))
+  if (!ibuf_open(&in, msgs[num-1].filename, 0))
     return respond("-ERR Could not open that message");
   respond(ok);
 
@@ -186,9 +192,10 @@ static void cmd_dele(const str* arg)
 {
   long i;
   if ((i = msgnum(arg)) == 0) return;
-  del_bytes += msg_sizes[i-1];
+  --i;
+  del_bytes += msgs[i].size;
   del_count++;
-  msg_sizes[i-1] = MSG_DELETED;
+  msgs[i].deleted = 1;
   respond(ok);
 }
 
@@ -197,10 +204,10 @@ static void cmd_list(void)
   long i;
   respond(ok);
   for (i = 0; i < msg_count; i++) {
-    if (msg_sizes[i] != MSG_DELETED) {
+    if (!msgs[i].deleted) {
       obuf_putu(&outbuf, i+1);
       obuf_putc(&outbuf, SPACE);
-      obuf_putu(&outbuf, msg_sizes[i]);
+      obuf_putu(&outbuf, msgs[i].size);
       obuf_puts(&outbuf, CRLF);
     }
   }
@@ -214,7 +221,7 @@ static void cmd_list_one(const str* arg)
   if (!str_copys(&tmp, "+OK ") ||
       !str_catu(&tmp, i) ||
       !str_catc(&tmp, SPACE) ||
-      !str_catu(&tmp, msg_sizes[i-1]))
+      !str_catu(&tmp, msgs[i-1].size))
     respond(err_internal);
   else
     respond(tmp.s);
@@ -229,16 +236,24 @@ static void cmd_quit(void)
 {
   long i;
   for (i = 0; i < msg_count; i++) {
-    const char* ptr = msg_list.s + msg_offs[i];
-    if (msg_sizes[i] == MSG_DELETED)
-      unlink(ptr);
-    else if (ptr[0] == 'n' && ptr[1] == 'e' && ptr[2] == 'w' &&
-	     ptr[3] == '/')
-      if (str_copys(&tmp, "cur/") && str_cats(&tmp, ptr+4)) {
-	if (str_findfirst(&tmp, ':') == -1)
-	  if (!str_cats(&tmp, ":2,")) continue;
-	rename(ptr, tmp.s);
+    const char* fn = msgs[i].filename;
+    if (msgs[i].deleted)
+      unlink(fn);
+    /* Logic: 
+     * 1. move all messages into "cur"
+     * 2. tag all read messages without flags with a read flag (:2,S)
+     */
+    else {
+      if (!str_copys(&tmp, "cur/")) continue;
+      if (!str_cats(&tmp, fn+4)) continue;
+      if (msgs[i].read) {
+	int c;
+	if ((c = str_findfirst(&tmp, ':')) == -1 ||
+	    (tmp.s[c+1] == '2' && str_truncate(&tmp, c)))
+	  if (!str_cats(&tmp, ":2,S")) continue;
       }
+      rename(fn, tmp.s);
+    }
   }
   respond(ok);
   exit(0);
@@ -272,7 +287,10 @@ static void cmd_top(const str* arg)
 
   if ((num = strtol(arg->s, &end, 10)) <= 0) return respond(err_syntax);
   while (*end == SPACE) ++end;
-  if (*end == 0) return dump_msg(num, LONG_MAX);
+  if (*end == 0) {
+    msgs[num-1].read = 1;
+    return dump_msg(num, LONG_MAX);
+  }
   if ((lines = strtol(end, &end, 10)) < 0 || *end != 0)
     return respond(err_syntax);
   dump_msg(num, lines);
@@ -283,15 +301,16 @@ static void cmd_uidl(void)
   long i;
   respond(ok);
   for (i = 0; i < msg_count; i++) {
-    if (msg_sizes[i] != MSG_DELETED) {
-      long pos;
-      long end;
+    msg* msg = &msgs[i];
+    if (!msg->deleted) {
+      const char* fn = msg->filename + 4;
+      const char* end;
       obuf_putu(&outbuf, i+1);
       obuf_putc(&outbuf, SPACE);
-      pos = msg_offs[i] + 4;
-      if ((end = str_findnext(&msg_list, ':', pos)) == -1)
-	end = msg_offs[i+1] - 1;
-      obuf_write(&outbuf, msg_list.s+pos, end-pos);
+      if ((end = strchr(fn, ':')) == 0)
+	obuf_puts(&outbuf, fn);
+      else
+	obuf_write(&outbuf, fn, end - fn);
       obuf_puts(&outbuf, CRLF);
     }
   }
@@ -301,16 +320,16 @@ static void cmd_uidl(void)
 static void cmd_uidl_one(const str* arg)
 {
   long i;
-  long pos;
-  long end;
+  const char* end;
+  const char* fn;
   if ((i = msgnum(arg)) == 0) return;
-  pos = msg_offs[i-1] + 4;
-  if ((end = str_findnext(&msg_list, ':', pos)) == -1)
-    end = msg_offs[i] - 1;
+  fn = msgs[i-1].filename + 4;
+  if ((end = strchr(fn, ':')) == 0)
+    end = fn + strlen(fn);
   if (!str_copys(&tmp, "+OK ") ||
       !str_catu(&tmp, i) ||
       !str_catc(&tmp, SPACE) ||
-      !str_catb(&tmp, msg_list.s+pos, end-pos))
+      !str_catb(&tmp, fn, end-fn))
     respond(err_internal);
   else
     respond(tmp.s);

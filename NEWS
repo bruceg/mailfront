@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
+Changes in version 0.74
+
+- Modified quit code in pop3front to properly tag only read messages as
+  "read".
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 0.73
 
 - Fixed bugs in the RETR/TOP function of pop3front-maildir which would
