@@ -1,0 +1,27 @@
+cat >$tmp/rules <<EOF
+dd:*
+zz:*
+kk:*
+d*:d
+z*:z
+k*:k
+EOF
+
+MAILRULES=$tmp/rules sfecho <<EOF
+MAIL FROM:<d>
+MAIL FROM:<z>
+MAIL FROM:<k>
+RCPT TO:<d>
+RCPT TO:<z>
+RCPT TO:<k>
+EOF
+
+rm -f $tmp/rules
+
+<result>
+451 Temporary failure^M
+553 Rejected^M
+250 OK^M
+451 Temporary failure^M
+553 Rejected^M
+250 OK^M
