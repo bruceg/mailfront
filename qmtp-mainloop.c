@@ -51,6 +51,7 @@ static void get_sender(ibuf* in)
   case -1: die1(111, "EOF while reading sender address");
   case 0: die1(111, "Invalid sender netstring");
   }
+  msg3("sender <", line.s, ">");
   if (response_ok(resp))
     resp = handle_sender(&line);
 }
@@ -75,7 +76,9 @@ static void get_recips(ibuf* in)
     if (j + len > line.len) die1(111, "Netstring length too long");
     if (line.s[j+len] != ',') die1(111, "Netstring missing comma");
     str_copyb(&tmp, line.s+j, len);
-    resp = handle_recipient(&tmp);
+    msg3("recipient <", tmp.s, ">");
+    if (response_ok(resp))
+      resp = handle_recipient(&tmp);
     i = j + len;
   }
 }
