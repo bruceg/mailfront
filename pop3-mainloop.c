@@ -85,6 +85,7 @@ int main(int argc, char* argv[])
   if (!startup(argc, argv)) return 0;
   respond(ok);
   while (ibuf_getstr_crlf(&inbuf, &line)) {
+    log(line.s);
     if (!parse_line())
       respond(err_internal);
     else

@@ -22,8 +22,10 @@
  * http://www.FutureQuest.net/
  * ossi@FutureQuest.net
  */
+#include <sys/types.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "iobuf/iobuf.h"
 #include "msg/msg.h"
 #include "pop3.h"
@@ -33,9 +35,20 @@ const char err_unimpl[] = "-ERR Unimplemented";
 const char ok[] = "+OK ";
 const char err_syntax[] = "-ERR Syntax error";
 
+void log(const char* msg)
+{
+  obuf_puts(&errbuf, program);
+  obuf_putc(&errbuf, '[');
+  obuf_putu(&errbuf, getpid());
+  obuf_puts(&errbuf, "]: ");
+  obuf_puts(&errbuf, msg);
+  obuf_putc(&errbuf, '\n');
+  obuf_flush(&errbuf);
+}
+
 void respond(const char* msg)
 {
-  if (msg[0] == '-') msg1(msg);
+  log(msg);
   if (!obuf_puts(&outbuf, msg) ||
       !obuf_putsflush(&outbuf, CRLF))
     exit(1);
