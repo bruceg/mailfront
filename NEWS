@@ -7,6 +7,9 @@ Changes in version 0.80
 - Fixed bug: lookups in badmailfrom in smtpfront-qmail did not properly
   lowercase the address.
 
+- Fixed bug: qmail-validate didn't handle wildcards in rcpthosts or
+  morercpthosts.cdb.
+
 - Added sender and recipient pattern matching to all SMTP front-ends.
   See mailrules.html for full details.
 

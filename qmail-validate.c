@@ -10,6 +10,8 @@ static dict bmf;
 static dict rh;
 static dict brt;
 static str tmp;
+static int mrh_fd;
+static struct cdb mrh;
 
 static int lower(str* s)
 {
@@ -29,6 +31,8 @@ const response* qmail_validate_init(void)
     return &resp_error;
   if (!dict_load_list(&brt, "control/badrcptto", 0, lower))
     return &resp_error;
+  if ((mrh_fd = open("control/morercpthosts.cdb", O_RDONLY)) != -1)
+    cdb_init(&mrh, mrh_fd);
   return 0;
 }
 
@@ -47,20 +51,6 @@ const response* qmail_validate_sender(const str* sender)
   return 0;
 }
 
-static int cdb_lookup(const char* filename, const str* domain)
-{
-  int fd;
-  int result = 0;
-  if ((fd = open(filename, O_RDONLY)) != -1) {
-    struct cdb db;
-    cdb_init(&db, fd);
-    if (cdb_find(&db, domain->s, domain->len) == 1) result = 1;
-    cdb_free(&db);
-    close(fd);
-  }
-  return result;
-}
-
 const response* qmail_validate_recipient(const str* recipient)
 {
   static const response resp_rh = {0,553,"Sorry, that domain isn't in my list of allowed rcpthosts."};
@@ -77,9 +67,13 @@ const response* qmail_validate_recipient(const str* recipient)
     ++at;
     str_copyb(&tmp, recipient->s + at, recipient->len - at);
     str_lower(&tmp);
-    if (dict_get(&rh, &tmp)) return 0;
-    /* NOTE: qmail-newmrh automatically lowercases the keys in this CDB */
-    if (cdb_lookup("control/morercpthosts.cdb", &tmp)) return 0;
+    for (;;) {
+      if (dict_get(&rh, &tmp)) return 0;
+      /* NOTE: qmail-newmrh automatically lowercases the keys in this CDB */
+      if (mrh_fd != -1 && cdb_find(&mrh, tmp.s, tmp.len) == 1) return 0;
+      if ((at = str_findnext(&tmp, '.', 1)) <= 0) break;
+      str_lcut(&tmp, at);
+    }
     return &resp_rh;
   }
   return 0;
