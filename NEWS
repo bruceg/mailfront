@@ -1,17 +1,25 @@
 -------------------------------------------------------------------------------
-Changes in version 0.88
+Changes in version 0.89
 
 - Added support for content pattern rejection.
 
 - Added a new "no-op" mail rule type.
+
+- Defer looking up $MAXRCPTS and $RELAYCLIENT as well so that they can
+  be set in the mailrules.
+ 
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
+Changes in version 0.88
 
 - Fixed handling of "@domain" entries in mailrules lists and CDB files.
 
 - Added patch from Marcelo Augusto <maugusto@stetnet.com.br> to allow
   for limits on the maximum number of recipients per message.
 
-- Defer looking up $MAXHOPS, $MAXRCPTS, $RELAYCLIENT, and $HEADER_ADD so
-  that they can be set in the mailrules.
+- Defer looking up $MAXHOPS and $HEADER_ADD so that they can be set in
+  the mailrules.
 
 - Added support for IMAP string literals in imapfront-auth.
 
