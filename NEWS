@@ -1,10 +1,20 @@
 -------------------------------------------------------------------------------
+Changes in version 0.75
+
+- Added an exit hook to pop3front-maildir to print the number of bytes
+  input and output.
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 0.74
 
 - Modified quit code in pop3front to properly tag only read messages as
   "read".
 
 - Implemented the obsolete LAST command.
+
+- Messages are now sorted in numerical order of their UID.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
