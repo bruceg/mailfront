@@ -22,6 +22,7 @@
  * http://www.FutureQuest.net/
  * ossi@FutureQuest.net
  */
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -134,33 +135,39 @@ static void dump_msg(long num, long bodylines)
 {
   ibuf in;
   static char buf[4096];
-  int in_header;
-
+  int in_header;		/* True until a blank line is seen */
+  int sol;			/* True if at start of line */
+  
   if (!msgnum_check(num)) return;
 
   if (!ibuf_open(&in, msg_list.s+msg_offs[num-1], 0))
     return respond("-ERR Could not open that message");
   respond(ok);
 
-  in_header = 1;
-  while (ibuf_read(&in, buf, 4096) || in.count) {
+  sol = in_header = 1;
+  while (ibuf_read(&in, buf, sizeof buf) || in.count) {
     const char* ptr = buf;
     const char* end = buf + in.count;
     while (ptr < end) {
       const char* lfptr;
+      if (sol) {
+	if (!in_header)
+	  if (--bodylines < 0) break;
+	if (*ptr == '.')
+	  obuf_putc(&outbuf, '.');
+      }
       if ((lfptr = memchr(ptr, LF, end-ptr)) == 0) {
 	obuf_write(&outbuf, ptr, end-ptr);
 	ptr = end;
+	sol = 0;
       }
       else {
-	if (in_header) {
-	  if (lfptr == ptr) in_header = 0;
-	}
-	else if (bodylines >= 0)
-	  if (--bodylines < 0) break;
+	if (in_header && lfptr == ptr)
+	  in_header = 0;
 	obuf_write(&outbuf, ptr, lfptr-ptr);
 	obuf_puts(&outbuf, CRLF);
 	ptr = lfptr + 1;
+	sol = 1;
       }
     }
   }
@@ -258,7 +265,7 @@ static void cmd_top(const str* arg)
 
   if ((num = strtol(arg->s, &end, 10)) <= 0) return respond(err_syntax);
   while (*end == SPACE) ++end;
-  if (*end == 0) return dump_msg(num, -1);
+  if (*end == 0) return dump_msg(num, LONG_MAX);
   if ((lines = strtol(end, &end, 10)) < 0 || *end != 0)
     return respond(err_syntax);
   dump_msg(num, lines);
