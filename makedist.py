@@ -7,8 +7,8 @@ WEBSITE = 'untroubled.org'
 
 # If LISTSUB is set, makedist will add a note regarding mailing list
 # subscription.
-LISTSUB = 'bgware-subscribe@lists.em.ca'
-LISTURL = 'http://lists.em.ca/?list=bgware'
+LISTSUB = 'bgware-subscribe@lists.untroubled.org'
+LISTURL = 'http://lists.untroubled.org/?list=bgware'
 
 # Set EXTRAS to a list of any extra files that should go into the
 # base directory in the destination site.
@@ -28,7 +28,7 @@ RPMUPLOAD = [
 
 # Set LISTS to the mailing list(s) to send the announcement to
 LISTS = [
-	'bgware@lists.em.ca',
+	'bgware@lists.untroubled.org',
 	]
 
 # Run any extra commands to prepare the source tree (such as making
