@@ -281,7 +281,7 @@ const response* rules_add(const char* l)
   struct rule* r;
   unsigned long databytes;
   
-  if (*l != 'k' && *l != 'd' && *l != 'z' && *l != 'p') return 0;
+  if (*l != 'k' && *l != 'd' && *l != 'z' && *l != 'p' && *l != 'n') return 0;
   r = alloc_rule();
   r->code = *l++;
 
@@ -390,6 +390,7 @@ static const response* build_response(int type, const str* message)
 
   switch (type) {
   case 'p': return 0;
+  case 'n': return 0;
   case 'k': code = 250; defmsg = "OK"; break;
   case 'd': code = 553; defmsg = "Rejected"; break;
   case 'z': code = 451; defmsg = "Deferred"; break;
@@ -427,12 +428,16 @@ static str sender_domain;
 const response* rules_validate_sender(str* sender)
 {
   struct rule* rule;
+  const response* r;
   
   if (!loaded) return 0;
   copy_addr(sender, &saved_sender, &sender_domain);
   for (rule = sender_rules; rule != 0; rule = rule->next)
-    if (matches(&rule->sender, &saved_sender, &sender_domain))
-      return apply_rule(rule);
+    if (matches(&rule->sender, &saved_sender, &sender_domain)) {
+      r = apply_rule(rule);
+      if (rule->code != 'n')
+	return r;
+    }
   return 0;
 }
 
@@ -442,14 +447,17 @@ static str rdomain;
 const response* rules_validate_recipient(str* recipient)
 {
   struct rule* rule;
-
+  const response* r;
+  
   if (!loaded) return 0;
   copy_addr(recipient, &laddr, &rdomain);
   for (rule = recip_rules; rule != 0; rule = rule->next)
     if (matches(&rule->sender, &saved_sender, &sender_domain) &&
 	matches(&rule->recipient, &laddr, &rdomain)) {
       str_cat(recipient, &rule->relayclient);
-      return apply_rule(rule);
+      r = apply_rule(rule);
+      if (rule->code != 'n')
+	return r;
     }
   return 0;
 }

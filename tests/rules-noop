@@ -1,0 +1,14 @@
+cat >$tmp/rules <<EOF
+n*:*:Do not see this:::RELAYCLIENT=@rc
+EOF
+
+MAILRULES=$tmp/rules sfecho <<EOF
+MAIL FROM:<a@a>
+RCPT TO:<b@b>
+EOF
+
+rm -f $tmp/rules
+
+<result>
+250 Sender='a@a'.^M
+250 Recipient='b@b@rc'.^M

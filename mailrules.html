@@ -31,6 +31,8 @@ format.  Each line starts with one of the following prefixes: <dl>
 code.
 <dt><tt>d</tt> <dd>Reject the sender or recipient with a permanent error
 code.
+<dt><tt>n</tt> <dd>NO-OP: apply the databytes, relayclient, and/or
+environment settings, but continue processing further rules.
 <dt><tt>p</tt> <dd>Pass the sender or recipient on to the next
 processing state (ie <tt>$RELAYCLIENT</tt> or back-end validation).
 
