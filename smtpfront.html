@@ -55,6 +55,11 @@ TO:</tt> and <tt>MAIL FROM:</tt> commands.
 <li>Rejects bounce messages (messages with an empty envelope sender)
 that attempt to deliver to multiple recipients.
 
+<li>Optionally adds a fixup "<tt>Received:</tt>" header for hosts that
+have different incoming and outgoing hostnames or IPs.  Set
+<tt>$FIXUP_RECEIVED_HOST</tt> and <tt>$FIXUP_RECEIVED_IP</tt> if you
+want this header added.
+
 </ul></p>
 
 <h2>Back Ends</h2>

@@ -6,6 +6,10 @@ Changes in version 0.85
 
 - Added a QMQP front-end.
 
+- The front-ends optionally add an extra "fixup" Received: header if
+  $FIXUP_RECEIVED_HOST and $FIXUP_RECEIVED_IP are set and differ from
+  $TCPLOCALHOST and $TCPLOCALIP.
+
 - Fixed internal variable transposition bug in smtp-commands.c.
 
 - Switched to bglibs 1.006 library scheme.
