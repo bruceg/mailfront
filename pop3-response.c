@@ -35,8 +35,6 @@ const char err_syntax[] = "-ERR Syntax error.";
 void respond(const char* msg)
 {
   if (!obuf_puts(&outbuf, msg) ||
-      !obuf_putc(&outbuf, CR) ||
-      !obuf_putc(&outbuf, LF) ||
-      !obuf_flush(&outbuf))
+      !obuf_putsflush(&outbuf, CRLF))
     exit(1);
 }
