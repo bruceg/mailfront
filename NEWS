@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------
 Changes in version 0.71
 
+- Log the parameters to the MAIL and RCPT commands in smtpfront.
+
 - Fixed missing lowercase conversion when handling validating domain
   names against rcpthosts and company.
 
