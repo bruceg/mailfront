@@ -1,8 +1,6 @@
 pop3.a
-cvm/client.a
 iobuf/str.a
 iobuf/iobuf.a
 str/str.a
-socket/socket.a
 iopoll.o
 setenv.o
