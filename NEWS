@@ -9,6 +9,8 @@ Changes in version 0.88
 - Defer looking up $MAXHOPS and $HEADER_ADD so that they can be set in
   the mailrules.
 
+- Added support for IMAP string literals in imapfront-auth.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

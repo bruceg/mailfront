@@ -1,0 +1,33 @@
+CVM_SASL_PLAIN=$tmp/cvm
+export CVM_SASL_PLAIN
+
+ifauth <<EOF
+1 LOGIN
+2 LOGIN A
+3 LOGIN A B C
+4 LoGiN A B
+5 LOGIN testuser testpass
+EOF
+
+ifauth <<EOF
+6 login "testuser" "testpass"
+EOF
+
+ifauth <<EOF
+7 login {8}
+testuser{8}
+testpass
+EOF
+
+unset CVM_SASL_PLAIN
+
+<result>
+1 BAD Syntax error: command requires arguments^M
+2 BAD LOGIN command requires exactly two arguments^M
+3 BAD LOGIN command requires exactly two arguments^M
+4 NO LOGIN failed^M
+Yes: 5
+Yes: 6
++ OK^M
++ OK^M
+Yes: 7

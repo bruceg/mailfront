@@ -38,6 +38,11 @@ const int msg_show_pid = 1;
 #define MAX_ARGC 16
 #define QUOTE '"'
 #define ESCAPE '\\'
+#define LBRACE '{'
+#define RBRACE '}'
+
+static const char NOTAG[] = "*";
+static const char CONT[] = "+";
 
 static const char* capability;
 static const char* cvm;
@@ -71,10 +76,9 @@ void log(const char* tagstr, const char* msg)
   log_end();
 }
 
-void respond_start(int tagged)
+void respond_start(const char* tagstr)
 {
-  const char* tagstr;
-  tagstr = tagged ? tag.s : "*";
+  if (tagstr == 0) tagstr = tag.s;
   log_start(tagstr);
   if (!obuf_puts(&outbuf, tagstr) ||
       !obuf_putc(&outbuf, ' '))
@@ -95,9 +99,9 @@ void respond_end(void)
     exit(1);
 }
 
-void respond(int tagged, const char* msg)
+void respond(const char* tagstr, const char* msg)
 {
-  respond_start(tagged);
+  respond_start(tagstr);
   respond_str(msg);
   respond_end();
 }
@@ -132,6 +136,7 @@ static int parse_line(void)
 {
 #define RESPOND(T,S) do{ respond(T,S); return 0; }while(0)
   unsigned i;
+  unsigned len;
   const char* ptr;
   str* arg;
   
@@ -140,15 +145,15 @@ static int parse_line(void)
   for (i = 0, ptr = line.s; i < line.len && isspace(*ptr); ++i, ++ptr) ;
   for (; i < line.len && !isspace(*ptr); ++i, ++ptr)
     str_catc(&tag, line.s[i]);
-  if (!tag.len) RESPOND(0, "BAD Syntax error");
-  if (i >= line.len) RESPOND(1, "BAD Syntax error");
+  if (!tag.len) RESPOND(NOTAG, "BAD Syntax error");
+  if (i >= line.len) RESPOND(0, "BAD Syntax error");
 
   /* Parse out the command itself */
   str_truncate(&cmd, 0);
   for (; i < line.len && isspace(*ptr); ++i, ++ptr) ;
   for (; i < line.len && !isspace(*ptr); ++i, ++ptr)
     str_catc(&cmd, line.s[i]);
-  if (!cmd.len) RESPOND(1, "BAD Syntax error");
+  if (!cmd.len) RESPOND(0, "BAD Syntax error");
 
   /* Parse out the command-line args */
   for (line_argc = 0; line_argc < MAX_ARGC; ++line_argc) {
@@ -156,7 +161,31 @@ static int parse_line(void)
     str_truncate(arg, 0);
     for (; i < line.len && isspace(*ptr); ++i, ++ptr) ;
     if (i >= line.len) break;
-    if (*ptr == QUOTE) {
+
+    switch (*ptr) {
+    case LBRACE:
+      /* Handle a string literal */
+      ++i, ++ptr;
+      if (!isdigit(*ptr)) RESPOND(0, "BAD Syntax error: missing integer");
+      for (len = 0; i < line.len && *ptr != RBRACE; ++i, ++ptr) {
+	if (!isdigit(*ptr))
+	  RESPOND(0, "BAD Syntax error: invalid integer");
+	len = len * 10 + *ptr - '0';
+      }
+      ++i, ++ptr;
+      if (*ptr != 0) RESPOND(0, "BAD Syntax error: missing LF after integer");
+      str_ready(arg, len);
+      respond(CONT, "OK");
+      if (len > 0)
+	ibuf_read(&inbuf, arg->s, len);
+      arg->s[arg->len = len] = 0;
+      ibuf_getstr_crlf(&inbuf, &line);
+      i = 0;
+      ptr = line.s;
+      break;
+
+    case QUOTE:
+      /* Handle a quoted string */
       for (++i, ++ptr; i < line.len && *ptr != QUOTE; ++i, ++ptr) {
 	if (*ptr == ESCAPE) {
 	  if (++i >= line.len) break;
@@ -165,50 +194,53 @@ static int parse_line(void)
 	str_catc(arg, *ptr);
       }
       if (i >= line.len || *ptr != QUOTE)
-	RESPOND(1, "BAD Syntax error: unterminated quoted string");
+	RESPOND(0, "BAD Syntax error: unterminated quoted string");
       ++i, ++ptr;
-    }
-    else
+      break;
+
+    default:
+      /* Normal case is very simple */
       for (; i < line.len && !isspace(*ptr); ++i, ++ptr)
 	str_catc(arg, *ptr);
+    }
   }
   for (; i < line.len && isspace(*ptr); ++i, ++ptr) ;
-  if (i < line.len) RESPOND(1, "BAD Too many command arguments");
+  if (i < line.len) RESPOND(0, "BAD Too many command arguments");
   return 1;
 }
 
 void cmd_noop(void)
 {
-  respond(1, "OK NOOP completed");
+  respond(0, "OK NOOP completed");
 }
 
 void cmd_logout(void)
 {
-  respond(0, "Logging out");
-  respond(1, "OK LOGOUT completed");
+  respond(NOTAG, "Logging out");
+  respond(0, "OK LOGOUT completed");
   exit(0);
 }
 
 void cmd_capability(void)
 {
-  respond_start(0);
+  respond_start(NOTAG);
   respond_str("CAPABILITY IMAP4rev1 ");
   respond_str(capability);
   respond_end();
-  respond(1, "OK CAPABILITY completed");
+  respond(0, "OK CAPABILITY completed");
 }
 
 void do_exec(void)
 {
   if (!cvm_setugid())
-    respond(1, "NO Internal error: could not set UID/GID");
+    respond(0, "NO Internal error: could not set UID/GID");
   else if (!cvm_setenv() ||
 	   setenv("IMAPLOGINTAG", tag.s, 1) == -1 ||
 	   setenv("AUTHENTICATED", cvm_fact_username, 1) == -1)
-    respond(1, "NO Internal error: could not set environment");
+    respond(0, "NO Internal error: could not set environment");
   else {
     execvp(nextcmd[0], nextcmd);
-    respond(1, "NO Could not execute second stage");
+    respond(0, "NO Could not execute second stage");
   }
   exit(1);
 }
@@ -217,13 +249,13 @@ void cmd_login(int argc, str* argv)
 {
   int cr;
   if (argc != 2)
-    respond(1, "BAD LOGIN command requires exactly two arguments");
+    respond(0, "BAD LOGIN command requires exactly two arguments");
   else {
     const char* credentials[2] = { argv[1].s, 0 };
     if ((cr = cvm_authenticate(cvm, argv[0].s, domain, credentials, 1)) == 0)
       do_exec();
     else
-      respond(1, "NO LOGIN failed");
+      respond(0, "NO LOGIN failed");
   }
 }
 
@@ -233,12 +265,12 @@ void cmd_authenticate(int argc, str* argv)
   if (argc == 1)      i = sasl_auth2("+ ", argv[0].s, 0);
   else if (argc == 2) i = sasl_auth2("+ ", argv[0].s, argv[1].s);
   else {
-    respond(1, "BAD AUTHENTICATE command requires only one or two arguments");
+    respond(0, "BAD AUTHENTICATE command requires only one or two arguments");
     return;
   }
   if (i == 0)
     do_exec();
-  respond_start(1);
+  respond_start(0);
   respond_str("NO AUTHENTICATE failed: ");
   respond_str(sasl_auth_msg(&i));
   respond_end();
@@ -268,36 +300,36 @@ static void dispatch_line(void)
     if (str_diffs(&cmd, c->name) == 0) {
       if (line_argc == 0) {
 	if (c->fn0 == 0)
-	  respond(1, "BAD Syntax error: command requires arguments");
+	  respond(0, "BAD Syntax error: command requires arguments");
 	else
 	  c->fn0();
       }
       else {
 	if (c->fn1 == 0)
-	  respond(1, "BAD Syntax error: command requires no arguments");
+	  respond(0, "BAD Syntax error: command requires no arguments");
 	else
 	  c->fn1(line_argc, line_args);
       }
       return;
     }
   }
-  respond(1, "BAD Unimplemented command");
+  respond(0, "BAD Unimplemented command");
 }
 
 static int startup(int argc, char* argv[])
 {
   if (argc < 2) {
-    respond(0, "NO Usage: imapfront-auth imapd [args ...]");
+    respond(NOTAG, "NO Usage: imapfront-auth imapd [args ...]");
     return 0;
   }
   domain = getenv("TCPLOCALHOST");
   nextcmd = argv + 1;
   if ((cvm = getenv("CVM_SASL_PLAIN")) == 0) {
-    respond(0, "NO $CVM_SASL_PLAIN is not set");
+    respond(NOTAG, "NO $CVM_SASL_PLAIN is not set");
     return 0;
   }
   if (!sasl_auth_init()) {
-    respond(0, "NO Could not initialize SASL AUTH");
+    respond(NOTAG, "NO Could not initialize SASL AUTH");
     return 0;
   }
   
@@ -316,12 +348,12 @@ int main(int argc, char* argv[])
 {
   set_timeout();
   if (!startup(argc, argv)) return 0;
-  respond(0, "OK imapfront ready.");
+  respond(NOTAG, "OK imapfront ready.");
   while (ibuf_getstr_crlf(&inbuf, &line)) {
     if (parse_line())
       dispatch_line();
   }
   if (ibuf_timedout(&inbuf))
-    respond(0, "NO Connection timed out");
+    respond(NOTAG, "NO Connection timed out");
   return 0;
 }
