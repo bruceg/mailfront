@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+Changes in version 0.88
+
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 0.87
 
 - Fixed a bug that prevented looping email detection from working.
