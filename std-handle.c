@@ -35,6 +35,7 @@ static const char* remote_host;
 static const char* remote_ip;
 static str fixup_host;
 static str fixup_ip;
+static const char* header_add;
 
 const response* handle_init(void)
 {
@@ -58,6 +59,7 @@ const response* handle_init(void)
     if (!str_copys(&fixup_ip, tmp)) return &resp_oom;
     str_strip(&fixup_ip);
   }
+  header_add = getenv("HEADER_ADD");
 
   maxhops = 0;
   if ((tmp = getenv("MAXHOPS")) != 0) maxhops = strtoul(tmp, 0, 10);
@@ -142,6 +144,15 @@ static const char* date_string(void)
   return datebuf;
 }
 
+int add_header_add(str* s)
+{
+  if (header_add != 0) {
+    if (!str_cats(s, header_add)) return 0;
+    if (!str_catc(s, '\n')) return 0;
+  }
+  return 1;
+}
+
 int fixup_received(str* s)
 {
   if (local_host &&
@@ -192,6 +203,7 @@ const response* handle_data_start(const str* helo_domain,
   if (response_ok(resp)) {
     received.len = 0;
     if (!fixup_received(&received) ||
+	!add_header_add(&received) ||
 	!build_received(&received, helo_domain, protocol))
       return &resp_internal;
     backend_handle_data_bytes(received.s, received.len);
