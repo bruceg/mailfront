@@ -27,6 +27,7 @@
 #include "cvm/client.h"
 #include "iobuf/iobuf.h"
 #include "str/str.h"
+#include "sasl-auth.h"
 #include "pop3.h"
 
 static const char* cvm;
@@ -34,6 +35,26 @@ static char** nextcmd;
 static const char* domain;
 
 static str user;
+
+static void do_exec(void)
+{
+  if (!cvm_setugid() || !cvm_setenv())
+    respond(err_internal);
+  else {
+    execvp(nextcmd[0], nextcmd);
+    respond("-ERR Could not execute second stage.");
+  }
+  _exit(1);
+}
+
+static void cmd_auth(const str* s)
+{
+  int i;
+  if ((i = sasl_auth("+ ", s)) == 0) 
+    do_exec();
+  obuf_write(&outbuf, "-ERR ", 5);
+  respond(sasl_auth_msg(&i));
+}
 
 static void cmd_user(const str* s)
 {
@@ -50,21 +71,13 @@ static void cmd_pass(const str* s)
   else {
     int cr;
     const char* credentials[2] = { s->s, 0 };
-    cr = cvm_authenticate(cvm, user.s, domain, credentials, 1);
+    if ((cr = cvm_authenticate(cvm, user.s, domain, credentials, 1)) == 0)
+      do_exec();
     str_truncate(&user, 0);
     if (cr == CVME_PERMFAIL)
       respond("-ERR Authentication failed.");
-    else if (cr != 0)
+    else
       respond(err_internal);
-    else {
-      if (!cvm_setugid() || !cvm_setenv())
-	respond(err_internal);
-      else {
-	execvp(nextcmd[0], nextcmd);
-	respond("-ERR Could not execute second stage.");
-      }
-      _exit(1);
-    }
   }
 }
 
@@ -75,9 +88,10 @@ static void cmd_quit(void)
 }
 
 command commands[] = {
-  { "USER", 0,        cmd_user },
+  { "AUTH", 0,        cmd_auth },
   { "PASS", 0,        cmd_pass },
   { "QUIT", cmd_quit, 0 },
+  { "USER", 0,        cmd_user },
   { 0,      0,        0 }
 };
 
@@ -91,5 +105,9 @@ int startup(int argc, char* argv[])
   }
   cvm = argv[1];
   nextcmd = argv+2;
+  if (!sasl_auth_init()) {
+    respond("-ERR Could not initialize SASL AUTH.");
+    return 0;
+  }
   return 1;
 }
