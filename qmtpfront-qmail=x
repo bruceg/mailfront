@@ -1,0 +1,11 @@
+qmtp.a
+qmail.a
+-lcdb/cdb
+-ldict/load
+-ldict/dict
+-lmsg/msg
+-liobuf/str
+-lstr/str
+-liobuf/iobuf
+-lunix/sig
+socket.lib
