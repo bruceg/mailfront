@@ -1,3 +1,7 @@
+- Add documentation for QMQP and QMTP back ends.
+
+- Add echo/reject back-ends for QMQP and QMTP, and add tests using them.
+
 - Add negation to patterns:
   - Each leading ! increments a counter (parsed when parsing the rules,
     not when using the pattern)
