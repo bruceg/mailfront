@@ -36,7 +36,9 @@ const response* qmail_validate_sender(const str* sender)
 {
   static const response resp = {0,553,"Sorry, your envelope sender is in my badmailfrom list."};
   int at;
-  if (dict_get(&bmf, sender) != 0) return &resp;
+  str_copy(&tmp, sender);
+  str_lower(&tmp);
+  if (dict_get(&bmf, &tmp) != 0) return &resp;
   if ((at = str_findlast(sender, '@')) > 0) {
     str_copyb(&tmp, sender->s + at, sender->len - at);
     str_lower(&tmp);

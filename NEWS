@@ -4,6 +4,9 @@ Changes in version 0.80
 - Fixed bug: setting $SMTPGREETING caused smtpfront to crash when issued
   HELO or EHLO commands.
 
+- Fixed bug: lookups in badmailfrom in smtpfront-qmail did not properly
+  lowercase the address.
+
 - Added sender and recipient pattern matching to all SMTP front-ends.
   See mailrules.html for full details.
 
