@@ -54,16 +54,17 @@ static long msg_bytes;
 static long del_bytes;
 static str tmp;
 
-static long scan_dir(const char* subdir, str* list, long* count, long max)
+static long scan_dir(const char* subdir, str* list, long* countptr, long max)
 {
   DIR* dir;
   direntry* entry;
   struct stat s;
+  long count;
   
   if ((dir = opendir(subdir)) == 0) return 0;
-  *count = 0;
+  count = 0;
   while (!(max_count > 0 && msg_count >= max_count) &&
-	 !(max > 0 && *count >= max) &&
+	 !(max > 0 && count >= max) &&
 	 (entry = readdir(dir)) != 0) {
     if (entry->d_name[0] == '.') continue;
     if (!str_copys(&tmp, subdir)) return 0;
@@ -74,10 +75,11 @@ static long scan_dir(const char* subdir, str* list, long* count, long max)
     if (!str_cat(list, &tmp)) return 0;
     if (!str_catc(list, 0)) return 0;
     msg_bytes += s.st_size;
-    ++*count;
+    ++count;
     ++msg_count;
   }
   closedir(dir);
+  *countptr = count;
   return 1;
 }
 
