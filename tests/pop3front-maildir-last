@@ -1,0 +1,19 @@
+pflast() { echo LAST | pfmaildir $maildir; }
+maildir
+tstmsg new/1
+tstmsg new/2
+pflast
+mv $maildir/new/1 $maildir/cur/1
+pflast
+mv $maildir/cur/1 $maildir/cur/1:2,S
+pflast
+mv $maildir/new/2 $maildir/cur/2:2,S
+pflast
+mv $maildir/cur/1:2,S $maildir/new/1
+pflast
+<result>
++OK 0^M
++OK 0^M
++OK 1^M
++OK 2^M
++OK 2^M

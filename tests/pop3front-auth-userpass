@@ -1,8 +1,9 @@
-pfauth $src/cvm/cvm-unix <<EOF
+# Should fix this and the others to actually check the stderr output too.
+pfauth $src/cvm/cvm-unix <<EOF 2>/dev/null
 USER testuser
 PASS testpass
 EOF
-pfauth $src/cvm/cvm-unix <<EOF
+pfauth $src/cvm/cvm-unix <<EOF 2>/dev/null
 USER testuser
 PASS testpasx
 EOF

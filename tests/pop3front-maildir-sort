@@ -1,0 +1,14 @@
+maildir
+tstmsg new/99
+tstmsg cur/100
+tstmsg new/101
+tstmsg cur/98
+
+echo UIDL | pfmaildir $maildir
+<result>
++OK ^M
+1 98^M
+2 99^M
+3 100^M
+4 101^M
+.^M

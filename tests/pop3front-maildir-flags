@@ -1,0 +1,36 @@
+pftest() {
+  (
+    for line in "$@"; do
+      echo $line
+    done
+  ) | pfmaildir $maildir
+  ( cd $maildir && ls -1 */* )
+}
+
+# Does it properly parse existing v2 flags
+maildir
+tstmsg new/1000000000.12345.here:2,FX
+pftest 'RETR 1' QUIT
+
+# Does it properly ignore non-v2 flags
+maildir
+tstmsg new/1000000000.12345.here:1fsd
+pftest 'RETR 1' QUIT
+
+<result>
++OK ^M
+Header: foo^M
+^M
+body^M
+^M
+.^M
++OK ^M
+cur/1000000000.12345.here:2,FXS
++OK ^M
+Header: foo^M
+^M
+body^M
+^M
+.^M
++OK ^M
+cur/1000000000.12345.here:1fsd

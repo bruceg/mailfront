@@ -1,0 +1,52 @@
+<loop quit false true>
+<loop command UIDL 'TOP 1 0' 'RETR 1'>
+maildir
+tstmsg new/1
+(
+  echo $command
+  if $quit; then echo QUIT; fi
+) | pfmaildir $maildir
+( cd $maildir && find new cur -type f )
+<result false UIDL>
++OK ^M
+1 1^M
+.^M
+new/1
+<result false 'TOP 1 0'>
++OK ^M
+Header: foo^M
+^M
+^M
+.^M
+new/1
+<result false 'RETR 1'>
++OK ^M
+Header: foo^M
+^M
+body^M
+^M
+.^M
+new/1
+<result true UIDL>
++OK ^M
+1 1^M
+.^M
++OK ^M
+cur/1
+<result true 'TOP 1 0'>
++OK ^M
+Header: foo^M
+^M
+^M
+.^M
++OK ^M
+cur/1
+<result true 'RETR 1'>
++OK ^M
+Header: foo^M
+^M
+body^M
+^M
+.^M
++OK ^M
+cur/1:2,S
