@@ -25,9 +25,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include "iobuf/iobuf.h"
+#include "msg/msg.h"
 #include "str/str.h"
 #include "pop3.h"
 
+const int msg_show_pid = 1;
+
+static unsigned timeout;
 static str line;
 static str cmd;
 static str arg;
@@ -70,6 +74,11 @@ static void dispatch_line(void)
 
 int main(int argc, char* argv[])
 {
+  const char* tmp;
+  if ((tmp = getenv("TIMEOUT")) != 0)
+    timeout = strtoul(tmp, 0, 10);
+  inbuf.io.timeout = timeout * 1000;
+  outbuf.io.timeout = timeout * 1000;
   if (!startup(argc, argv)) return 0;
   respond(ok);
   while (ibuf_getstr_crlf(&inbuf, &line)) {
@@ -78,5 +87,7 @@ int main(int argc, char* argv[])
     else
       dispatch_line();
   }
+  if (ibuf_timedout(&inbuf))
+    respond("-ERR Connection timed out");
   return 0;
 }
