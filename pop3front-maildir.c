@@ -43,6 +43,8 @@ static unsigned long* msg_offs;
 static unsigned long* msg_sizes;
 
 static long max_count;
+static long max_new_count;
+static long max_cur_count;
 
 static long new_count;
 static long cur_count;
@@ -52,7 +54,7 @@ static long msg_bytes;
 static long del_bytes;
 static str tmp;
 
-static long scan_dir(const char* subdir, str* list, long* count)
+static long scan_dir(const char* subdir, str* list, long* count, long max)
 {
   DIR* dir;
   direntry* entry;
@@ -61,6 +63,7 @@ static long scan_dir(const char* subdir, str* list, long* count)
   if ((dir = opendir(subdir)) == 0) return 0;
   *count = 0;
   while (!(max_count > 0 && msg_count >= max_count) &&
+	 !(max > 0 && *count >= max) &&
 	 (entry = readdir(dir)) != 0) {
     if (entry->d_name[0] == '.') continue;
     if (!str_copys(&tmp, subdir)) return 0;
@@ -86,8 +89,8 @@ static int scan_maildir(void)
   msg_bytes = 0;
   if (!str_truncate(&msg_list, 0)) return 0;
   msg_count = 0;
-  if (!scan_dir("cur", &msg_list, &cur_count)) return 0;
-  if (!scan_dir("new", &msg_list, &new_count)) return 0;
+  if (!scan_dir("cur", &msg_list, &cur_count, max_cur_count)) return 0;
+  if (!scan_dir("new", &msg_list, &new_count, max_new_count)) return 0;
 
   del_count = 0;
   del_bytes = 0;
@@ -331,9 +334,10 @@ int startup(int argc, char* argv[])
     return 0;
   }
 
-  if ((tmp = getenv("MAX_MESSAGES")) != 0)
-    max_count = atol(tmp);
-
+  if ((tmp = getenv("MAX_MESSAGES")) != 0)     max_count = atol(tmp);
+  if ((tmp = getenv("MAX_CUR_MESSAGES")) != 0) max_cur_count = atol(tmp);
+  if ((tmp = getenv("MAX_NEW_MESSAGES")) != 0) max_new_count = atol(tmp);
+  
   if ((tmp = getenv("MAILBOX")) == 0) {
     if (argc < 2) {
       obuf_putsflush(&errbuf, "pop3front-main: Mailbox not specified\n");
