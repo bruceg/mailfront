@@ -10,6 +10,9 @@ Changes in version 0.92
 - Fixed bug in pattern handling that would cause a bogus "out of memory"
   error if the patterns file had a blank line.
 
+- Fixed bug:  Only set $MAILDIR in imapfront-auth if the CVM set it.
+  Thanks Charlie Brady.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
