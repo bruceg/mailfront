@@ -7,27 +7,32 @@
 
 const int msg_show_pid = 1;
 
-int respond_start(unsigned number, int final)
+static str line;
+
+static int respond_start(unsigned number, int final)
 {
-  return obuf_putu(&outbuf, number) &&
-    obuf_putc(&outbuf, final ? ' ' : '-');
+  return str_truncate(&line, 0) &&
+    str_catu(&line, number) &&
+    str_catc(&line, final ? ' ' : '-');
 }
 
-int respond_end(void)
+static int respond_end(void)
 {
-  return obuf_putsflush(&outbuf, CRLF);
+  msg1(line.s);
+  return obuf_putstr(&outbuf, &line) &&
+    obuf_putsflush(&outbuf, CRLF);
 }
 
-int respond_str(const char* s)
+static int respond_str(const char* s)
 {
-  return obuf_puts(&outbuf, s);
+  return str_cats(&line, s);
 }
 
 static int respond_b(unsigned number, int final,
 		     const char* msg, long len)
 {
   return respond_start(number, final) &&
-    obuf_write(&outbuf, msg, len) &&
+    str_catb(&line, msg, len) &&
     respond_end();
 }
 

@@ -12,12 +12,7 @@ extern str domain_name;
 extern int smtp_mainloop(void);
 extern int smtp_dispatch(void);
 
-/* State variables */
-
 extern int respond(unsigned number, int final, const char* msg);
-extern int respond_start(unsigned number, int nonfinal);
-extern int respond_str(const char* msg);
-extern int respond_end(void);
 extern int respond_resp(const response* resp, int final);
 
 #endif
