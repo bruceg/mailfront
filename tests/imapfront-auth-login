@@ -1,0 +1,35 @@
+export CVM_SASL_PLAIN=$tmp/cvm
+
+ifauth false <<EOF
+1 AUTHENTICATE LOGIN
+dGVzdHVzZXI=
+dGVzdHBhc3x=
+2 AUTHENTICATE LOGIN
+dGVzdHVzZXI=
+dGVzdHBhc3M=
+EOF
+
+ifauth false <<EOF
+3 AUTHENTICATE LOGIN dGVzdHVzZXI=
+dGVzdHBhc3M=
+EOF
+
+ifauth false <<EOF
+4 AUTHENTICATE LOGIN
+dGVzdHVzZXI=
+*
+EOF
+
+unset CVM_SASL_PLAIN
+<result>
++ VXNlcm5hbWU6^M
++ UGFzc3dvcmQ6^M
+1 NO AUTHENTICATE failed: Authentication failed.^M
++ VXNlcm5hbWU6^M
++ UGFzc3dvcmQ6^M
+Yes: 2
++ UGFzc3dvcmQ6^M
+Yes: 3
++ VXNlcm5hbWU6^M
++ UGFzc3dvcmQ6^M
+4 NO AUTHENTICATE failed: Authentication failed.^M
