@@ -27,6 +27,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "setenv.h"
+#include "sasl-auth.h"
 #include "cvm/client.h"
 #include "iobuf/iobuf.h"
 #include "str/str.h"
@@ -152,12 +153,11 @@ static int parse_line(void)
   if (!cmd.len) RESPOND(1, "BAD Syntax error");
 
   /* Parse out the command-line args */
-  for (argc = 0;; ++argc) {
-    for (; i < line.len && isspace(*ptr); ++i, ++ptr) ;
-    if (i >= line.len) break;
-    if (argc >= MAX_ARGC) RESPOND(1, "BAD Too many command arguments");
+  for (argc = 0; argc < MAX_ARGC; ++argc) {
     arg = &args[argc];
     str_truncate(arg, 0);
+    for (; i < line.len && isspace(*ptr); ++i, ++ptr) ;
+    if (i >= line.len) break;
     if (*ptr == QUOTE) {
       for (++i, ++ptr; i < line.len && *ptr != QUOTE; ++i, ++ptr) {
 	if (*ptr == ESCAPE) {
@@ -174,6 +174,8 @@ static int parse_line(void)
       for (; i < line.len && !isspace(*ptr); ++i, ++ptr)
 	str_catc(arg, *ptr);
   }
+  for (; i < line.len && isspace(*ptr); ++i, ++ptr) ;
+  if (i < line.len) RESPOND(1, "BAD Too many command arguments");
   return 1;
 }
 
@@ -227,6 +229,23 @@ void cmd_login(int argc, str* argv)
   }
 }
 
+void cmd_authenticate(int argc, str* argv)
+{
+  int i;
+  if (argc == 1)      i = sasl_auth2("+ ", argv[0].s, 0);
+  else if (argc == 2) i = sasl_auth2("+ ", argv[0].s, argv[1].s);
+  else {
+    respond(1, "BAD AUTHENTICATE command requires only one or two arguments");
+    return;
+  }
+  if (i == 0)
+    do_exec();
+  respond_start(1);
+  respond_str("NO AUTHENTICATE failed: ");
+  respond_str(sasl_auth_msg(&i));
+  respond_end();
+}
+
 struct command
 {
   const char* name;
@@ -239,7 +258,7 @@ struct command commands[] = {
   { "NOOP",        cmd_noop,       0 },
   { "LOGOUT",      cmd_logout,     0 },
   { "LOGIN",       0, cmd_login },
-  //{ "AUTHENTICATE", 0, cmd_authenticate },
+  { "AUTHENTICATE", 0, cmd_authenticate },
   { 0, 0, 0 }
 };
 
@@ -269,13 +288,20 @@ static void dispatch_line(void)
 
 static int startup(int argc, char* argv[])
 {
-  if (argc < 3) {
-    respond(0, "Usage: imapfront-auth CVM imapd [args ...]");
-    exit(1);
+  if (argc < 2) {
+    respond(0, "NO Usage: imapfront-auth imapd [args ...]");
+    return 0;
   }
-  cvm = argv[1];
   domain = getenv("TCPLOCALHOST");
-  nextcmd = argv + 2;
+  nextcmd = argv + 1;
+  if ((cvm = getenv("CVM_SASL_PLAIN")) == 0) {
+    respond(0, "NO $CVM_SASL_PLAIN is not set");
+    return 0;
+  }
+  if (!sasl_auth_init()) {
+    respond(0, "NO Could not initialize SASL AUTH");
+    return 0;
+  }
   
   if ((capability = getenv("IMAP_CAPABILITY")) == 0 &&
       (capability = getenv("CAPABILITY")) == 0)
