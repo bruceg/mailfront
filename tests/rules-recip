@@ -20,7 +20,7 @@ rm -f $tmp/rules
 <result>
 250 Sender='nobody@nobody'.^M
 250 KK^M
-451 DD^M
-553 ZZ^M
+553 DD^M
+451 ZZ^M
 250 Recipient='four@four'.^M
 250 Recipient='five@five'.^M

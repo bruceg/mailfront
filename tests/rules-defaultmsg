@@ -19,9 +19,9 @@ EOF
 rm -f $tmp/rules
 
 <result>
-451 Temporary failure^M
 553 Rejected^M
+451 Temporary failure^M
 250 OK^M
-451 Temporary failure^M
 553 Rejected^M
+451 Temporary failure^M
 250 OK^M

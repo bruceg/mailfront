@@ -1,7 +1,7 @@
 cat >$tmp/rules <<EOF
 k[[$tmp/list.cdb]]:*:LIST
 k[[@$tmp/atlist.cdb]]:*:ATLIST
-z*:*:ZZ
+d*:*:DD
 EOF
 
 cat <<EOF | cdbmake $tmp/list.cdb $tmp/list.tmp
@@ -25,6 +25,6 @@ rm -f $tmp/rules $tmp/list.cdb $tmp/atlist.cdb
 
 <result>
 250 LIST^M
-553 ZZ^M
+553 DD^M
 250 ATLIST^M
 250 ATLIST^M

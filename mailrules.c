@@ -363,7 +363,7 @@ static const response* build_response(int type, const str* message)
   switch (type) {
   case 'p': return 0;
   case 'k': code = 250; defmsg = "OK"; break;
-  case 'z': code = 553; defmsg = "Rejected"; break;
+  case 'd': code = 553; defmsg = "Rejected"; break;
   default: code = 451; defmsg = "Temporary failure";
   }
 
