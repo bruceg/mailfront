@@ -1,0 +1,29 @@
+mailfront
+Mail server network protocol front-ends
+Bruce Guenter <bruceg@em.ca>
+Version 0.50
+2001-08-08
+
+This is mailfront, a package containing customizeable network front-ends
+for mail servers.  Right now the only protocol that is handled is SMTP,
+but it may be extended to deal with QMQP, QMTP, and even POP3 or IMAP.
+
+Two back-ends are provided.  One delivers mail to qmail-queue, mimicking
+most of the behavior of qmail-smtpd.  The other rejects all SMTP commands
+if $SMTPREJECT is set, and execs its command line otherwise (in order to
+run the above program).
+
+A mailing list has been set up to discuss this and other packages.
+To subscribe, send an email to:
+	bgware-subscribe@lists.em.ca
+A mailing list archive is available at:
+	http://lists.em.ca/?list=bgware
+
+Development versions of mailfront are available via anonymous CVS.
+Set your CVSROOT to ":pserver:cvs@bruce-guenter.dyndns.org:/CVS",
+login with an empty password, and check out the "mailfront" module.
+
+This program is Copyright(C) 2001 Bruce Guenter, and may be copied
+according to the GNU GENERAL PUBLIC LICENSE (GPL) Version 2 or a later
+version.  A copy of this license is included with this package.  This
+package comes with no warranty of any kind.

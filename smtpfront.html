@@ -1,0 +1,56 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">MailFront</a></h2>
+
+<h1>SMTP Front Ends</h1>
+
+<hr>
+
+<h2>Features</h2>
+
+<p>The following features are common to all SMTP front-ends: <ul>
+
+<li>Automatically handles either bare NL or RFC 821/2821 compliant
+CR/NL end-of-line conventions.
+
+<li>Rejects messages that exceed <tt>$DATABYTES</tt> bytes in the
+body.
+
+<li>Times out connections after <tt>$TIMEOUT</tt> seconds of
+inactivity (defaults to 1200 seconds).
+
+<li>Counts the number of "<tt>Received:</tt>" and
+"<tt>Delivered-To:</tt>" headers, and rejects the message if more than
+<tt>$MAXHOPS</tt> of either are seen (defaults to 100).
+
+<li>All error responses are logged.
+
+<li>Handles (ignores) RFC 1869 extended parameters on the <tt>RCPT
+TO:</tt> and <tt>MAIL FROM:</tt> commands.
+
+</ul></p>
+
+<h2>Back Ends</h2>
+
+<dl>
+
+<dt><tt>smtpfront-echo</tt> <dd><p>Uses the echo backend to simply
+echo back the sender and recipient parameters, and the size of the
+data to the client.</p>
+
+<dt><tt>smtpfront-qmail</tt> <dd><p>Uses the <a
+href="qmail-validate.html">qmail validation features</a> to validate
+addresses, and the <a href="qmail-backend.html">qmail backend</a> to
+deliver messages.</p>
+
+<dt><tt>smtpfront-reject</tt> <dd><p>If <tt>$SMTPREJECT</tt> is set,
+all SMTP commands are rejected with this message.  If the message
+starts with a "<tt>-</tt>", a permanent error number is used and the
+leading "<tt>-</tt>" is stripped.  If <tt>$SMTPREJECT</tt> is not set,
+it execs its command line.</p>
+
+</dl>
+
+</body>
+</html>
