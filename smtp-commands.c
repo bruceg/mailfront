@@ -202,7 +202,6 @@ static int DATA(void)
     return 0;
   }
   if ((resp = handle_data_end()) == 0) resp = &resp_data_end;
-  do_reset();
   return respond_resp(resp, 1);
 }
 
