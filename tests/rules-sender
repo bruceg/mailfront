@@ -1,0 +1,22 @@
+cat >$tmp/rules <<EOF
+kone@one:*:KK
+dtwo@two:*:DD
+zthree@three:*:ZZ
+zfour@four:one@one:ZZ
+EOF
+
+MAILRULES=$tmp/rules sfecho <<EOF
+MAIL FROM:<one@one>
+MAIL FROM:<two@two>
+MAIL FROM:<three@three>
+MAIL FROM:<four@four>
+EOF
+
+rm -f $tmp/rules
+
+<result>
+250 KK^M
+451 DD^M
+553 ZZ^M
+250 Sender='four@four'.^M
+

@@ -1,0 +1,28 @@
+cat >$tmp/rules <<EOF
+k[[$tmp/list]]:*:LIST
+k[[@$tmp/atlist]]:*:ATLIST
+z*:*:ZZ
+EOF
+
+cat >$tmp/list <<EOF
+a@a
+EOF
+
+cat >$tmp/atlist <<EOF
+b
+EOF
+
+MAILRULES=$tmp/rules sfecho <<EOF
+MAIL FROM:<a@a>
+MAIL FROM:<b@a>
+MAIL FROM:<a@b>
+MAIL FROM:<b@B>
+EOF
+
+rm -f $tmp/rules $tmp/list $tmp/atlist
+
+<result>
+250 LIST^M
+553 ZZ^M
+250 ATLIST^M
+250 ATLIST^M

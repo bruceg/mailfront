@@ -1,0 +1,19 @@
+cat >$tmp/rules <<EOF
+ka@a:*:ONE\nTWO
+ka@b:*:ONE\:TWO
+ka@c:*:ONE\\\\TWO:
+EOF
+
+MAILRULES=$tmp/rules sfecho <<EOF
+MAIL FROM:<a@a>
+MAIL FROM:<a@b>
+MAIL FROM:<a@c>
+EOF
+
+rm -f $tmp/rules
+
+<result>
+250-ONE^M
+250 TWO^M
+250 ONE:TWO^M
+250 ONE\TWO^M

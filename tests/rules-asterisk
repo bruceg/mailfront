@@ -1,0 +1,21 @@
+cat >$tmp/rules <<EOF
+ka@a:*:K1
+k*@a:*:K2
+kc@*:*:K3
+k*:*:K4
+EOF
+
+MAILRULES=$tmp/rules sfecho <<EOF
+MAIL FROM:<a@a>
+MAIL FROM:<b@a>
+MAIL FROM:<c@b>
+MAIL FROM:<d@d>
+EOF
+
+rm -f $tmp/rules
+
+<result>
+250 K1^M
+250 K2^M
+250 K3^M
+250 K4^M

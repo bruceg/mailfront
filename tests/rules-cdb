@@ -1,0 +1,30 @@
+cat >$tmp/rules <<EOF
+k[[$tmp/list.cdb]]:*:LIST
+k[[@$tmp/atlist.cdb]]:*:ATLIST
+z*:*:ZZ
+EOF
+
+cat <<EOF | cdbmake $tmp/list.cdb $tmp/list.tmp
++3,0:a@a->
+
+EOF
+
+cat <<EOF | cdbmake $tmp/atlist.cdb $tmp/atlist.tmp
++1,0:b->
+
+EOF
+
+MAILRULES=$tmp/rules sfecho <<EOF
+MAIL FROM:<a@a>
+MAIL FROM:<b@a>
+MAIL FROM:<a@b>
+MAIL FROM:<b@B>
+EOF
+
+rm -f $tmp/rules $tmp/list.cdb $tmp/atlist.cdb
+
+<result>
+250 LIST^M
+553 ZZ^M
+250 ATLIST^M
+250 ATLIST^M
