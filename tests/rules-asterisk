@@ -10,6 +10,7 @@ MAIL FROM:<a@a>
 MAIL FROM:<b@a>
 MAIL FROM:<c@b>
 MAIL FROM:<d@d>
+MAIL FROM:<>
 EOF
 
 rm -f $tmp/rules
@@ -18,4 +19,5 @@ rm -f $tmp/rules
 250 K1^M
 250 K2^M
 250 K3^M
+250 K4^M
 250 K4^M
