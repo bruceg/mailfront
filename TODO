@@ -14,6 +14,8 @@
 
   - Segment the SMTP code into seperate files
 
+  - Add some information about authentication into the headers (?)
+
 - pop3front:
 
   - Add support for CAPA command (RFC 2449)

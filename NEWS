@@ -6,7 +6,10 @@ Changes in version 0.71
 - Fixed missing lowercase conversion when handling validating domain
   names against rcpthosts and company.
 
-- Fixed a number of bugs in the SASL implementation.
+- Fixed a number of bugs in the SASL implementation.  SMTP AUTH PLAIN
+  and/or LOGIN have now been tested with Mozilla Mail (PLAIN), Pegasus
+  (PLAIN I think), PMMail (LOGIN), The Bat (PLAIN), Eudora (LOGIN), and
+  Outlook Express (LOGIN).
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
