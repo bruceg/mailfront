@@ -1,19 +1,10 @@
 #ifndef MAIL_FRONT__MAILFRONT__H__
 #define MAIL_FRONT__MAILFRONT__H__
 
+#include "responses.h"
 #include "log.h"
 #include "str/str.h"
-#include "responses.h"
 #include "constants.h"
-
-/* State variables */
-extern int authenticated;
-
-extern int respond(unsigned number, int final, const char* msg);
-extern int respond_start(unsigned number, int nonfinal);
-extern int respond_str(const char* msg);
-extern int respond_end(void);
-extern int respond_resp(const response* resp, int final);
 
 /* Defined by a back-end module */
 extern void handle_reset(void);
