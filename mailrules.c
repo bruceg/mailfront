@@ -157,9 +157,8 @@ static str envars;
 const char* rules_getenv(const char* name)
 {
   unsigned i;
-  unsigned namelen;
+  const unsigned namelen = strlen(name);
   const char* s;
-  namelen = strlen(name);
   for (s = 0, i = 0; i < envars.len; i += strlen(envars.s + i) + 1) {
     if (memcmp(envars.s + i, name, namelen) == 0 &&
 	envars.s[i + namelen] == '=')
@@ -185,9 +184,8 @@ static unsigned long min_u_s(unsigned long u, const char* s)
 unsigned long rules_getenvu(const char* name)
 {
   unsigned i;
-  unsigned namelen;
+  const unsigned namelen = strlen(name);
   unsigned long val;
-  namelen = strlen(name);
   val = min_u_s(0, getenv(name));
   for (i = 0; i < envars.len; i += strlen(envars.s + i) + 1) {
     if (memcmp(envars.s + i, name, namelen) == 0 &&
