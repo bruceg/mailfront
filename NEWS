@@ -1,17 +1,4 @@
 -------------------------------------------------------------------------------
-Changes in version 0.75
-
-- Added an exit hook to both pop3front and mailfront to print the number
-  of bytes input and output.
-
-- Fixed a one-off bug in handling "@domain" entries in badmailfrom in
-  smtpfront-qmail.
-
-- pop3front-auth now logs the user name.
-
-Development of this version has been sponsored by FutureQuest, Inc.
-ossi@FutureQuest.net  http://www.FutureQuest.net/
--------------------------------------------------------------------------------
 Changes in version 0.74
 
 - Modified quit code in pop3front to properly tag only read messages as
@@ -20,6 +7,14 @@ Changes in version 0.74
 - Implemented the obsolete LAST command.
 
 - Messages are now sorted in numerical order of their UID.
+
+- Added an exit hook to both pop3front and mailfront to print the number
+  of bytes input and output.
+
+- Fixed a one-off bug in handling "@domain" entries in badmailfrom in
+  smtpfront-qmail.
+
+- pop3front-auth now logs the user name.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
