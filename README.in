@@ -21,6 +21,9 @@ To subscribe, send an email to:
 A mailing list archive is available at:
 	http://lists.em.ca/?list=bgware
 
+Development versions of @PACKAGE@ are available via Subversion at:
+	svn://bruce-guenter.dyndns.org/@PACKAGE@/trunk
+
 Installation:
 
 - Make sure the latest version of bglibs from
