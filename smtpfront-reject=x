@@ -1,8 +1,8 @@
 smtp.a
 sasl-stub.o
-./bglibs/cdb
-./bglibs/dict
-./bglibs/str
-./bglibs/msg
-./bglibs/iobuf
-./bglibs/unix
+-lbg-cdb
+-lbg-dict
+-lbg-str
+-lbg-msg
+-lbg-iobuf
+-lbg-unix

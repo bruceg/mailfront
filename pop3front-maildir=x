@@ -1,5 +1,5 @@
 pop3.a
-./bglibs/msg
-./bglibs/iobuf
-./bglibs/str
-./bglibs/unix
+-lbg-msg
+-lbg-iobuf
+-lbg-str
+-lbg-unix

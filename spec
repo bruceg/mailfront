@@ -6,7 +6,7 @@ Copyright: GPL
 Group: Utilities/System
 Source: http://untroubled.org/@PACKAGE@/@PACKAGE@-@VERSION@.tar.gz
 BuildRoot: %{_tmppath}/@PACKAGE@-buildroot
-BuildRequires: bglibs >= 1.001
+BuildRequires: bglibs >= 1.006
 URL: http://untroubled.org/@PACKAGE@/
 Packager: Bruce Guenter <bruceg@em.ca>
 
@@ -16,8 +16,8 @@ for mail servers.  Right now the only protocol that is handled is SMTP.
 
 %prep
 %setup
-echo "gcc %{optflags} -I/usr/local/bglibs/include" >conf-cc
-echo "gcc -s -L/usr/local/bglibs/lib" >conf-ld
+echo "gcc %{optflags}" >conf-cc
+echo "gcc -s" >conf-ld
 echo %{_bindir} >conf-bin
 
 %build

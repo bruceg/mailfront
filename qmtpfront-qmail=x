@@ -1,9 +1,9 @@
 qmtp.a
 qmail.a
-./bglibs/cdb
-./bglibs/dict
-./bglibs/msg
-./bglibs/iobuf
-./bglibs/str
-./bglibs/unix
+-lbg-cdb
+-lbg-dict
+-lbg-msg
+-lbg-iobuf
+-lbg-str
+-lbg-unix
 socket.lib
