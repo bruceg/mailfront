@@ -7,6 +7,9 @@
 
 #define AT '@'
 
+/* State variables */
+extern int authenticated;
+
 extern int respond(unsigned number, int final, const char* msg);
 extern int respond_start(unsigned number, int nonfinal);
 extern int respond_str(const char* msg);
