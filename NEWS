@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
+Changes in version 0.70
+
+- Added a POP3 authenticator and maildir handler.  If you can believe
+  it, the maildir portion is actually smaller than qmail-pop3d!
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 0.60
 
 - Adds support for the SMTP AUTH command, supporting LOGIN, PLAIN, and
