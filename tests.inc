@@ -15,3 +15,9 @@ tstmsg() {
     echo "body"
   } >$maildir/$fn
 }
+
+PROTO=TEST
+TESTLOCALIP=1.2.3.4
+TESTREMOTEIP=5.6.7.8
+TESTLOCALHOST=local.host
+TESTREMOTEHOST=remote.host
