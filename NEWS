@@ -1,4 +1,9 @@
 -------------------------------------------------------------------------------
+Changes in version 0.80
+
+- Fixed bug: setting $SMTPGREETING caused smtpfront to crash when issued
+  HELO or EHLO commands.
+-------------------------------------------------------------------------------
 Changes in version 0.77
 
 - Added missing imapfront-auth to insthier.

@@ -29,12 +29,13 @@ int smtp_mainloop(void)
   if ((tmp = getenv("MAXHOPS")) != 0) maxhops = strtoul(tmp, 0, 10);
   if (maxhops == 0) maxhops = 100;
   
+  if ((tmp = getenv("TCPLOCALHOST")) == 0) tmp = UNKNOWN;
+  str_copys(&domain_name, tmp);
+
   if ((tmp = getenv("SMTPGREETING")) != 0)
     str_copys(&str_welcome, tmp);
   else {
-    if ((tmp = getenv("TCPLOCALHOST")) == 0) tmp = UNKNOWN;
-    str_copys(&domain_name, tmp);
-    str_copys(&str_welcome, tmp);
+    str_copy(&str_welcome, &domain_name);
     str_cats(&str_welcome, " mailfront");
   }
   str_cats(&str_welcome, " ESMTP");
