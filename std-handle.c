@@ -140,7 +140,7 @@ int build_received(str* s, const str* helo_domain, const char* proto)
     if (!str_catc(s, ')')) return 0;
   }
   if (!str_cat6s(s, " (", remote_ip, ")\n"
-		 " by ", local_host, " (", local_ip)) return 0;
+		 "  by ", local_host, " (", local_ip)) return 0;
   if (!str_cat5s(s, ") with ", proto, "; ", date_string(), "\n")) return 0;
   return 1;
 }
