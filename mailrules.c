@@ -394,7 +394,8 @@ static const response* apply_rule(const struct rule* rule)
   const response* resp;
   resp = build_response(rule->code, &rule->response);
   apply_environment(&rule->environment);
-  if (rule->databytes > 0 && rule->databytes < maxdatabytes)
+  if (rule->databytes > 0 &&
+      (maxdatabytes == 0 || rule->databytes < maxdatabytes))
     maxdatabytes = rule->databytes;
   return resp;
 }
