@@ -1,8 +1,8 @@
-mailfront
+@PACKAGE@
 Mail server network protocol front-ends
 Bruce Guenter <bruceg@em.ca>
-Version 0.81
-2002-09-27
+Version @VERSION@
+@TODAY@
 
 This is mailfront, a package containing customizeable network front-ends
 for mail servers.  It contains complete SMTP and POP3 front-ends as well
@@ -20,10 +20,6 @@ To subscribe, send an email to:
 A mailing list archive is available at:
 	http://lists.em.ca/?list=bgware
 
-Development versions of mailfront are available via anonymous CVS.
-Set your CVSROOT to ":pserver:cvs@bruce-guenter.dyndns.org:/CVS",
-login with an empty password, and check out the "mailfront" module.
-
 This project was initiated at FutureQuest, Inc.  We are releasing it
 as an open-source project because we felt it would be useful to others,
 as well as to repay our debt of gratitude to the larger open-source
@@ -36,7 +32,7 @@ Oviedo FL 32762-3127 USA
 http://www.FutureQuest.net/
 ossi@FutureQuest.net
 
-This package is Copyright(C) 2001 Bruce Guenter or FutureQuest, Inc.,
+This package is Copyright(C) 2001-2002 Bruce Guenter or FutureQuest, Inc.,
 and may be copied according to the GNU GENERAL PUBLIC LICENSE (GPL)
 Version 2 or a later version.  A copy of this license is included with
 this package.  This package comes with no warranty of any kind.
