@@ -185,7 +185,7 @@ void handle_data_bytes(const char* bytes, unsigned len)
   const char* p;
   data_bytes += len;
   if (data_response) return;
-  if (data_bytes > maxdatabytes) {
+  if (maxdatabytes && data_bytes > maxdatabytes) {
     data_response = &resp_too_long;
     return;
   }
