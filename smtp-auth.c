@@ -10,15 +10,14 @@ int smtp_auth_init(void)
 
 int smtp_auth_cap(str* line)
 {
-  sasl_mechanism* smech;
+  const sasl_mechanism* smech;
+  if (!sasl_mechanisms) return 0;
+
   if (!str_truncate(line, 0) ||
       !str_copys(line, "AUTH")) return -1;
-  for (smech = sasl_mechanisms; smech->name != 0; smech++)
-    if (smech->cvm)
-      if (!str_catc(line, ' ') ||
-	  !str_cats(line, smech->name))
-	return -1;
-  return line->len > 4;
+  for (smech = sasl_mechanisms; smech != 0; smech = smech->next)
+    if (!str_catc(line, ' ') ||	!str_cats(line, smech->name)) return -1;
+  return 1;
 }
 
 static RESPONSE(internal, 451, "Internal error.");
