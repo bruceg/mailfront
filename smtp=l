@@ -1,0 +1,3 @@
+smtp-commands.o
+smtp-mainloop.o
+smtp-respond.o

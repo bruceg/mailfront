@@ -1,0 +1,27 @@
+Features common to all SMTP back-ends:
+
+- Handles either bare NL or RFC 821/2821 compliant CR/NL end-of-line
+  conventions.
+
+- Drops messages that exceed $DATABYTES bytes in the body.
+
+- Times out connections after $TIMEOUT seconds of inactivity (defaults
+  to 1200).
+
+- Counts the number of "Received:" and "Delivered-To:" headers, and
+  rejects the message if more than 100 of either are seen
+  (configurable by $MAXHOPS).
+
+- All error responses are logged.
+
+Features of the smtpd-qmail back-end:
+
+- Delivers messages through $QMAILQUEUE, or qmail-queue if it's not set.
+
+- Verifies sender addresses against control/badmailfrom.
+
+- Verifies recipient addresses against control/rcpthosts.
+
+- Handles $RELAYCLIENT the same as qmail-smtpd.
+
+- Logs qmail-queue PID.

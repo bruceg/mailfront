@@ -1,0 +1,19 @@
+- Make the DATA command work within fixed-size limits, instead of
+  reading line-at-a-time.
+
+- Implement a session timeout in addition to the I/O timeout.
+
+- Do recipient lookups in morercpthosts.cdb.
+
+- Make sure we actually handle PIPELINING properly.
+
+- Handle $LOCALIPHOST
+
+- SMTP AUTH
+
+- Handle $SMTPREJECT -- all commands are rejected with this message
+  (do this in an alternate back-end).
+
+- Add RFC 1893/2034 enhanced status codes to all responses.
+
+- Add support for RFC 2487 STARTTLS

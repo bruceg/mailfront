@@ -1,0 +1,7 @@
+smtp.a
+qmail.a
+log.o
+dict/dict.a
+iobuf/str.a
+str/str.a
+iobuf/iobuf.a
