@@ -1,0 +1,33 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">MailFront</a></h2>
+
+<h1>POP3 Front End</h1>
+
+<hr>
+
+<p>The POP3 front end is composed of two pieces: an authentication
+front end and a transfer back-end.</p>
+
+<h2>pop3front-auth</h2>
+
+<p>Usage: <tt>pop3front-auth CVM PROGRAM [ ARGS ... ]</tt></p>
+
+<p><tt>pop3front-auth</tt> authenticates the username and password
+sent by the client using the named CVM.  If successful, it sets up the
+environment and executes <tt>PROGRAM</tt>.  It also offers RFC 1734
+complient AUTH support through <a
+href="cvm-sasl.html">cvm-sasl</a>.</p>
+
+<h2>pop3front-maildir</h2>
+
+<p>Usage: <tt>pop3front-maildir [ DEFAULT-MAILDIR ]</tt></p>
+
+<p><tt>pop3front-maildir</tt> serves messages via POP3 out of a
+maildir.  If <tt>$MAILBOX</tt> is set, its contents are used as the
+path to the mailbox, otherwise the <tt>DEFAULT-MAILDIR</tt> argument
+must be present.</p>
+
+</body>
+</html>
