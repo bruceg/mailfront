@@ -1,4 +1,9 @@
 -------------------------------------------------------------------------------
+Changes in version 0.93
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 0.92
 
 - Fixed bug in QMQP front-end that prevented it from accepting relayed
