@@ -12,7 +12,6 @@
 str line = {0,0,0};
 str domain_name = {0,0,0};
 unsigned long maxdatabytes;
-unsigned long saved_maxdatabytes;
 unsigned maxhops;
 
 const char UNKNOWN[] = "unknown";
@@ -49,7 +48,6 @@ int smtp_mainloop(void)
 
   if ((tmp = getenv("DATABYTES")) != 0) maxdatabytes = strtoul(tmp, 0, 10);
   else maxdatabytes = 0;
-  saved_maxdatabytes = maxdatabytes;
 
   if (!sasl_auth_init()) return respond(421, 1, "Failed to initialize AUTH");
 

@@ -6,7 +6,6 @@
 #include <str/str.h>
 
 extern unsigned long maxdatabytes;
-extern unsigned long saved_maxdatabytes;
 extern unsigned maxhops;
 extern str line;
 extern str domain_name;
