@@ -1,10 +1,5 @@
 - Write install document.
 
-- Add new control files: matchmailfrom and matchrcptto
-  - Each line contains either + (accept) or - (reject) followed by a
-    pattern
-  - The patterns are used one-by-one until a match is found
-
 - Build up TLS support.
 
 - Use lib/cli for all executables
@@ -17,6 +12,10 @@
       handle_line(&line);
     if (ibuf_timedout(&inbuf))
       respond_timedout();
+
+- Tests:
+
+  - Test application of environment variables in mail rules
 
 - smtpfront:
 
