@@ -8,7 +8,7 @@ Changes in version 0.74
 
 - Messages are now sorted in numerical order of their UID.
 
-- Added an exit hook to both pop3front and mailfront to print the number
+- Added an exit hook to both pop3front and smtpfront to print the number
   of bytes input and output.
 
 - Fixed a one-off bug in handling "@domain" entries in badmailfrom in
