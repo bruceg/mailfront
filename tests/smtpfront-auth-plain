@@ -26,6 +26,10 @@ MAIL FROM: <user@remote>
 RCPT TO: <user@remote>
 EOF
 
+sfqmail << EOF
+AUTH PLAIN XXXXdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
+EOF
+
 unset CVM_SASL_PLAIN
 <result>
 504 Unrecognized authentication mechanism.^M
@@ -42,3 +46,4 @@ unset CVM_SASL_PLAIN
 501 Authentication failed.^M
 250 Sender accepted.^M
 553 Sorry, that domain isn't in my list of allowed rcpthosts.^M
+235 Authentication succeeded.^M
