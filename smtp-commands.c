@@ -276,5 +276,6 @@ int smtp_dispatch(void)
   for (d = dispatch_table; d->cmd != 0; ++d)
     if (strcasecmp(d->cmd, cmd.s) == 0)
       return d->fn();
+  msg3(cmd.s, " ", arg.s);
   return respond_resp(&resp_unimp, 1);
 }
