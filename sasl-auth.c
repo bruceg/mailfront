@@ -37,8 +37,10 @@ int sasl_auth2(const char* prefix,
 
   if (iresponse != 0) {
     if (!str_truncate(&response, 0)) return -1;
-    if (!base64_decode_line(iresponse, &response))
+    if (!base64_decode_line(iresponse, &response)) {
+      msg3("SASL AUTH ", mechanism, " failed: bad response");
       return SASL_RESP_BAD;
+    }
     iresponsestr = &response;
   }
   else
@@ -54,14 +56,32 @@ int sasl_auth2(const char* prefix,
 	!obuf_putsflush(&outbuf, CRLF))
       return -1;
     if (!ibuf_getstr_crlf(&inbuf, &response64)) return -1;
-    if (response64.len == 0 || response64.s[0] == '*') return SASL_AUTH_FAILED;
+    if (response64.len == 0 || response64.s[0] == '*') {
+      msg3("SASL AUTH ", mechanism, " failed: aborted");
+      return SASL_AUTH_FAILED;
+    }
     if (!str_truncate(&response, 0) ||
-	!base64_decode_line(response64.s, &response))
+	!base64_decode_line(response64.s, &response)) {
+      msg3("SASL AUTH ", mechanism, " failed: bad response");
       return SASL_RESP_BAD;
+    }
   }
-  if (i == SASL_AUTH_OK)
-    msg6("SASL AUTH ", mechanism,
-	 " username=", cvm_fact_username, "@", cvm_fact_domain);
+  if (i == SASL_AUTH_OK) {
+    str_truncate(&response, 0);
+    str_copys(&response, "username=");
+    str_cats(&response, cvm_fact_username);
+    if (cvm_fact_sys_username != 0) {
+      str_cats(&response, " sys_username=");
+      str_cats(&response, cvm_fact_sys_username);
+    }
+    if (cvm_fact_domain != 0 && cvm_fact_domain[0] != 0) {
+      str_cats(&response, " domain=");
+      str_cats(&response, cvm_fact_domain);
+    }
+    msg4("SASL AUTH ", mechanism, " ", response.s);
+  }
+  else
+    msg3("SASL AUTH ", mechanism, " failed");
   return i;
 }
 
