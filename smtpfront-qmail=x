@@ -1,6 +1,5 @@
 smtp.a
 qmail.a
-log.o
 sasl-auth.o
 cvm-sasl/cvm-sasl.a
 cvm/client.a
@@ -9,6 +8,7 @@ socket/socket.a
 cdb/cdb.a
 dict/load.a
 dict/dict.a
+msg/msg.a
 iobuf/str.a
 str/str.a
 iobuf/iobuf.a

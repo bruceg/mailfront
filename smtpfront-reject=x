@@ -1,7 +1,7 @@
 smtp.a
-log.o
 sasl-stub.o
 iobuf/str.a
 str/str.a
+msg/msg.a
 iobuf/iobuf.a
 iopoll.o

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include "msg/msg.h"
 #include "mailfront.h"
 #include "qmail.h"
 #include "fork.h"
@@ -162,7 +163,7 @@ const response* qmail_data_end(void)
     str_catu(&buffer, qqpid);
     str_cats(&buffer, " bytes ");
     str_catu(&buffer, databytes);
-    log1(buffer.s);
+    msg1(buffer.s);
     resp.number = 250;
     resp.message = buffer.s;
   }

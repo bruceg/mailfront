@@ -3,6 +3,9 @@
 #include "mailfront.h"
 #include "smtp.h"
 #include "iobuf/iobuf.h"
+#include "msg/msg.h"
+
+const int msg_show_pid = 1;
 
 int respond_start(unsigned number, int final)
 {
@@ -30,6 +33,6 @@ int respond(unsigned number, int final, const char* msg)
 int respond_resp(const response* resp, int final)
 {
   if (resp->prev && !respond_resp(resp->prev, 0)) return 0;
-  if (resp->number >= 400) log1(resp->message);
+  if (resp->number >= 400) msg1(resp->message);
   return respond(resp->number, final, resp->message);
 }

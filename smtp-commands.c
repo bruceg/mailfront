@@ -5,6 +5,7 @@
 #include "smtp.h"
 #include "sasl-auth.h"
 #include "iobuf/iobuf.h"
+#include "msg/msg.h"
 
 int authenticated = 0;
 
@@ -131,10 +132,7 @@ static int EHLO(void)
 static int MAIL(void)
 {
   const response* resp;
-  log_start();
-  log_s("MAIL ");
-  log_s(arg.s);
-  log_end();
+  msg2("MAIL ", arg.s);
   handle_reset();
   parse_addr_arg();
   if ((resp = handle_sender(&addr)) == 0) resp = &resp_mail_ok;
@@ -145,10 +143,7 @@ static int MAIL(void)
 static int RCPT(void)
 {
   const response* resp;
-  log_start();
-  log_s("RCPT ");
-  log_s(arg.s);
-  log_end();
+  msg2("RCPT ", arg.s);
   if (!saw_mail) return respond_resp(&resp_no_mail, 1);
   parse_addr_arg();
   if ((resp = handle_recipient(&addr)) == 0) resp = &resp_rcpt_ok;
