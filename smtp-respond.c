@@ -13,7 +13,7 @@ int respond_start(unsigned number, int final)
 int respond_end(void)
 {
   return obuf_putc(&outbuf, CR) &&
-    obuf_putc(&outbuf, NL) &&
+    obuf_putc(&outbuf, LF) &&
     obuf_flush(&outbuf);
 }
 
