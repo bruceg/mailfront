@@ -2,6 +2,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <msg/msg.h>
+#include <unix/sig.h>
 #include "mailfront.h"
 #include "mailrules.h"
 #include <sysdeps.h>
@@ -66,6 +67,7 @@ const response* backend_handle_data_start(void)
     close(mpipe[1]);
     return &resp_no_pipe;
   }
+  sig_pipe_block();
 
   if ((qqpid = fork()) == -1) {
     close(mpipe[0]); close(mpipe[1]);
