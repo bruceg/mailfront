@@ -1,8 +1,7 @@
 #ifndef MAIL_FRONT__POP3__H__
 #define MAIL_FRONT__POP3__H__
 
-#define SPACE ((char)32)
-
+#include "constants.h"
 struct str;
 
 struct command

@@ -4,8 +4,7 @@
 #include "log.h"
 #include "str/str.h"
 #include "responses.h"
-
-#define AT '@'
+#include "constants.h"
 
 /* State variables */
 extern int authenticated;
