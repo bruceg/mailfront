@@ -102,9 +102,8 @@ static void make_msg(msg* msg, const char* filename)
   msg->read = 0;
   if ((c = strchr(filename, ':')) != 0)
     if (c[1] == '2' && c[2] == ',')
-      for (c += 3; *c; ++c)
-	if (*c == 'S')
-	  msg->read = 1;
+      if (strchr(c+3, 'S') != 0)
+	msg->read = 1;
 }
 
 static int fn_compare(const str_sortentry* a, const str_sortentry* b)
@@ -210,15 +209,17 @@ static int add_flag(str* fn, char flag)
 {
   int c;
   /* If the filename has no flags, append them */
-  if ((c = str_findfirst(fn, ':')) == -1)
+  if ((c = str_findfirst(fn, ':')) == -1) {
     if (!str_cats(fn, ":2,")) return 0;
-  /* If it has a colon (start of flags), see if they are a type we
-   * recognize, and bail out if they aren't */
-  if (fn->s[++c] != '2' || fn->s[++c] != ',') return 1;
-  /* Scan through the flag characters and return success
-   * if the message is already marked with the flag */
-  for (++c; fn->s[c]; ++c)
-    if (fn->s[c] == flag) return 1;
+  }
+  else {
+    /* If it has a colon (start of flags), see if they are a type we
+     * recognize, and bail out if they aren't */
+    if (fn->s[c+1] != '2' || fn->s[c+2] != ',') return 1;
+    /* Scan through the flag characters and return success
+     * if the message is already marked with the flag */
+    if (strchr(fn->s+c+3, flag) != 0) return 1;
+  }
   return str_catc(fn, flag);
 }
 
