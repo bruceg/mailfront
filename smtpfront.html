@@ -7,6 +7,13 @@
 
 <hr>
 
+<h2>Overview</h2>
+
+<p>The code for SMTP is divided internally into two sections:
+front-end and back-end code.  The front-end code handles the low-level
+details of the protocol.  The back-end code handles the validation and
+delivery details in a protocol-independant fashion.</p>
+
 <h2>Features</h2>
 
 <p>The following features are common to all SMTP front-ends: <ul>
@@ -28,6 +35,9 @@ inactivity (defaults to 1200 seconds).
 
 <li>Handles (ignores) RFC 1869 extended parameters on the <tt>RCPT
 TO:</tt> and <tt>MAIL FROM:</tt> commands.
+
+<li>Initial greeting message is configureable by
+<tt>$SMTPGREETING</tt>.
 
 </ul></p>
 
