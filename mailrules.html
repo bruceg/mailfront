@@ -27,14 +27,12 @@ badmailfrom file).</p>
 format.  Each line starts with one of "k", "d", or "z" corresponding to
 accept, defer, or reject.  Empty lines and lines starting with any other
 character are ignored.  The remainder of the line consists of a series
-of fields seperated by colons (":").  Empty fields are either ignored or
-replaced by default values.  The fields are: <ol>
+of fields seperated by colons (":").  The fields are: <ol>
 
 <li><b>Sender</b>: A pattern applied to the envelope sender address.
-Defaults to <tt>*</tt>.
 
 <li><b>Recipient</b>: A pattern applied to the envelope recipient
-address.  Defaults to <tt>*</tt>.
+address.
 
 <li><b>Response</b>: The response message that will be given to the
 client with the numerical code.  The default for this message depends on
@@ -43,10 +41,11 @@ the line's prefix.
 <li><b>Data Bytes</b>: Reduces the maximum message size to the lesser of
 the current limit (as set at startup by <tt>$DATABYTES</tt>) and the
 specified number.  This message size limit is reset to its original
-value before after each message.
+value before after each message.  If empty or missing, no changes are
+made.
 
-<li><b>Relay Client</b>: The current recipient address is suffixed with
-this string.  Only useful for "k" rules.
+<li><b>Relay Client</b>: If present, the current recipient address is
+suffixed with this string.  Only useful for "k" rules.
 
 <li><b>Environment</b>: Environment variables to set as a result of
 matching this rule.  This field contains a list of assignments seperated
