@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+Changes in version 0.86
+
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 0.85
 
 - Added a QMTP front-end, with many features in common with the SMTP
