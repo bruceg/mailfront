@@ -1,6 +1,9 @@
 - Write install document.
 
-- Add pattern matching on badmailfrom and badrcptto.
+- Add new control files: matchmailfrom and matchrcptto
+  - Each line contains either + (accept) or - (reject) followed by a
+    pattern
+  - The patterns are used one-by-one until a match is found
 
 - Build up TLS support.
 
