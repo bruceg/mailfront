@@ -25,15 +25,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include "iobuf/iobuf.h"
+#include "msg/msg.h"
 #include "pop3.h"
 
-const char err_internal[] = "-ERR Internal error.";
-const char err_unimpl[] = "-ERR Unimplemented.";
+const char err_internal[] = "-ERR Internal error";
+const char err_unimpl[] = "-ERR Unimplemented";
 const char ok[] = "+OK ";
-const char err_syntax[] = "-ERR Syntax error.";
+const char err_syntax[] = "-ERR Syntax error";
 
 void respond(const char* msg)
 {
+  if (msg[0] == '-') msg1(msg);
   if (!obuf_puts(&outbuf, msg) ||
       !obuf_putsflush(&outbuf, CRLF))
     exit(1);
