@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <msg/msg.h>
 #include "mailfront.h"
+#include "mailrules.h"
 #include "qmail.h"
 #include <sysdeps.h>
 #include "conf_qmail.h"
@@ -55,7 +56,7 @@ const response* qmail_data_start(void)
   int mpipe[2];
   int epipe[2];
 
-  if (qqargs[0] == 0) qqargs[0] = getenv("QMAILQUEUE");
+  if (qqargs[0] == 0) qqargs[0] = rules_getenv("QMAILQUEUE");
   if (qqargs[0] == 0) qqargs[0] = "bin/qmail-queue";
 
   if (chdir(conf_qmail) == -1) return &resp_no_chdir;
@@ -74,6 +75,7 @@ const response* qmail_data_start(void)
   }
 
   if (qqpid == 0) {
+    if (!rules_exportenv()) exit(51);
     close(mpipe[1]);
     close(epipe[1]);
     if (dup2(mpipe[0], 0) == -1) exit(120);
