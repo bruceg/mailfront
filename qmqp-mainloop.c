@@ -59,6 +59,7 @@ static void get_sender(ibuf* in)
   msg3("sender <", line.s, ">");
   if (response_ok(resp))
     resp = handle_sender(&line);
+  if (relayclient == 0) relayclient = "";
 }
 
 static void get_recips(ibuf* in)
@@ -96,7 +97,6 @@ int qmqp_mainloop(void)
     respond_resp(r, 1);
     return 1;
   }
-  if (relayclient == 0) relayclient = "";
   alarm(3600);
   get_package(&inbuf);
   return 0;

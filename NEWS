@@ -1,6 +1,9 @@
 -------------------------------------------------------------------------------
 Changes in version 0.92
 
+- Fixed bug in QMQP front-end that prevented it from accepting relayed
+  messages (relayclient wasn't getting set properly).
+
 - Added qmqpfront-echo and qmtpfront-echo test front-ends, for
   completeness.
 
