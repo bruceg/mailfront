@@ -1,3 +1,10 @@
+- Add negation to patterns:
+  - Each leading ! increments a counter (parsed when parsing the rules,
+    not when using the pattern)
+  - If the counter is odd, negate the result of the pattern match
+  - Check for both a zero negate counter and a pattern of "*" when
+    deciding if it's a sender-only rule.
+
 - Write install document.
 
 - Build up TLS support.
@@ -14,8 +21,9 @@
       respond_timedout();
 
 - Tests:
-
   - Test application of environment variables in mail rules
+  - Test rcpthosts/morercpthosts.cdb normal/wildcard behavior in
+    smtpfront-qmail.
 
 - smtpfront:
 
