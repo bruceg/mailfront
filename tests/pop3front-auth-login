@@ -1,0 +1,40 @@
+pfauth false <<EOF
+AUTH LOGIN
+EOF
+
+export CVM_SASL_LOGIN=$src/cvm/cvm-unix
+
+pfauth false <<EOF
+AUTH LOGIN
+dGVzdHVzZXI=
+dGVzdHBhc3x=
+AUTH LOGIN
+dGVzdHVzZXI=
+dGVzdHBhc3M=
+EOF
+
+pfauth false <<EOF
+AUTH LOGIN dGVzdHVzZXI=
+dGVzdHBhc3M=
+EOF
+
+pfauth false <<EOF
+AUTH LOGIN
+dGVzdHVzZXI=
+*
+EOF
+
+unset CVM_SASL_PLAIN
+<result>
+-ERR Unrecognized authentication mechanism.^M
++ VXNlcm5hbWU6^M
++ UGFzc3dvcmQ6^M
+-ERR Authentication failed.^M
++ VXNlcm5hbWU6^M
++ UGFzc3dvcmQ6^M
+Yes.
++ UGFzc3dvcmQ6^M
+Yes.
++ VXNlcm5hbWU6^M
++ UGFzc3dvcmQ6^M
+-ERR Authentication failed.^M

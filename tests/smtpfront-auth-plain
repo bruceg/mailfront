@@ -1,0 +1,44 @@
+sfqmail <<EOF
+AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
+EOF
+
+export CVM_SASL_PLAIN=$src/cvm/cvm-unix
+
+sfqmail <<EOF
+MAIL FROM: <user@remote>
+RCPT TO: <user@remote>
+AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3x=
+AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
+AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
+MAIL FROM: <user@remote>
+RCPT TO: <user@remote>
+EOF
+
+sfqmail << EOF
+AUTH PLAIN
+dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
+EOF
+
+sfqmail <<EOF
+AUTH PLAIN
+*
+MAIL FROM: <user@remote>
+RCPT TO: <user@remote>
+EOF
+
+unset CVM_SASL_PLAIN
+<result>
+504 Unrecognized authentication mechanism.^M
+250 Sender accepted.^M
+553 Sorry, that domain isn't in my list of allowed rcpthosts.^M
+501 Authentication failed.^M
+235 Authentication succeeded.^M
+503 You are already authenticated.^M
+250 Sender accepted.^M
+250 Recipient accepted.^M
+334 ^M
+235 Authentication succeeded.^M
+334 ^M
+501 Authentication failed.^M
+250 Sender accepted.^M
+553 Sorry, that domain isn't in my list of allowed rcpthosts.^M

@@ -1,0 +1,13 @@
+pfauth $src/cvm/cvm-unix <<EOF
+USER testuser
+PASS testpass
+EOF
+pfauth $src/cvm/cvm-unix <<EOF
+USER testuser
+PASS testpasx
+EOF
+<result>
++OK ^M
+Yes.
++OK ^M
+-ERR Authentication failed.^M

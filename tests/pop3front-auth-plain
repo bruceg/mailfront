@@ -1,0 +1,30 @@
+pfauth false <<EOF
+AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
+EOF
+
+export CVM_SASL_PLAIN=$src/cvm/cvm-unix
+
+pfauth false <<EOF
+AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3x=
+AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
+EOF
+
+pfauth false <<EOF
+AUTH PLAIN
+dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
+EOF
+
+pfauth false <<EOF
+AUTH PLAIN
+*
+EOF
+
+unset CVM_SASL_PLAIN
+<result>
+-ERR Unrecognized authentication mechanism.^M
+-ERR Authentication failed.^M
+Yes.
++ ^M
+Yes.
++ ^M
+-ERR Authentication failed.^M
