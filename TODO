@@ -4,7 +4,10 @@
 
 - Add variable substitution to pattern variable setting (ie x=${y} etc)
 
-- Add negation to patterns:
+- Add better MIME attachment discrimination to patterns, instead of just
+  keying on a blank line.
+
+- Add negation to rule patterns:
   - Each leading ! increments a counter (parsed when parsing the rules,
     not when using the pattern)
   - If the counter is odd, negate the result of the pattern match
