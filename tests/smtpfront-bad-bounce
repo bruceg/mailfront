@@ -1,0 +1,35 @@
+sfecho <<EOF
+MAIL FROM:<not@bounce>
+RCPT TO:<addr1@domain>
+RCPT TO:<addr2@domain>
+DATA
+.
+EOF
+
+sfecho <<EOF
+MAIL FROM:<>
+RCPT TO:<addr1@domain>
+DATA
+.
+EOF
+
+sfecho <<EOF
+MAIL FROM:<>
+RCPT TO:<addr1@domain>
+RCPT TO:<addr2@domain>
+DATA
+EOF
+<result>
+250 Sender='not@bounce'.^M
+250 Recipient='addr1@domain'.^M
+250 Recipient='addr2@domain'.^M
+354 End your message with a period.^M
+250 Received 94 bytes.^M
+250 Sender=''.^M
+250 Recipient='addr1@domain'.^M
+354 End your message with a period.^M
+250 Received 94 bytes.^M
+250 Sender=''.^M
+250 Recipient='addr1@domain'.^M
+550 Bounce messages should have a single recipient.^M
+550 Bounce messages should have a single recipient.^M

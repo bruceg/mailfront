@@ -32,7 +32,9 @@ static RESPONSE(unimp, 500, "Not implemented.");
 static RESPONSE(internal, 451, "Internal error.");
 static RESPONSE(needsparam, 501, "That command requires a parameter.");
 static RESPONSE(auth_already, 503, "You are already authenticated.");
+static RESPONSE(badbounce, 550, "Bounce messages should have a single recipient.");
 
+static int is_bounce = 0;
 static int saw_mail = 0;
 static int saw_rcpt = 0;
 static const char* smtp_mode = "SMTP";
@@ -136,7 +138,10 @@ static int MAIL(void)
   handle_reset();
   parse_addr_arg();
   if ((resp = handle_sender(&addr)) == 0) resp = &resp_mail_ok;
-  if (resp->number >= 200 && resp->number < 300) saw_mail = 1;
+  if (resp->number >= 200 && resp->number < 300) {
+    saw_mail = 1;
+    is_bounce = (addr.len == 0);
+  }
   return respond_resp(resp, 1);
 }
 
@@ -147,7 +152,8 @@ static int RCPT(void)
   if (!saw_mail) return respond_resp(&resp_no_mail, 1);
   parse_addr_arg();
   if ((resp = handle_recipient(&addr)) == 0) resp = &resp_rcpt_ok;
-  if (resp->number >= 200 && resp->number < 300) ++saw_rcpt;
+  if (resp->number >= 200 && resp->number < 300)
+    if (++saw_rcpt > 1 && is_bounce) resp = &resp_badbounce;
   return respond_resp(resp, 1);
 }
 
@@ -241,6 +247,7 @@ static int DATA(void)
   
   if (!saw_mail) return respond_resp(&resp_no_mail, 1);
   if (!saw_rcpt) return respond_resp(&resp_no_rcpt, 1);
+  if (is_bounce && saw_rcpt > 1) return respond_resp(&resp_badbounce, 1);
   if ((resp = handle_data_start()) != 0) return respond_resp(resp, 1);
   if (!respond_resp(&resp_data_ok, 1)) return 0;
   if (!build_received()) return 0;

@@ -7,6 +7,11 @@ Changes in version 0.75
 
 - Added an IMAP front end.  Works with Courier IMAP presently.
 
+- Switched to using external bglibs.
+
+- smtpfront rejects bounce messages with multiple recipients.  See
+  http://www.ornl.gov/its/archives/mailing-lists/qmail/2001/12/msg00405.html
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

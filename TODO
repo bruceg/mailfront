@@ -20,9 +20,6 @@
 
 - smtpfront:
 
-  - Block bounces with multiple recipients
-    http://www.ornl.gov/its/archives/mailing-lists/qmail/2001/12/msg00405.html
-
   - When verifying senders, check if $DOMAIN(?) is set, and only allow
     sender addresses from that domain.
 
