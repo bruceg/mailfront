@@ -1,13 +1,17 @@
 #include <string.h>
 #include <stdlib.h>
 #include <systime.h>
+
 #include "mailfront.h"
+#include "mailrules.h"
 #include "smtp.h"
 #include "sasl-auth.h"
+
 #include <iobuf/iobuf.h>
 #include <msg/msg.h>
 
 int authenticated = 0;
+const char* relayclient = 0;
 
 static str cmd;
 static str arg;
@@ -131,14 +135,37 @@ static int EHLO(void)
   return respond_resp(&resp_ehlo, 1);
 }
 
+static int number_ok(const response* resp)
+{
+  return resp->number >= 200 && resp->number < 300;
+}
+
+static void do_reset(void)
+{
+  const response* resp;
+  if ((resp = rules_reset()) != 0) {
+    respond_resp(resp, 1);
+    exit(0);
+  }
+  handle_reset();
+}
+
+// FIXME: if rules_reset fails, exit
 static int MAIL(void)
 {
   const response* resp;
+  const response* tmpresp;
   msg2("MAIL ", arg.s);
-  handle_reset();
+  do_reset();
   parse_addr_arg();
-  if ((resp = handle_sender(&addr)) == 0) resp = &resp_mail_ok;
-  if (resp->number >= 200 && resp->number < 300) {
+  if (((resp = rules_validate_sender(&addr)) == 0 &&
+       (resp = validate_sender(&addr)) == 0) || number_ok(resp)) {
+    tmpresp = handle_sender(&addr);
+    if (resp == 0 || (tmpresp != 0 && !number_ok(tmpresp)))
+      resp = tmpresp;
+  }
+  if (resp == 0) resp = &resp_mail_ok;
+  if (number_ok(resp)) {
     saw_mail = 1;
     is_bounce = (addr.len == 0);
   }
@@ -148,12 +175,31 @@ static int MAIL(void)
 static int RCPT(void)
 {
   const response* resp;
+  const response* hresp;
   msg2("RCPT ", arg.s);
   if (!saw_mail) return respond_resp(&resp_no_mail, 1);
   parse_addr_arg();
   if (is_bounce && saw_rcpt > 0) return respond_resp(&resp_badbounce, 1);
-  if ((resp = handle_recipient(&addr)) == 0) resp = &resp_rcpt_ok;
-  if (resp->number >= 200 && resp->number < 300)
+  if ((resp = rules_validate_recipient(&addr)) != 0) {
+    if (!number_ok(resp))
+      return respond_resp(resp, 1);
+  }
+  else if (relayclient != 0)
+    str_cats(&addr, relayclient);
+  else if (authenticated)
+    resp = 0;
+  else if ((resp = validate_recipient(&addr)) != 0) {
+    if (!number_ok(resp))
+      return respond_resp(resp, 1);
+  }
+  if ((hresp = handle_recipient(&addr)) != 0) {
+    if (!number_ok(hresp))
+      return respond_resp(resp, 1);
+    else 
+      if (resp == 0) resp = hresp;
+  }
+  if (resp == 0) resp = &resp_rcpt_ok;
+  if (number_ok(resp))
     ++saw_rcpt;
   return respond_resp(resp, 1);
 }
@@ -162,7 +208,7 @@ static int RSET(void)
 {
   saw_mail = 0;
   saw_rcpt = 0;
-  handle_reset();
+  do_reset();
   return respond_resp(&resp_ok, 1);
 }
 
@@ -255,18 +301,19 @@ static int DATA(void)
   handle_data_bytes(line.s, line.len);
 
   if (!copy_body(&received, &deliveredto)) {
-    handle_reset();
+    do_reset();
     return 0;
   }
   if (maxdatabytes && data_bytes > maxdatabytes) {
-    handle_reset();
+    do_reset();
     return respond_resp(&resp_too_long, 1);
   }
   if (received > maxhops || deliveredto > maxhops) {
-    handle_reset();
+    do_reset();
     return respond_resp(&resp_hops, 1);
   }
   if ((resp = handle_data_end()) == 0) resp = &resp_data_end;
+  do_reset();
   return respond_resp(resp, 1);
 }
 
