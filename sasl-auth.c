@@ -54,6 +54,7 @@ int sasl_auth(const char* prefix, const str* arg)
 	!obuf_putsflush(&outbuf, CRLF))
       return -1;
     if (!ibuf_getstr_crlf(&inbuf, &response64)) return -1;
+    if (response64.len == 0 || response64.s[0] == '*') return SASL_AUTH_FAILED;
     if (!str_truncate(&response, 0) ||
 	!base64_decode_line(response64.s, &response))
       return SASL_RESP_BAD;
