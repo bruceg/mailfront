@@ -3,7 +3,7 @@
 #include "qmtp.h"
 #include <iobuf/iobuf.h>
 
-const char program[] = "smtpfront-qmail";
+const char program[] = "qmtpfront-qmail";
 
 int main(void)
 {
