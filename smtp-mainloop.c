@@ -8,6 +8,7 @@
 #include "sasl-auth.h"
 
 #include <iobuf/iobuf.h>
+#include <msg/msg.h>
 
 str line = {0,0,0};
 str domain_name = {0,0,0};
@@ -40,6 +41,12 @@ int smtp_mainloop(void)
 
   if (!respond(220, 1, str_welcome.s)) return 1;
   while (smtp_get_line())
-    if (!smtp_dispatch()) return 1;
+    if (!smtp_dispatch()) {
+      if (ibuf_eof(&inbuf))
+	msg1("Connection dropped");
+      if (ibuf_timedout(&inbuf))
+	msg1("Timed out");
+      return 1;
+    }
   return 0;
 }
