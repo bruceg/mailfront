@@ -1,6 +1,9 @@
 -------------------------------------------------------------------------------
 Changes in version 0.93
 
+- Fixed bug in pattern matching where the pattern was longer than the
+  line that would other match.
+
 - Fixed bug in parsing the databytes column in mail rules.
 
 - Fixed omission of not resetting maxdatabytes, which could be set by a
