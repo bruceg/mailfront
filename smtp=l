@@ -1,4 +1,5 @@
 iobytes.o
+mailrules.o
 timeout.o
 smtp-commands.o
 smtp-mainloop.o

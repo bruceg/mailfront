@@ -1,5 +1,8 @@
 smtp.a
 sasl-stub.o
+-lcdb/cdb
+-ldict/load
+-ldict/dict
 -liobuf/str
 -lstr/str
 -lmsg/msg
