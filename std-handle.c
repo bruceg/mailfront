@@ -113,6 +113,7 @@ const response* handle_sender(str* sender)
   resp = rules_validate_sender(sender);
   maxrcpts = rules_getenvu("MAXRCPTS");
   relayclient = rules_getenv("RELAYCLIENT");
+  maxdatabytes = rules_getenvu("DATABYTES");
   if (resp == 0)
     resp = backend_validate_sender(sender);
   if (!response_ok(resp))

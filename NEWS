@@ -3,6 +3,9 @@ Changes in version 0.93
 
 - Fixed bug in parsing the databytes column in mail rules.
 
+- Fixed omission of not resetting maxdatabytes, which could be set by a
+  rule, after checking for sender rules.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
