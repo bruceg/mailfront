@@ -9,6 +9,15 @@
 
 - Use lib/cli for all executables
 
+- Build a common line-driven protocol main loop, which does:
+    set_timeout();
+    if (!startup(argc, argv)) return 0;
+    respond_ready();
+    while (ibuf_getstr_crlf(&inbuf, &line))
+      handle_line(&line);
+    if (ibuf_timedout(&inbuf))
+      respond_timedout();
+
 - smtpfront:
 
   - Block bounces with multiple recipients
