@@ -6,7 +6,10 @@ Changes in version 0.85
 
 - Fixed internal variable transposition bug in smtp-commands.c.
 
-- Switched to bglibs 1.005 library scheme.
+- Switched to bglibs 1.006 library scheme.
+
+- Fixed bug: aborting DATA command does not work, must only give
+  responses once all the data is received.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
