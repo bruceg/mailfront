@@ -36,6 +36,14 @@ static const char* remote_ip;
 static str fixup_host;
 static str fixup_ip;
 static const char* header_add;
+static const char* linkproto;
+
+const char* getprotoenv(const char* name)
+{
+  static str fullname;
+  if (!str_copy2s(&fullname, linkproto, name)) return 0;
+  return getenv(fullname.s);
+}
 
 const response* handle_init(void)
 {
@@ -47,10 +55,11 @@ const response* handle_init(void)
   set_timeout();
 
   relayclient = getenv("RELAYCLIENT");
-  if ((local_host = getenv("TCPLOCALHOST")) == 0) local_host = UNKNOWN;
-  if ((local_ip = getenv("TCPLOCALIP")) == 0) local_ip = UNKNOWN;
-  if ((remote_host = getenv("TCPREMOTEHOST")) == 0) remote_host = UNKNOWN;
-  if ((remote_ip = getenv("TCPREMOTEIP")) == 0) remote_ip = UNKNOWN;
+  if ((linkproto = getenv("PROTO")) == 0) linkproto = "TCP";
+  if ((local_host = getprotoenv("LOCALHOST")) == 0) local_host = UNKNOWN;
+  if ((local_ip = getprotoenv("LOCALIP")) == 0) local_ip = UNKNOWN;
+  if ((remote_host = getprotoenv("REMOTEHOST")) == 0) remote_host = UNKNOWN;
+  if ((remote_ip = getprotoenv("REMOTEIP")) == 0) remote_ip = UNKNOWN;
   if ((tmp = getenv("FIXUP_RECEIVED_HOST")) != 0) {
     if (!str_copys(&fixup_host, tmp)) return &resp_oom;
     str_strip(&fixup_host);
@@ -184,9 +193,11 @@ int build_received(str* s, const str* helo_domain, const char* proto)
   }
   else
     if (!str_cat2s(s, remote_host, " ([")) return 0;
-  if (!str_cat5s(s, remote_ip, "])\n"
-		 "  by ", local_host, " ([", local_ip)) return 0;
-  if (!str_cat5s(s, "]) with ", proto, "; ", date_string(), "\n")) return 0;
+  if (!str_cat6s(s, remote_ip, "])\n"
+		 "  by ", local_host, " ([", local_ip, "])\n"
+		 "  with ")) return 0;
+  if (!str_cat6s(s, proto, " via ", linkproto,
+		 "; ", date_string(), "\n")) return 0;
   return 1;
 }
 

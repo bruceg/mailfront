@@ -6,6 +6,8 @@ Changes in version 0.87
 - Fixed the Received: header generation to match the syntax described in
   RFC 2821.
 
+- Added the link protocol (ie TCP or TCP6) to the Received: header.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
