@@ -1,6 +1,5 @@
 pop3.a
--lmsg/msg
--liobuf/str
--liobuf/iobuf
--lstr/str
--lunix/sig
+./bglibs/msg
+./bglibs/iobuf
+./bglibs/str
+./bglibs/unix
