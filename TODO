@@ -9,8 +9,6 @@
 
 - Use lib/cli for all executables
 
-- Merge the duplicated copies of the timeout setup into common code.
-
 - smtpfront:
 
   - Block bounces with multiple recipients

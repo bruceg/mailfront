@@ -1,4 +1,5 @@
 sasl-auth.o
+timeout.o
 -lcvm-sasl/cvm-sasl
 -lbase64/base64
 -lcvm/client

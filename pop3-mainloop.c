@@ -30,7 +30,6 @@
 
 const int msg_show_pid = 1;
 
-static unsigned timeout;
 static str line;
 static str cmd;
 static str arg;
@@ -73,16 +72,11 @@ static void dispatch_line(void)
   respond(err_unimpl);
 }
 
+extern void set_timeout(void);
+
 int main(int argc, char* argv[])
 {
-  const char* tmp;
-
-  timeout = 0;
-  if ((tmp = getenv("TIMEOUT")) != 0) timeout = strtoul(tmp, 0, 10);
-  if (timeout <= 0) timeout = 1200;
-  inbuf.io.timeout = timeout * 1000;
-  outbuf.io.timeout = timeout * 1000;
-
+  set_timeout();
   if (!startup(argc, argv)) return 0;
   respond(ok);
   while (ibuf_getstr_crlf(&inbuf, &line)) {

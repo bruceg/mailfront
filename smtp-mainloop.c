@@ -14,21 +14,16 @@ unsigned maxhops;
 const char UNKNOWN[] = "unknown";
 
 extern void report_io_bytes(void);
+extern void set_timeout(void);
 
 int smtp_mainloop(void)
 {
   static str str_welcome;
-  
-  unsigned long timeout;
   const char* tmp;
 
   atexit(report_io_bytes);
-  
-  timeout = 0;
-  if ((tmp = getenv("TIMEOUT")) != 0) timeout = strtoul(tmp, 0, 10);
-  if (timeout <= 0) timeout = 1200;
-  inbuf.io.timeout = timeout * 1000;
-  outbuf.io.timeout = timeout * 1000;
+
+  set_timeout();
 
   maxhops = 0;
   if ((tmp = getenv("MAXHOPS")) != 0) maxhops = strtoul(tmp, 0, 10);
