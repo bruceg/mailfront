@@ -186,6 +186,8 @@ static void cmd_dele(const str* arg)
 {
   long i;
   if ((i = msgnum(arg)) == 0) return;
+  del_bytes += msg_sizes[i-1];
+  del_count++;
   msg_sizes[i-1] = MSG_DELETED;
   respond(ok);
 }

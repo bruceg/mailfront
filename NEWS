@@ -1,8 +1,19 @@
 -------------------------------------------------------------------------------
 Changes in version 0.73
 
+- Fixed bugs in the RETR/TOP function of pop3front-maildir which would
+  cause message corruption.
+
+- Fixed bugs in the DELE/STAT functions of pop3front-maildir which
+  neglected to remove the deleted message count/bytes from the totals
+  reported by STAT.
+
 - Added a "maximum message count" option to pop3front-maildir, which
   limits the number of visible messages.
+
+- Added timeouts to pop3front.
+
+- All POP3 error responses are now printed to stderr.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
