@@ -164,7 +164,6 @@ const response* backend_handle_data_end(void)
     str_catu(&buffer, qqpid);
     str_cats(&buffer, " bytes ");
     str_catu(&buffer, databytes);
-    msg1(buffer.s);
     resp.number = 250;
     resp.message = buffer.s;
   }
