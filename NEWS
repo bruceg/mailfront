@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------
 Changes in version 0.86
 
+- Allow for addition of user-specified headers with $HEADER_ADD.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
