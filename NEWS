@@ -5,6 +5,8 @@ Changes in version 0.72
 
 - Added the missing pop3front-* targets in insthier.c
 
+- Added missing Solaris/SysV -lsocket -lnsl linker flags.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

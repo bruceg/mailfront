@@ -9,3 +9,4 @@ str/str.a
 socket/socket.a
 iopoll.o
 setenv.o
+socket.lib

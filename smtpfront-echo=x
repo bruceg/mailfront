@@ -11,3 +11,4 @@ str/str.a
 iobuf/iobuf.a
 iopoll.o
 setenv.o
+socket.lib
