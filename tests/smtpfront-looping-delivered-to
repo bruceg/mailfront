@@ -1,0 +1,28 @@
+MAXHOPS=1 sfecho <<EOF
+MAIL FROM:<somebody>
+RCPT TO:<nobody@nowhere>
+DATA
+Delivered-To: foo
+.
+EOF
+
+echo
+
+MAXHOPS=1 sfecho <<EOF
+MAIL FROM:<somebody>
+RCPT TO:<nobody@nowhere>
+DATA
+Delivered-To: foo
+Delivered-To: foo
+.
+EOF
+<result>
+250 Sender='somebody'.^M
+250 Recipient='nobody@nowhere'.^M
+354 End your message with a period.^M
+250 Received 112 bytes.^M
+
+250 Sender='somebody'.^M
+250 Recipient='nobody@nowhere'.^M
+354 End your message with a period.^M
+554 This message is looping, too many hops.^M

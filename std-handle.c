@@ -262,6 +262,7 @@ void handle_data_bytes(const char* bytes, unsigned len)
 	    }
 	  }
 	}
+	++linepos;
       }
     }
   }
