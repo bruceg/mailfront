@@ -15,8 +15,8 @@ for mail servers.  Right now the only protocol that is handled is SMTP.
 
 %prep
 %setup
-echo gcc "%{optflags}" >conf-cc
-echo gcc -s >conf-ld
+echo "gcc %{optflags} -I/usr/local/bglibs/include" >conf-cc
+echo "gcc -s -L/usr/local/bglibs/lib" >conf-ld
 echo %{_bindir} >conf-bin
 
 %build
