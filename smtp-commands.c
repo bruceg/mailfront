@@ -10,9 +10,6 @@
 #include <iobuf/iobuf.h>
 #include <msg/msg.h>
 
-int authenticated = 0;
-const char* relayclient = 0;
-
 static str cmd;
 static str arg;
 static str addr;
@@ -29,16 +26,12 @@ static RESPONSE(rcpt_ok, 250, "Recipient accepted.");
 static RESPONSE(no_rcpt, 503, "You must send RCPT TO: first");
 static RESPONSE(data_ok, 354, "End your message with a period.");
 static RESPONSE(data_end, 250, "Message accepted.");
-static RESPONSE(too_long, 552, "Sorry, that message exceeds the maximum message length.");
 static RESPONSE(ok, 250, "OK");
-static RESPONSE(hops, 554, "This message is looping, too many hops.");
 static RESPONSE(unimp, 500, "Not implemented.");
 static RESPONSE(internal, 451, "Internal error.");
 static RESPONSE(needsparam, 501, "That command requires a parameter.");
 static RESPONSE(auth_already, 503, "You are already authenticated.");
-static RESPONSE(badbounce, 550, "Bounce messages should have a single recipient.");
 
-static int is_bounce = 0;
 static int saw_mail = 0;
 static int saw_rcpt = 0;
 static const char* smtp_mode = "SMTP";
@@ -68,39 +61,6 @@ static int parse_addr_arg(void)
   return 1;
 }
 
-static int build_received(void)
-{
-  const char* env;
-  char datebuf[32];
-  time_t now = time(0);
-  struct tm* tm = gmtime(&now);
-  strftime(datebuf, sizeof datebuf - 1, "%d %b %Y %H:%M:%S -0000", tm);
-
-  if (!str_copys(&line, "Received: from ")) return 0;
-  if ((env = getenv("TCPREMOTEHOST")) == 0) env = UNKNOWN;
-  if (!str_cats(&line, env)) return 0;
-  if (helo_domain.len && str_diffs(&helo_domain, env)) {
-    if (!str_cats(&line, " (HELO ")) return 0;
-    if (!str_cat(&line, &helo_domain)) return 0;
-    if (!str_catc(&line, ')')) return 0;
-  }
-  if ((env = getenv("TCPREMOTEIP")) == 0) env = UNKNOWN;
-  if (!str_cats(&line, " (")) return 0;
-  if (!str_cats(&line, env)) return 0;
-  if (!str_cats(&line, ")\n  by ")) return 0;
-  if ((env = getenv("TCPLOCALHOST")) == 0) env = UNKNOWN;
-  if (!str_cats(&line, env)) return 0;
-  if ((env = getenv("TCPLOCALIP")) == 0) env = UNKNOWN;
-  if (!str_cats(&line, " (")) return 0;
-  if (!str_cats(&line, env)) return 0;
-  if (!str_cats(&line, ") with ")) return 0;
-  if (!str_cats(&line, smtp_mode)) return 0;
-  if (!str_cats(&line, "; ")) return 0;
-  if (!str_cats(&line, datebuf)) return 0;
-  if (!str_catc(&line, '\n')) return 0;
-  return 1;
-}
-  
 static int QUIT(void)
 {
   respond(221, 1, "Good bye.");
@@ -135,78 +95,37 @@ static int EHLO(void)
   return respond_resp(&resp_ehlo, 1);
 }
 
-static int number_ok(const response* resp)
-{
-  return resp->number >= 200 && resp->number < 300;
-}
-
 static void do_reset(void)
 {
   const response* resp;
-  if ((resp = rules_reset()) != 0) {
+  if ((resp = std_handle_reset()) != 0) {
     respond_resp(resp, 1);
     exit(0);
   }
   saw_rcpt = 0;
   saw_mail = 0;
-  is_bounce = 0;
-  handle_reset();
 }
 
 // FIXME: if rules_reset fails, exit
 static int MAIL(void)
 {
   const response* resp;
-  const response* tmpresp;
   msg2("MAIL ", arg.s);
   do_reset();
   parse_addr_arg();
-  if (((resp = rules_validate_sender(&addr)) == 0 &&
-       (resp = validate_sender(&addr)) == 0) || number_ok(resp)) {
-    tmpresp = handle_sender(&addr);
-    if (resp == 0 || (tmpresp != 0 && !number_ok(tmpresp)))
-      resp = tmpresp;
-  }
-  if (resp == 0) resp = &resp_mail_ok;
-  if (number_ok(resp)) {
-    saw_mail = 1;
-    is_bounce = (addr.len == 0);
-  }
+  if ((resp = std_handle_sender(&addr)) == 0) resp = &resp_mail_ok;
+  if (number_ok(resp)) saw_mail = 1;
   return respond_resp(resp, 1);
 }
 
 static int RCPT(void)
 {
   const response* resp;
-  const response* hresp;
   msg2("RCPT ", arg.s);
   if (!saw_mail) return respond_resp(&resp_no_mail, 1);
   parse_addr_arg();
-  if (is_bounce && saw_rcpt > 0) {
-    ++saw_rcpt;
-    return respond_resp(&resp_badbounce, 1);
-  }
-  if ((resp = rules_validate_recipient(&addr)) != 0) {
-    if (!number_ok(resp))
-      return respond_resp(resp, 1);
-  }
-  else if (relayclient != 0)
-    str_cats(&addr, relayclient);
-  else if (authenticated)
-    resp = 0;
-  else if ((resp = validate_recipient(&addr)) != 0) {
-    if (!number_ok(resp))
-      return respond_resp(resp, 1);
-  }
-  if ((hresp = handle_recipient(&addr)) != 0) {
-    if (!number_ok(hresp))
-      return respond_resp(hresp, 1);
-    else 
-      if (resp == 0) resp = hresp;
-  }
-  if (resp == 0) resp = &resp_rcpt_ok;
-  if (number_ok(resp))
-    ++saw_rcpt;
+  if ((resp = std_handle_recipient(&addr)) == 0) resp = &resp_rcpt_ok;
+  if (number_ok(resp)) saw_rcpt = 1;
   return respond_resp(resp, 1);
 }
 
@@ -228,35 +147,29 @@ static void data_byte(char ch)
   data_buf[data_bufpos++] = ch;
   ++data_bytes;
   if (data_bufpos >= sizeof data_buf) {
-    handle_data_bytes(data_buf, data_bufpos);
+    std_handle_data_bytes(data_buf, data_bufpos);
     data_bufpos = 0;
   }
 }
 static void data_end(void)
 {
-  if (data_bufpos) handle_data_bytes(data_buf, data_bufpos);
+  if (data_bufpos) std_handle_data_bytes(data_buf, data_bufpos);
 }
 
-static int copy_body(unsigned* count_rec, unsigned* count_dt)
+static int copy_body(void)
 {
-  int in_header = 1;		/* True until a blank line is seen */
   int sawcr = 0;		/* Was the last character a CR */
   unsigned linepos = 0;		/* The number of bytes since the last LF */
-  int in_rec = 1;		/* True if we might be seeing Received: */
-  int in_dt = 1;		/* True if we might be seeing Delivered-To: */
   int sawperiod = 0;		/* True if the first character was a period */
   char ch;
 
-  *count_rec = *count_dt = 0;
   data_start();
   while (ibuf_getc(&inbuf, &ch)) {
     switch (ch) {
     case LF:
       if (sawperiod && linepos == 0) { data_end(); return 1; }
       data_byte(ch);
-      if (linepos == 0) in_header = 0;
-      sawcr = sawperiod = linepos = 0;
-      in_rec = in_dt = in_header;
+      sawcr = linepos = 0;
       break;
     case CR:
       if (sawcr) { data_byte(CR); ++linepos; }
@@ -266,29 +179,9 @@ static int copy_body(unsigned* count_rec, unsigned* count_dt)
       if (ch == PERIOD && !sawperiod && linepos == 0)
 	sawperiod = 1;
       else {
-	if (in_header) {
-	  if (in_rec) {
-	    if (ch != "received:"[linepos] &&
-		ch != "RECEIVED:"[linepos])
-	      in_rec = 0;
-	    else if (linepos >= 8)
-	      ++*count_rec, in_rec = 0;
-	  }
-	  if (in_dt) {
-	    if (ch != "delivered-to:"[linepos] &&
-		ch != "DELIVERED-TO:"[linepos])
-	      in_dt = 0;
-	    else if (linepos >= 12)
-	      ++*count_dt, in_dt = 0;
-	  }
-	}
 	if (sawcr) { data_byte(CR); ++linepos; sawcr = 0; }
 	data_byte(ch); ++linepos;
       }
-    }
-    if (maxdatabytes && data_bytes >= maxdatabytes) {
-      do_reset();
-      return respond_resp(&resp_too_long, 1);
     }
   }
   return 0;
@@ -297,30 +190,18 @@ static int copy_body(unsigned* count_rec, unsigned* count_dt)
 static int DATA(void)
 {
   const response* resp;
-  unsigned received;
-  unsigned deliveredto;
   
   if (!saw_mail) return respond_resp(&resp_no_mail, 1);
   if (!saw_rcpt) return respond_resp(&resp_no_rcpt, 1);
-  if (is_bounce && saw_rcpt > 1) return respond_resp(&resp_badbounce, 1);
-  if ((resp = handle_data_start()) != 0) return respond_resp(resp, 1);
+  if ((resp = std_handle_data_start(&helo_domain, smtp_mode)) != 0)
+    return respond_resp(resp, 1);
   if (!respond_resp(&resp_data_ok, 1)) return 0;
-  if (!build_received()) return 0;
-  handle_data_bytes(line.s, line.len);
 
-  if (!copy_body(&received, &deliveredto)) {
+  if (!copy_body()) {
     do_reset();
     return 0;
   }
-  if (maxdatabytes && data_bytes > maxdatabytes) {
-    do_reset();
-    return respond_resp(&resp_too_long, 1);
-  }
-  if (received > maxhops || deliveredto > maxhops) {
-    do_reset();
-    return respond_resp(&resp_hops, 1);
-  }
-  if ((resp = handle_data_end()) == 0) resp = &resp_data_end;
+  if ((resp = std_handle_data_end()) == 0) resp = &resp_data_end;
   do_reset();
   return respond_resp(resp, 1);
 }
