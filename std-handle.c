@@ -12,6 +12,7 @@ static RESPONSE(badbounce, 550, "Bounce messages should have a single recipient.
 static RESPONSE(too_long, 552, "Sorry, that message exceeds the maximum message length.");
 static RESPONSE(hops, 554, "This message is looping, too many hops.");
 static RESPONSE(internal, 451, "Internal error.");
+static RESPONSE(manyrcpt, 550, "Too many recipients");
 
 const char UNKNOWN[] = "unknown";
 
@@ -25,6 +26,7 @@ const char* relayclient = 0;
 
 unsigned long maxdatabytes = 0;
 unsigned maxhops = 0;
+unsigned maxrcpts = 0;
 
 extern void set_timeout(void);
 extern void report_io_bytes(void);
@@ -77,6 +79,9 @@ const response* handle_init(void)
   if ((tmp = getenv("DATABYTES")) != 0) maxdatabytes = strtoul(tmp, 0, 10);
   else maxdatabytes = 0;
 
+  if ((tmp = getenv("MAXRCPTS")) != 0) maxrcpts = strtoul(tmp, 0, 10);
+  else maxrcpts = 0;
+
   if ((resp = backend_validate_init()) != 0) return resp;
 
   return rules_init();
@@ -125,6 +130,7 @@ const response* handle_recipient(str* recip)
 {
   const response* resp;
   const response* hresp;
+  if (maxrcpts > 0 && rcpt_count > maxrcpts) return &resp_manyrcpt;
   if (++rcpt_count > 1 && is_bounce) return &resp_badbounce;
   if ((resp = rules_validate_recipient(recip)) != 0) {
     if (!number_ok(resp))

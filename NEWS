@@ -3,6 +3,9 @@ Changes in version 0.88
 
 - Fixed handling of "@domain" entries in mailrules lists and CDB files.
 
+- Added patch from Marcelo Augusto <maugusto@stetnet.com.br> to allow
+  for limits on the maximum number of recipients per message.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
