@@ -23,6 +23,7 @@ struct pattern
   str pattern;
   dict* file;
   struct cdb* cdb;
+  int negated;
 };
 
 struct rule
@@ -271,6 +272,16 @@ static const char* parse_str(const char* ptr, char sep, str* out)
   return ptr;
 }
 
+static const char* parse_pattern(const char* ptr, char sep,
+				 struct pattern* out)
+{
+  while (*ptr != sep && *ptr == '!') {
+    out->negated = !out->negated;
+    ++ptr;
+  }
+  return parse_str(ptr, sep, &out->pattern);
+}
+
 static void parse_env(const char* ptr, str* out)
 {
   while (ptr && *ptr != 0)
@@ -289,8 +300,8 @@ const response* rules_add(const char* l)
   r = alloc_rule();
   r->code = *l++;
 
-  if ((l = parse_str(l, ':', &r->sender.pattern)) != 0 && *l == ':')
-    if ((l = parse_str(l+1, ':', &r->recipient.pattern)) != 0 && *l == ':')
+  if ((l = parse_pattern(l, ':', &r->sender)) != 0 && *l == ':')
+    if ((l = parse_pattern(l+1, ':', &r->recipient)) != 0 && *l == ':')
       if ((l = parse_str(l+1, ':', &r->response)) != 0 && *l == ':')
 	if ((l = parse_uint(l+1, ':', &databytes)) != 0 && *l == ':') {
 	  str_copys(&r->environment, "DATABYTES=");
@@ -370,28 +381,32 @@ static int matches(const struct pattern* pattern,
 		   const str* addr, const str* atdomain)
 {
   static str domain;
+  int result;
   if (pattern->cdb != 0) {
     if (pattern->pattern.s[2] == '@')
-      return cdb_find(pattern->cdb, atdomain->s+1, atdomain->len-1) != 0;
+      result = cdb_find(pattern->cdb, atdomain->s+1, atdomain->len-1) != 0;
     else {
-      if (cdb_find(pattern->cdb, addr->s, addr->len) != 0)
-	return 1;
-      return cdb_find(pattern->cdb, atdomain->s, atdomain->len) != 0;
+      result = (cdb_find(pattern->cdb, addr->s, addr->len) != 0) ?
+	1 :
+	cdb_find(pattern->cdb, atdomain->s, atdomain->len) != 0;
     }
   }
   else if (pattern->file != 0) {
     if (pattern->pattern.s[2] == '@') {
       str_copyb(&domain, atdomain->s+1, atdomain->len-1);
-      return dict_get(pattern->file, &domain) != 0;
+      result = dict_get(pattern->file, &domain) != 0;
     }
     else {
-      if (dict_get(pattern->file, addr) != 0)
-	return 1;
-      return dict_get(pattern->file, atdomain) != 0;
+      result = (dict_get(pattern->file, addr) != 0) ?
+	1 : 
+	dict_get(pattern->file, atdomain) != 0;
     }
   }
   else
-    return pattern_match(&pattern->pattern, addr);
+    result = pattern_match(&pattern->pattern, addr);
+  if (pattern->negated)
+    result = !result;
+  return result;
 }
 
 static const response* build_response(int type, const str* message)

@@ -141,6 +141,13 @@ the domain portion of the address.  All comparisons are case
 insensitive.  Missing CDB files are silently ignored.  Missing text
 files cause an error message at startup.</p>
 
+<h3>Negation</h3>
+
+<p>Prefixing the pattern with a <tt>!</tt> inverts the result of the
+match.  That is, if the pattern match does <i>not</i> succeed, the rule
+will succeed instead of failing.  This applies to all patterns including
+the special patterns above.</p>
+
 <h2>Semantics</h2>
 
 <p>Each rule is applied in the order they are listed in the rules file

@@ -1,0 +1,15 @@
+cat >$tmp/rules <<EOF
+k!a@a:*:A
+k!!a@a:*:B
+EOF
+
+MAILRULES=$tmp/rules sfecho <<EOF
+MAIL FROM:<a@a>
+MAIL FROM:<b@b>
+EOF
+
+rm -f $tmp/rules
+
+<result>
+250 B^M
+250 A^M

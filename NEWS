@@ -2,7 +2,7 @@
 Changes in version 0.90
 
 - Added support for explicit application of mail rules to senders or
-  recipients.
+  recipients, as well as negation of rule patterns.
 
 - Fixed a bug in handling patterns that are not after a blank line.
 
