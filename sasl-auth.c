@@ -2,7 +2,7 @@
 #include "constants.h"
 #include "sasl-auth.h"
 #include <base64/base64.h>
-#include <cvm-sasl/cvm-sasl.h>
+#include <cvm/sasl.h>
 #include <cvm/client.h>
 #include <iobuf/iobuf.h>
 #include <msg/msg.h>
