@@ -12,6 +12,8 @@ static RESPONSE(too_long, 552, "Sorry, that message exceeds the maximum message 
 static RESPONSE(hops, 554, "This message is looping, too many hops.");
 static RESPONSE(internal, 451, "Internal error.");
 
+const char UNKNOWN[] = "unknown";
+
 static int is_bounce = 0;
 static int rcpt_count = 0;
 
@@ -26,6 +28,11 @@ unsigned maxhops = 0;
 extern void set_timeout(void);
 extern void report_io_bytes(void);
 
+static const char* local_host;
+static const char* local_ip;
+static const char* remote_host;
+static const char* remote_ip;
+
 const response* handle_init(void)
 {
   const char* tmp;
@@ -36,6 +43,10 @@ const response* handle_init(void)
   set_timeout();
 
   relayclient = getenv("RELAYCLIENT");
+  if ((local_host = getenv("TCPLOCALHOST")) == 0) local_host = UNKNOWN;
+  if ((local_ip = getenv("TCPLOCALIP")) == 0) local_ip = UNKNOWN;
+  if ((remote_host = getenv("TCPREMOTEHOST")) == 0) remote_host = UNKNOWN;
+  if ((remote_ip = getenv("TCPREMOTEIP")) == 0) remote_ip = UNKNOWN;
 
   maxhops = 0;
   if ((tmp = getenv("MAXHOPS")) != 0) maxhops = strtoul(tmp, 0, 10);
@@ -111,38 +122,34 @@ const response* handle_recipient(str* recip)
   return resp;
 }
 
-
-const char UNKNOWN[] = "unknown";
-
-int build_received(str* s, const str* helo_domain, const char* proto)
+static const char* date_string(void)
 {
-  const char* env;
-  char datebuf[32];
+  static char datebuf[64];
   time_t now = time(0);
   struct tm* tm = gmtime(&now);
   strftime(datebuf, sizeof datebuf - 1, "%d %b %Y %H:%M:%S -0000", tm);
+  return datebuf;
+}
 
+int build_received(str* s, const str* helo_domain, const char* proto)
+{
   if (!str_copys(s, "Received: from ")) return 0;
-  if ((env = getenv("TCPREMOTEHOST")) == 0) env = UNKNOWN;
-  if (!str_cats(s, env)) return 0;
-  if (helo_domain && helo_domain->len && str_diffs(helo_domain, env)) {
+  if (!str_cats(s, remote_host)) return 0;
+  if (helo_domain && helo_domain->len && str_diffs(helo_domain, remote_host)) {
     if (!str_cats(s, " (HELO ")) return 0;
     if (!str_cat(s, helo_domain)) return 0;
     if (!str_catc(s, ')')) return 0;
   }
-  if ((env = getenv("TCPREMOTEIP")) == 0) env = UNKNOWN;
   if (!str_cats(s, " (")) return 0;
-  if (!str_cats(s, env)) return 0;
+  if (!str_cats(s, remote_ip)) return 0;
   if (!str_cats(s, ")\n  by ")) return 0;
-  if ((env = getenv("TCPLOCALHOST")) == 0) env = UNKNOWN;
-  if (!str_cats(s, env)) return 0;
-  if ((env = getenv("TCPLOCALIP")) == 0) env = UNKNOWN;
+  if (!str_cats(s, local_host)) return 0;
   if (!str_cats(s, " (")) return 0;
-  if (!str_cats(s, env)) return 0;
+  if (!str_cats(s, local_ip)) return 0;
   if (!str_cats(s, ") with ")) return 0;
   if (!str_cats(s, proto)) return 0;
   if (!str_cats(s, "; ")) return 0;
-  if (!str_cats(s, datebuf)) return 0;
+  if (!str_cats(s, date_string())) return 0;
   if (!str_catc(s, '\n')) return 0;
   return 1;
 }
