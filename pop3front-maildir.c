@@ -35,6 +35,8 @@
 
 #define MSG_DELETED ((unsigned long)-1)
 
+const char program[] = "pop3front-maildir";
+
 static str msg_list;
 static unsigned long* msg_offs;
 static unsigned long* msg_sizes;
@@ -109,9 +111,9 @@ static int scan_maildir(void)
 static int msgnum_check(long i)
 {
   if (i > msg_count)
-    respond("-ERR Message number out of range.");
+    respond("-ERR Message number out of range");
   else if (msg_sizes[i-1] == MSG_DELETED)
-    respond("-ERR Message was deleted.");
+    respond("-ERR Message was deleted");
   else
     return 1;
   return 0;
@@ -137,7 +139,7 @@ static void dump_msg(long num, long bodylines)
   if (!msgnum_check(num)) return;
 
   if (!ibuf_open(&in, msg_list.s+msg_offs[num-1], 0))
-    return respond("-ERR Could not open that message.");
+    return respond("-ERR Could not open that message");
   respond(ok);
 
   in_header = 1;
@@ -333,11 +335,11 @@ int startup(int argc, char* argv[])
     tmp = argv[1];
   }
   if (chdir(tmp) == -1) {
-    respond("-ERR Could not chdir to maildir.");
+    respond("-ERR Could not chdir to maildir");
     return 0;
   }
   if (!scan_maildir()) {
-    respond("-ERR Could not access maildir.");
+    respond("-ERR Could not access maildir");
     return 0;
   }
   return 1;
