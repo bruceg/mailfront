@@ -20,8 +20,8 @@ rm -f $tmp/rules
 
 <result>
 553 Rejected^M
-451 Temporary failure^M
+451 Deferred^M
 250 OK^M
 553 Rejected^M
-451 Temporary failure^M
+451 Deferred^M
 250 OK^M
