@@ -364,7 +364,8 @@ static const response* build_response(int type, const str* message)
   case 'p': return 0;
   case 'k': code = 250; defmsg = "OK"; break;
   case 'd': code = 553; defmsg = "Rejected"; break;
-  default: code = 451; defmsg = "Temporary failure";
+  case 'z': code = 451; defmsg = "Deferred"; break;
+  default:  code = 451; defmsg = "Temporary failure"; break;
   }
 
   if (message->len == 0) {
