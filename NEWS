@@ -1,4 +1,13 @@
 -------------------------------------------------------------------------------
+Changes in version 0.72
+
+- This version includes a one-off bug fix in the CVM client code.
+
+- Added the missing pop3front-* targets in insthier.c
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 0.71
 
 - Log the parameters to the MAIL and RCPT commands in smtpfront.
