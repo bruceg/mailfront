@@ -156,17 +156,19 @@ static int try_load(struct pattern* pattern)
 /* environment variable handling ******************************************* */
 static str envars;
 
-char* rules_getenv(const char* name)
+const char* rules_getenv(const char* name)
 {
   unsigned i;
   unsigned namelen;
+  const char* s;
   namelen = strlen(name);
-  for (i = 0; i < envars.len; i += strlen(envars.s + i) + 1) {
+  for (s = 0, i = 0; i < envars.len; i += strlen(envars.s + i) + 1) {
     if (memcmp(envars.s + i, name, namelen) == 0 &&
 	envars.s[i + namelen] == '=')
-      return envars.s + i + namelen + 1;
+      s = envars.s + i + namelen + 1;
   }
-  return 0;
+  if (s == 0) s = getenv(name);
+  return s;
 }
 
 int rules_exportenv(void)

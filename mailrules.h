@@ -4,7 +4,7 @@
 extern const response* rules_add(const char* line);
 extern const response* rules_init(void);
 extern const response* rules_reset(void);
-extern char* rules_getenv(const char* name);
+extern const char* rules_getenv(const char* name);
 extern int rules_exportenv(void);
 extern const response* rules_validate_sender(str*);
 extern const response* rules_validate_recipient(str*);
