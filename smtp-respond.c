@@ -12,9 +12,7 @@ int respond_start(unsigned number, int final)
 
 int respond_end(void)
 {
-  return obuf_putc(&outbuf, CR) &&
-    obuf_putc(&outbuf, LF) &&
-    obuf_flush(&outbuf);
+  return obuf_putsflush(&outbuf, CRLF);
 }
 
 int respond_str(const char* str)
