@@ -7,6 +7,8 @@ Changes in version 0.86
 
 - Added a hook for CVM validation of recipient addresses.
 
+- Added support for RFC 1870 ESMTP SIZE extension.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

@@ -9,6 +9,7 @@
 
 #include <iobuf/iobuf.h>
 #include <msg/msg.h>
+#include <str/iter.h>
 
 static str cmd;
 static str arg;
@@ -30,6 +31,7 @@ static RESPONSE(unimp, 500, "Not implemented.");
 static RESPONSE(internal, 451, "Internal error.");
 static RESPONSE(needsparam, 501, "That command requires a parameter.");
 static RESPONSE(auth_already, 503, "You are already authenticated.");
+static RESPONSE(toobig, 552, "The message would exceed the maximum message size.");
 
 static int saw_mail = 0;
 static int saw_rcpt = 0;
@@ -57,7 +59,25 @@ static int parse_addr_arg(void)
   if (arg.s[end] == RBRACE) ++end;
   while (arg.s[end] == SPACE) ++end;
   if (!str_copyb(&params, arg.s+end, arg.len-end)) return 0;
+  str_subst(&params, ' ', 0);
   return 1;
+}
+
+static const char* find_param(const char* name)
+{
+  const long len = strlen(name);
+  striter i;
+  for (striter_start(&i, &params, 0);
+       striter_valid(&i);
+       striter_advance(&i)) {
+    if (strncasecmp(i.startptr, name, len) == 0) {
+      if (i.startptr[len] == '0')
+	return i.startptr + len;
+      if (i.startptr[len] == '=')
+	return i.startptr + len + 1;
+    }
+  }
+  return 0;
 }
 
 static int QUIT(void)
@@ -90,6 +110,9 @@ static int EHLO(void)
   case 1: if (!respond(250, 0, auth_resp.s)) return 0; break;
   default: return respond_resp(&resp_internal, 1);
   }
+  str_copys(&auth_resp, "SIZE ");
+  str_catu(&auth_resp, maxdatabytes);
+  if (!respond(250, 0, auth_resp.s)) return 0;
 
   return respond_resp(&resp_ehlo, 1);
 }
@@ -109,11 +132,23 @@ static void do_reset(void)
 static int MAIL(void)
 {
   const response* resp;
+  const char* param;
+  unsigned long size;
   msg2("MAIL ", arg.s);
   do_reset();
   parse_addr_arg();
   if ((resp = handle_sender(&addr)) == 0) resp = &resp_mail_ok;
-  if (number_ok(resp)) saw_mail = 1;
+  if (number_ok(resp)) {
+    /* Look up the size limit after handling the sender,
+       in order to honour limits set in the mail rules. */
+    if (maxdatabytes > 0 &&
+	(param = find_param("SIZE")) != 0 &&
+	(size = strtoul(param, (char**)&param, 10)) > 0 &&
+	*param == 0 &&
+	size > maxdatabytes)
+      return respond_resp(&resp_toobig, 1);
+    saw_mail = 1;
+  }
   return respond_resp(resp, 1);
 }
 
