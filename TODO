@@ -7,3 +7,11 @@
 - Add RFC 1893/2034 enhanced status codes to all responses.
 
 - Add support for RFC 2487 STARTTLS
+
+- Segment the SMTP code into seperate files
+
+- Write a POP3 authenticator: pop3front-auth
+
+- Write a POP3 back-end: pop3front-maildir
+
+- Write a IMAP authenticator: imapfront-auth

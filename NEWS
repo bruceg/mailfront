@@ -1,0 +1,6 @@
+-------------------------------------------------------------------------------
+Changes in version 0.60
+
+- Adds support for the SMTP AUTH command, supporting LOGIN, PLAIN, and
+  CRAM-MD5 mechanisms via CVM.
+-------------------------------------------------------------------------------
