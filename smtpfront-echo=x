@@ -4,7 +4,7 @@ sasl-auth.o
 cvm-sasl/cvm-sasl.a
 cvm/client.a
 base64/base64.a
-socket/socket.a
+net/socket.a
 msg/msg.a
 iobuf/str.a
 str/str.a
