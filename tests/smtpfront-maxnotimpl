@@ -1,0 +1,22 @@
+MAXNOTIMPL=1 sfecho <<EOF
+a
+b
+c
+d
+EOF
+
+MAXNOTIMPL=0 sfecho <<EOF
+a
+b
+c
+d
+EOF
+
+<result>
+500 Not implemented.^M
+503-Too many unimplemented commands.^M
+503 Closing connection.^M
+500 Not implemented.^M
+500 Not implemented.^M
+500 Not implemented.^M
+500 Not implemented.^M

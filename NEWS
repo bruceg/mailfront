@@ -8,6 +8,8 @@ Changes in version 0.89
 - Defer looking up $MAXRCPTS and $RELAYCLIENT as well so that they can
   be set in the mailrules.
  
+- Drop connections after $MAXNOTIMPL unimplemented commands are given.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

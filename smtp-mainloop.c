@@ -12,6 +12,8 @@
 str line = {0,0,0};
 str domain_name = {0,0,0};
 
+extern unsigned long maxnotimpl;
+
 int smtp_mainloop(void)
 {
   static str str_welcome;
@@ -28,6 +30,9 @@ int smtp_mainloop(void)
     str_cats(&str_welcome, " mailfront");
   }
   str_cats(&str_welcome, " ESMTP");
+
+  if ((tmp = getenv("MAXNOTIMPL")) != 0)
+    maxnotimpl = strtoul(tmp, 0, 10);
 
   if ((resp = handle_init()) != 0) { respond_resp(resp, 1); return 1; }
 

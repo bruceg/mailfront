@@ -75,6 +75,10 @@ message is limited to that number.</tt>
 <li>Support for <a href="patterns.html">pattern matching</a> in the
 message data.
 
+<li>If <tt>$MAXNOTIMPL</tt> is set, clients are disconnected if they
+send more than the specified number of commands that result in a
+"<tt>500 Not implemented.</tt>" error.
+
 </ul></p>
 
 <h2>Back Ends</h2>

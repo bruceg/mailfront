@@ -32,10 +32,13 @@ static RESPONSE(internal, 451, "Internal error.");
 static RESPONSE(needsparam, 501, "That command requires a parameter.");
 static RESPONSE(auth_already, 503, "You are already authenticated.");
 static RESPONSE(toobig, 552, "The message would exceed the maximum message size.");
+static RESPONSE(toomanyunimp, 503, "Too many unimplemented commands.\nClosing connection.");
 
 static int saw_mail = 0;
 static int saw_rcpt = 0;
 static const char* smtp_mode = "SMTP";
+
+unsigned long maxnotimpl = 0;
 
 static int parse_addr_arg(void)
 {
@@ -306,11 +309,18 @@ static int parse_line(void)
 
 int smtp_dispatch(void)
 {
+  static unsigned long notimpl = 0;
   struct dispatch* d;
   if (!parse_line()) return 1;
   for (d = dispatch_table; d->cmd != 0; ++d)
-    if (strcasecmp(d->cmd, cmd.s) == 0)
+    if (strcasecmp(d->cmd, cmd.s) == 0) {
+      notimpl = 0;
       return d->fn();
+    }
   msg3(cmd.s, " ", arg.s);
+  if (maxnotimpl > 0 && ++notimpl > maxnotimpl) {
+    respond_resp(&resp_toomanyunimp, 1);
+    return 0;
+  }
   return respond_resp(&resp_unimp, 1);
 }
