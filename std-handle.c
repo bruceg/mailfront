@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 
 #include <systime.h>
 #include <str/str.h>
@@ -32,6 +33,8 @@ static const char* local_host;
 static const char* local_ip;
 static const char* remote_host;
 static const char* remote_ip;
+static str fixup_host;
+static str fixup_ip;
 
 const response* handle_init(void)
 {
@@ -47,6 +50,14 @@ const response* handle_init(void)
   if ((local_ip = getenv("TCPLOCALIP")) == 0) local_ip = UNKNOWN;
   if ((remote_host = getenv("TCPREMOTEHOST")) == 0) remote_host = UNKNOWN;
   if ((remote_ip = getenv("TCPREMOTEIP")) == 0) remote_ip = UNKNOWN;
+  if ((tmp = getenv("FIXUP_RECEIVED_HOST")) != 0) {
+    if (!str_copys(&fixup_host, tmp)) return &resp_oom;
+    str_strip(&fixup_host);
+  }
+  if ((tmp = getenv("FIXUP_RECEIVED_IP")) != 0) {
+    if (!str_copys(&fixup_ip, tmp)) return &resp_oom;
+    str_strip(&fixup_ip);
+  }
 
   maxhops = 0;
   if ((tmp = getenv("MAXHOPS")) != 0) maxhops = strtoul(tmp, 0, 10);
@@ -131,9 +142,27 @@ static const char* date_string(void)
   return datebuf;
 }
 
+int fixup_received(str* s)
+{
+  if (local_host &&
+      local_ip &&
+      fixup_host.len > 0 &&
+      fixup_ip.len > 0 &&
+      (strcasecmp(local_host, fixup_host.s) != 0 ||
+       strcasecmp(local_ip, fixup_ip.s) != 0)) {
+    if (!str_cat5s(s, "Received: from ", local_host, " (", local_ip, ")\n"
+		   "  by ")) return 0;
+    if (!str_cat(s, &fixup_host)) return 0;
+    if (!str_cats(s, " (")) return 0;
+    if (!str_cat(s, &fixup_ip)) return 0;
+    if (!str_cat3s(s, "); ", date_string(), "\n")) return 0;
+  }
+  return 1;
+}
+
 int build_received(str* s, const str* helo_domain, const char* proto)
 {
-  if (!str_copy2s(s, "Received: from ", remote_host)) return 0;
+  if (!str_cat2s(s, "Received: from ", remote_host)) return 0;
   if (helo_domain && helo_domain->len && str_diffs(helo_domain, remote_host)) {
     if (!str_cats(s, " (HELO ")) return 0;
     if (!str_cat(s, helo_domain)) return 0;
@@ -161,7 +190,9 @@ const response* handle_data_start(const str* helo_domain,
   if (is_bounce && rcpt_count > 1) return &resp_badbounce;
   resp = backend_handle_data_start();
   if (response_ok(resp)) {
-    if (!build_received(&received, helo_domain, protocol))
+    received.len = 0;
+    if (!fixup_received(&received) ||
+	!build_received(&received, helo_domain, protocol))
       return &resp_internal;
     backend_handle_data_bytes(received.s, received.len);
   }

@@ -1,5 +1,6 @@
 iobytes.o
 mailrules.o
+responses.o
 std-handle.o
 timeout.o
 smtp-commands.o

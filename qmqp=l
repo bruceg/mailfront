@@ -1,6 +1,7 @@
 iobytes.o
 mailrules.o
 netstring.o
+responses.o
 std-handle.o
 timeout.o
 qmqp-mainloop.o
