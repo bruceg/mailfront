@@ -8,14 +8,27 @@ DATA
 EOF
 }
 
-sfecho2
-TESTREMOTEHOST= sfecho2
-TESTLOCALHOST= sfecho2
+TESTLOCALIP=   TESTLOCALHOST=   TESTREMOTEIP=   TESTREMOTEHOST=   sfecho2
+TESTLOCALIP=li TESTLOCALHOST=   TESTREMOTEIP=   TESTREMOTEHOST=   sfecho2
+TESTLOCALIP=   TESTLOCALHOST=lh TESTREMOTEIP=   TESTREMOTEHOST=   sfecho2
+TESTLOCALIP=li TESTLOCALHOST=lh TESTREMOTEIP=   TESTREMOTEHOST=   sfecho2
+TESTLOCALIP=   TESTLOCALHOST=   TESTREMOTEIP=ri TESTREMOTEHOST=   sfecho2
+TESTLOCALIP=li TESTLOCALHOST=   TESTREMOTEIP=ri TESTREMOTEHOST=   sfecho2
+TESTLOCALIP=   TESTLOCALHOST=lh TESTREMOTEIP=ri TESTREMOTEHOST=   sfecho2
+TESTLOCALIP=li TESTLOCALHOST=lh TESTREMOTEIP=ri TESTREMOTEHOST=   sfecho2
+TESTLOCALIP=   TESTLOCALHOST=   TESTREMOTEIP=   TESTREMOTEHOST=rh sfecho2
+TESTLOCALIP=li TESTLOCALHOST=   TESTREMOTEIP=   TESTREMOTEHOST=rh sfecho2
+TESTLOCALIP=   TESTLOCALHOST=lh TESTREMOTEIP=   TESTREMOTEHOST=rh sfecho2
+TESTLOCALIP=li TESTLOCALHOST=lh TESTREMOTEIP=   TESTREMOTEHOST=rh sfecho2
+TESTLOCALIP=   TESTLOCALHOST=   TESTREMOTEIP=ri TESTREMOTEHOST=rh sfecho2
+TESTLOCALIP=li TESTLOCALHOST=   TESTREMOTEIP=ri TESTREMOTEHOST=rh sfecho2
+TESTLOCALIP=   TESTLOCALHOST=lh TESTREMOTEIP=ri TESTREMOTEHOST=rh sfecho2
+TESTLOCALIP=li TESTLOCALHOST=lh TESTREMOTEIP=ri TESTREMOTEHOST=rh sfecho2
 
 sfecho3() {
 $src/smtpfront-echo 2>&1 >/dev/null <<EOF | \
 	sed -n -e 's/^.* Received: //p'
-EHLO ehlo.host
+EHLO hh
 MAIL FROM:<>
 RCPT TO:<test>
 DATA
@@ -23,14 +36,53 @@ DATA
 EOF
 }
 
-sfecho3
-TESTREMOTEHOST= sfecho3
-TESTLOCALHOST= sfecho3
+TESTLOCALIP=   TESTLOCALHOST=   TESTREMOTEIP=   TESTREMOTEHOST=   sfecho3
+TESTLOCALIP=li TESTLOCALHOST=   TESTREMOTEIP=   TESTREMOTEHOST=   sfecho3
+TESTLOCALIP=   TESTLOCALHOST=lh TESTREMOTEIP=   TESTREMOTEHOST=   sfecho3
+TESTLOCALIP=li TESTLOCALHOST=lh TESTREMOTEIP=   TESTREMOTEHOST=   sfecho3
+TESTLOCALIP=   TESTLOCALHOST=   TESTREMOTEIP=ri TESTREMOTEHOST=   sfecho3
+TESTLOCALIP=li TESTLOCALHOST=   TESTREMOTEIP=ri TESTREMOTEHOST=   sfecho3
+TESTLOCALIP=   TESTLOCALHOST=lh TESTREMOTEIP=ri TESTREMOTEHOST=   sfecho3
+TESTLOCALIP=li TESTLOCALHOST=lh TESTREMOTEIP=ri TESTREMOTEHOST=   sfecho3
+TESTLOCALIP=   TESTLOCALHOST=   TESTREMOTEIP=   TESTREMOTEHOST=rh sfecho3
+TESTLOCALIP=li TESTLOCALHOST=   TESTREMOTEIP=   TESTREMOTEHOST=rh sfecho3
+TESTLOCALIP=   TESTLOCALHOST=lh TESTREMOTEIP=   TESTREMOTEHOST=rh sfecho3
+TESTLOCALIP=li TESTLOCALHOST=lh TESTREMOTEIP=   TESTREMOTEHOST=rh sfecho3
+TESTLOCALIP=   TESTLOCALHOST=   TESTREMOTEIP=ri TESTREMOTEHOST=rh sfecho3
+TESTLOCALIP=li TESTLOCALHOST=   TESTREMOTEIP=ri TESTREMOTEHOST=rh sfecho3
+TESTLOCALIP=   TESTLOCALHOST=lh TESTREMOTEIP=ri TESTREMOTEHOST=rh sfecho3
+TESTLOCALIP=li TESTLOCALHOST=lh TESTREMOTEIP=ri TESTREMOTEHOST=rh sfecho3
 
 <result>
-from remote.host (remote.host [5.6.7.8])  by local.host ([1.2.3.4])
-from 5.6.7.8 ([5.6.7.8])  by local.host ([1.2.3.4])
-from remote.host (remote.host [5.6.7.8])  by 1.2.3.4 ([1.2.3.4])
-from ehlo.host (remote.host [5.6.7.8])  by local.host ([1.2.3.4])
-from ehlo.host ([5.6.7.8])  by local.host ([1.2.3.4])
-from ehlo.host (remote.host [5.6.7.8])  by 1.2.3.4 ([1.2.3.4])
+from unknown  by unknown
+from unknown  by li ([li])
+from unknown  by lh
+from unknown  by lh ([li])
+from ri ([ri])  by unknown
+from ri ([ri])  by li ([li])
+from ri ([ri])  by lh
+from ri ([ri])  by lh ([li])
+from rh (rh)  by unknown
+from rh (rh)  by li ([li])
+from rh (rh)  by lh
+from rh (rh)  by lh ([li])
+from rh (rh [ri])  by unknown
+from rh (rh [ri])  by li ([li])
+from rh (rh [ri])  by lh
+from rh (rh [ri])  by lh ([li])
+from hh  by unknown
+from hh  by li ([li])
+from hh  by lh
+from hh  by lh ([li])
+from hh ([ri])  by unknown
+from hh ([ri])  by li ([li])
+from hh ([ri])  by lh
+from hh ([ri])  by lh ([li])
+from hh (rh)  by unknown
+from hh (rh)  by li ([li])
+from hh (rh)  by lh
+from hh (rh)  by lh ([li])
+from hh (rh [ri])  by unknown
+from hh (rh [ri])  by li ([li])
+from hh (rh [ri])  by lh
+from hh (rh [ri])  by lh ([li])

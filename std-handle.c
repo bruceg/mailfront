@@ -2,7 +2,6 @@
 #include <string.h>
 
 #include <systime.h>
-#include <msg/msg.h>
 #include <str/str.h>
 
 #include "mailfront.h"
@@ -57,10 +56,10 @@ const response* handle_init(void)
   set_timeout();
 
   if ((linkproto = getenv("PROTO")) == 0) linkproto = "TCP";
-  if ((local_ip = getprotoenv("LOCALIP")) == 0)
-    die3(1, "$", linkproto, "LOCALIP must be set");
-  if ((remote_ip = getprotoenv("REMOTEIP")) == 0)
-    die3(1, "$", linkproto, "REMOTEIP must be set");
+  if ((local_ip = getprotoenv("LOCALIP")) != 0 && *local_ip == 0)
+    local_ip = 0;
+  if ((remote_ip = getprotoenv("REMOTEIP")) != 0 && *remote_ip == 0)
+    remote_ip = 0;
   if ((local_host = getprotoenv("LOCALHOST")) == 0 || *local_host == 0)
     local_host = local_ip;
   if ((remote_host = getprotoenv("REMOTEHOST")) != 0 && *remote_host == 0)
@@ -187,18 +186,37 @@ int fixup_received(str* s)
   return 1;
 }
 
-int build_received(str* s, const str* helo_domain, const char* proto)
+static int str_catfromby(str* s, const char* helo_domain,
+			 const char* host, const char* ip)
 {
-  if (!str_cat3s(s, "Received: from ",
-		 (helo_domain && helo_domain->len > 0) ? helo_domain->s :
-		 remote_host ? remote_host : remote_ip, " (")) return 0;
-  if (remote_host != 0)
-    if (!str_cat2s(s, remote_host, " ")) return 0;
-  if (!str_cat3s(s, "[", remote_ip, "])\n")) return 0;
-  if (!str_cat5s(s, "  by ", local_host, " ([", local_ip, "])\n"
-		 "  with ")) return 0;
-  if (!str_cat6s(s, proto, " via ", linkproto,
-		 "; ", date_string(), "\n")) return 0;
+  if (helo_domain == 0)
+    helo_domain = (host != 0) ? host : (ip != 0) ? ip : UNKNOWN;
+  if (!str_cats(s, helo_domain)) return 0;
+  if (host != 0 || ip != 0) {
+    if (!str_cats(s, " (")) return 0;
+    if (host != 0) {
+      if (!str_cats(s, host)) return 0;
+      if (ip != 0)
+	if (!str_catc(s, ' ')) return 0;
+    }
+    if (ip != 0)
+      if (!str_catc(s, '[') ||
+	  !str_cats(s, ip) ||
+	  !str_catc(s, ']'))
+	return 0;
+    if (!str_catc(s, ')')) return 0;
+  }
+  return 1;
+}
+
+int build_received(str* s, const char* helo_domain, const char* proto)
+{
+  if (!str_cats(s, "Received: from ")) return 0;
+  if (!str_catfromby(s, helo_domain, remote_host, remote_ip)) return 0;
+  if (!str_cats(s, "\n  by ")) return 0;
+  if (!str_catfromby(s, local_host, 0, local_ip)) return 0;
+  if (!str_cat4s(s, "\n  with ", proto, " via ", linkproto)) return 0;
+  if (!str_cat3s(s, "; ", date_string(), "\n")) return 0;
   return 1;
 }
 
@@ -211,7 +229,7 @@ static int in_rec;	      /* True if we might be seeing Received: */
 static int in_dt;	  /* True if we might be seeing Delivered-To: */
 static const response* data_response;
 
-const response* handle_data_start(const str* helo_domain,
+const response* handle_data_start(const char* helo_domain,
 				      const char* protocol)
 {
   const response* resp;

@@ -231,7 +231,8 @@ static int DATA(void)
   
   if (!saw_mail) return respond_resp(&resp_no_mail, 1);
   if (!saw_rcpt) return respond_resp(&resp_no_rcpt, 1);
-  if ((resp = handle_data_start(&helo_domain, smtp_mode)) != 0)
+  if ((resp = handle_data_start((helo_domain.len > 0) ? helo_domain.s : 0,
+				smtp_mode)) != 0)
     return respond_resp(resp, 1);
   if (!respond_resp(&resp_data_ok, 1)) return 0;
 
