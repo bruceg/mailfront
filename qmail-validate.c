@@ -7,6 +7,7 @@
 
 static dict bmf;
 static dict rh;
+static dict brt;
 static str tmp;
 
 static int read_dict(const char* filename, dict* d)
@@ -36,6 +37,7 @@ const response* qmail_validate_init(void)
   if (chdir(conf_qmail) == -1) return &resp_no_chdir;
   if (!read_dict("control/badmailfrom", &bmf)) return &resp_error;
   if (!read_dict("control/rcpthosts", &rh)) return &resp_error;
+  if (!read_dict("control/badrcptto", &brt)) return &resp_error;
   return 0;
 }
 
@@ -68,15 +70,17 @@ static int cdb_lookup(const char* filename, const str* domain)
 
 const response* qmail_validate_recipient(const str* recipient)
 {
-  static const response resp = {0,553,"Sorry, that domain isn't in my list of allowed rcpthosts."};
+  static const response resp_rh = {0,553,"Sorry, that domain isn't in my list of allowed rcpthosts."};
+  static const response resp_bmt = {0,553,"Sorry, that address is in my badrcptto list."};
   int at;
 
+  if (dict_get(&brt, recipient) != 0) return &resp_bmt;
   if ((at = str_findlast(recipient, '@')) > 0) {
     ++at;
     str_copyb(&tmp, recipient->s + at, recipient->len - at);
     if (dict_get(&rh, &tmp)) return 0;
     if (cdb_lookup("control/morercpthosts.cdb", &tmp)) return 0;
-    return &resp;
+    return &resp_rh;
   }
   return 0;
 }
