@@ -21,8 +21,8 @@ rm -f $tmp/rules
 250 Sender='a'.^M
 250 K1^M
 354 End your message with a period.^M
-250 Received 139 bytes.^M
+250 Received 151 bytes.^M
 250 Sender='a'.^M
 250 Recipient='c'.^M
 354 End your message with a period.^M
-250 Received 116 bytes.^M
+250 Received 128 bytes.^M

@@ -20,7 +20,7 @@ EOF
 250 Sender='somebody'.^M
 250 Recipient='nobody@nowhere'.^M
 354 End your message with a period.^M
-250 Received 134 bytes.^M
+250 Received 146 bytes.^M
 
 250 Sender='somebody'.^M
 250 Recipient='nobody@nowhere'.^M

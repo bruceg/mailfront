@@ -38,4 +38,4 @@ rm -f $tmp/patterns
 250 Sender=''.^M
 250 Recipient='nobody'.^M
 354 End your message with a period.^M
-250 Received 130 bytes.^M
+250 Received 142 bytes.^M

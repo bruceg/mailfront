@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include <systime.h>
+#include <msg/msg.h>
 #include <str/str.h>
 
 #include "mailfront.h"
@@ -56,10 +57,14 @@ const response* handle_init(void)
   set_timeout();
 
   if ((linkproto = getenv("PROTO")) == 0) linkproto = "TCP";
-  if ((local_host = getprotoenv("LOCALHOST")) == 0) local_host = UNKNOWN;
-  if ((local_ip = getprotoenv("LOCALIP")) == 0) local_ip = UNKNOWN;
-  if ((remote_host = getprotoenv("REMOTEHOST")) == 0) remote_host = UNKNOWN;
-  if ((remote_ip = getprotoenv("REMOTEIP")) == 0) remote_ip = UNKNOWN;
+  if ((local_ip = getprotoenv("LOCALIP")) == 0)
+    die3(1, "$", linkproto, "LOCALIP must be set");
+  if ((remote_ip = getprotoenv("REMOTEIP")) == 0)
+    die3(1, "$", linkproto, "REMOTEIP must be set");
+  if ((local_host = getprotoenv("LOCALHOST")) == 0 || *local_host == 0)
+    local_host = local_ip;
+  if ((remote_host = getprotoenv("REMOTEHOST")) != 0 && *remote_host == 0)
+    remote_host = 0;
   if ((tmp = getenv("FIXUP_RECEIVED_HOST")) != 0) {
     if (!str_copys(&fixup_host, tmp)) return &resp_oom;
     str_strip(&fixup_host);
@@ -184,10 +189,12 @@ int fixup_received(str* s)
 
 int build_received(str* s, const str* helo_domain, const char* proto)
 {
-  if (!str_cats(s, "Received: from ")) return 0;
-  if (!str_cat6s(s, (helo_domain && helo_domain->len > 0) ?
-		 helo_domain->s : remote_host,
-		 " (", remote_host, " [", remote_ip, "])\n")) return 0;
+  if (!str_cat3s(s, "Received: from ",
+		 (helo_domain && helo_domain->len > 0) ? helo_domain->s :
+		 remote_host ? remote_host : remote_ip, " (")) return 0;
+  if (remote_host != 0)
+    if (!str_cat2s(s, remote_host, " ")) return 0;
+  if (!str_cat3s(s, "[", remote_ip, "])\n")) return 0;
   if (!str_cat5s(s, "  by ", local_host, " ([", local_ip, "])\n"
 		 "  with ")) return 0;
   if (!str_cat6s(s, proto, " via ", linkproto,

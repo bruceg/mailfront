@@ -24,11 +24,11 @@ EOF
 250 Recipient='addr1@domain'.^M
 250 Recipient='addr2@domain'.^M
 354 End your message with a period.^M
-250 Received 116 bytes.^M
+250 Received 128 bytes.^M
 250 Sender=''.^M
 250 Recipient='addr1@domain'.^M
 354 End your message with a period.^M
-250 Received 116 bytes.^M
+250 Received 128 bytes.^M
 250 Sender=''.^M
 250 Recipient='addr1@domain'.^M
 550 Bounce messages should have a single recipient.^M
