@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
-Changes in version 0.82
+Changes in version 0.85
 
 - Added a QMTP front-end, with many features in common with the SMTP
   front-end (excluding authentication, of course).
