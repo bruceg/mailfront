@@ -31,6 +31,11 @@
 
 - smtpfront:
 
+  - Rename handle_* to std_handle_*, and let the backend code override
+    handle_*.
+
+  - Build a shared routine for breaking out the domain name.
+
   - When verifying senders, check if $DOMAIN(?) is set, and only allow
     sender addresses from that domain.
 
