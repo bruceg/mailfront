@@ -23,14 +23,7 @@ const response* backend_handle_sender(str* sender)
 
 const response* backend_validate_recipient(str* recip)
 {
-  if (relayclient != 0) {
-    str_cats(recip, relayclient);
-    return 0;
-  }
-  else if (authenticated)
-    return 0;
-  else
-    return qmail_validate_recipient(recip);
+  return qmail_validate_recipient(recip);
 }
 
 const response* backend_handle_recipient(str* recip)
