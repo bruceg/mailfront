@@ -6,6 +6,8 @@ Changes in version 0.85
 
 - Fixed internal variable transposition bug in smtp-commands.c.
 
+- Switched to bglibs 1.005 library scheme.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
