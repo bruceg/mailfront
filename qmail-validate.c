@@ -2,6 +2,7 @@
 #include "mailfront.h"
 #include "iobuf/iobuf.h"
 #include "dict/dict.h"
+#include "dict/load.h"
 #include "conf_qmail.h"
 #include "cdb/cdb.h"
 
@@ -10,34 +11,15 @@ static dict rh;
 static dict brt;
 static str tmp;
 
-static int read_dict(const char* filename, dict* d)
-{
-  ibuf in;
-
-  if (!dict_init(d)) return 0;
-  if (ibuf_open(&in, filename, 0)) {
-    while (ibuf_getstr(&in, &tmp, '\n')) {
-      str_strip(&tmp);
-      if (tmp.len > 0 && tmp.s[0] != '#')
-	if (!dict_add(d, &tmp, 0)) {
-	  ibuf_close(&in);
-	  return 0;
-	}
-    }
-    ibuf_close(&in);
-  }
-  return 1;
-}
-
 const response* qmail_validate_init(void)
 {
   static const response resp_no_chdir = {0,451,"Could not change to the qmail directory."};
   static const response resp_error = {0,451,"Internal error."};
   
   if (chdir(conf_qmail) == -1) return &resp_no_chdir;
-  if (!read_dict("control/badmailfrom", &bmf)) return &resp_error;
-  if (!read_dict("control/rcpthosts", &rh)) return &resp_error;
-  if (!read_dict("control/badrcptto", &brt)) return &resp_error;
+  if (!dict_load_list(&bmf, "control/badmailfrom", 0)) return &resp_error;
+  if (!dict_load_list(&rh, "control/rcpthosts", 0)) return &resp_error;
+  if (!dict_load_list(&brt, "control/badrcptto", 0)) return &resp_error;
   return 0;
 }
 
