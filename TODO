@@ -1,5 +1,7 @@
 - Write install document.
 
+- Build up TLS support.
+
 - Use lib/cli for all executables
 
 - smtpfront:
@@ -32,6 +34,3 @@
 
   - Split the generic protocol handling bits from pop3front-maildir (low
     priority -- who wants anything but maildir?)
-
-- Write a IMAP authenticator imapfront-auth (to be used as a front-end
-  for Courier IMAP)
