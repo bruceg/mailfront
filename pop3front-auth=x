@@ -3,6 +3,7 @@ sasl-auth.o
 cvm-sasl/cvm-sasl.a
 base64/base64.a
 cvm/client.a
+msg/msg.a
 iobuf/str.a
 iobuf/iobuf.a
 str/str.a

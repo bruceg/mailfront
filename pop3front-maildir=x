@@ -1,4 +1,5 @@
 pop3.a
+msg/msg.a
 iobuf/str.a
 iobuf/iobuf.a
 str/str.a
