@@ -200,7 +200,7 @@ static int RCPT(void)
   }
   if ((hresp = handle_recipient(&addr)) != 0) {
     if (!number_ok(hresp))
-      return respond_resp(resp, 1);
+      return respond_resp(hresp, 1);
     else 
       if (resp == 0) resp = hresp;
   }
