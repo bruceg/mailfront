@@ -14,6 +14,8 @@ Changes in version 0.81
 
 - Fixed bug: The "*" pattern failed to match the empty string.
 
+- Abort the DATA command immediately if the databytes limit is reached.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

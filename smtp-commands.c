@@ -286,6 +286,10 @@ static int copy_body(unsigned* count_rec, unsigned* count_dt)
 	data_byte(ch); ++linepos;
       }
     }
+    if (maxdatabytes && data_bytes >= maxdatabytes) {
+      do_reset();
+      return respond_resp(&resp_too_long, 1);
+    }
   }
   return 0;
 }
