@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <unistd.h>
 #include "mailfront.h"
 #include "smtp.h"
 #include "iobuf/iobuf.h"
