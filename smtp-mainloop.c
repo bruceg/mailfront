@@ -15,7 +15,7 @@ const char UNKNOWN[] = "unknown";
 
 extern void report_io_bytes(void);
 
-int smtp_mainloop(const char* welcome)
+int smtp_mainloop(void)
 {
   static str str_welcome;
   
@@ -34,14 +34,15 @@ int smtp_mainloop(const char* welcome)
   if ((tmp = getenv("MAXHOPS")) != 0) maxhops = strtoul(tmp, 0, 10);
   if (maxhops == 0) maxhops = 100;
   
-  if ((tmp = getenv("TCPLOCALHOST")) == 0) tmp = UNKNOWN;
-  str_copys(&domain_name, tmp);
-  str_copys(&str_welcome, tmp);
-  str_cats(&str_welcome, " mailfront ESMTP");
-  if (welcome) {
-    str_catc(&str_welcome, ' ');
-    str_cats(&str_welcome, welcome);
+  if ((tmp = getenv("SMTPGREETING")) != 0)
+    str_copys(&str_welcome, tmp);
+  else {
+    if ((tmp = getenv("TCPLOCALHOST")) == 0) tmp = UNKNOWN;
+    str_copys(&domain_name, tmp);
+    str_copys(&str_welcome, tmp);
+    str_cats(&str_welcome, " mailfront");
   }
+  str_cats(&str_welcome, " ESMTP");
 
   if ((tmp = getenv("DATABYTES")) != 0) maxdatabytes = strtoul(tmp, 0, 10);
   else maxdatabytes = 0;

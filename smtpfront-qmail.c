@@ -52,5 +52,5 @@ int main(void)
   relayclient = getenv("RELAYCLIENT");
   
   if ((resp = qmail_validate_init()) != 0) { respond_resp(resp, 1); return 1; }
-  return smtp_mainloop(0);
+  return smtp_mainloop();
 }

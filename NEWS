@@ -3,6 +3,8 @@ Changes in version 0.75
 
 - Modified pop3front to log all commands and responses.
 
+- Added support for $SMTPGREETING to smtpfront.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

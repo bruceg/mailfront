@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
       resp.number = 553;
     }
     resp.message = sr;
-    return smtp_mainloop(0);
+    return smtp_mainloop();
   }
   else {
     execvp(argv[1], argv+1);

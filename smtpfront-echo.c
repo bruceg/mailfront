@@ -5,5 +5,5 @@ const char program[] = "smtpfront-test";
 
 int main(void)
 {
-  return smtp_mainloop(0);
+  return smtp_mainloop();
 }
