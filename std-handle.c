@@ -77,13 +77,13 @@ const response* handle_sender(str* sender)
    * if rules_validate_sender returns a response, use it
    * else if backend_validate_sender returns a response, use it
    */
-  if (((resp = rules_validate_sender(sender)) == 0 &&
-       (resp = backend_validate_sender(sender)) == 0) ||
-      number_ok(resp)) {
-    tmpresp = backend_handle_sender(sender);
-    if (resp == 0 || (tmpresp != 0 && !number_ok(tmpresp)))
-      resp = tmpresp;
-  }
+  if ((resp = rules_validate_sender(sender)) == 0)
+    resp = backend_validate_sender(sender);
+  if (!response_ok(resp))
+    return resp;
+  if (!response_ok(tmpresp = backend_handle_sender(sender)))
+    return tmpresp;
+  if (resp == 0) resp = tmpresp;
   is_bounce = sender->len == 0;
   return resp;
 }
@@ -106,13 +106,10 @@ const response* handle_recipient(str* recip)
     if (!number_ok(resp))
       return resp;
   }
-  if ((hresp = backend_handle_recipient(recip)) != 0) {
-    if (!number_ok(hresp))
-      return hresp;
-    else 
-      if (resp == 0) resp = hresp;
-  }
-  return 0;
+  if (!response_ok(hresp = backend_handle_recipient(recip)))
+    return hresp;
+  if (resp == 0) resp = hresp;
+  return resp;
 }
 
 
