@@ -6,12 +6,6 @@
 #include "iobuf/iobuf.h"
 #include "str/str.h"
 
-static str challenge;
-static str challenge64;
-static str response;
-static str response64;
-static str mechanism;
-
 int sasl_auth_init(void)
 {
   return sasl_init();
@@ -29,23 +23,27 @@ int sasl_auth_cap(str* line)
   return 1;
 }
 
-int sasl_auth(const char* prefix, const str* arg)
+int sasl_auth2(const char* prefix,
+	       const char* mechanism, const char* iresponse)
 {
-  unsigned s;
+  static str challenge;
+  static str challenge64;
+  static str response;
+  static str response64;
   int i;
+  str* iresponsestr;
 
-  if ((s = str_findfirst(arg, SPACE)) != (unsigned)-1) {
-    if (!str_copyb(&mechanism, arg->s, s)) return -1;
+  if (iresponse != 0) {
     if (!str_truncate(&response, 0)) return -1;
-    while (arg->s[s] == SPACE) ++s;
-    if (!base64_decode_line(arg->s+s, &response))
+    if (!base64_decode_line(iresponse, &response))
       return SASL_RESP_BAD;
-    i = sasl_start(mechanism.s, &response, &challenge);
+    iresponsestr = &response;
   }
   else
-    i = sasl_start(arg->s, 0, &challenge);
-
-  while (i == SASL_CHALLENGE) {
+    iresponsestr = 0;
+  for (i = sasl_start(mechanism, iresponsestr, &challenge);
+       i == SASL_CHALLENGE;
+       i = sasl_response(&response, &challenge)) {
     if (!str_truncate(&challenge64, 0) ||
 	!base64_encode_line(challenge.s, challenge.len, &challenge64))
       return -1;
@@ -58,9 +56,21 @@ int sasl_auth(const char* prefix, const str* arg)
     if (!str_truncate(&response, 0) ||
 	!base64_decode_line(response64.s, &response))
       return SASL_RESP_BAD;
-    i = sasl_response(&response, &challenge);
   }
   return i;
+}
+
+int sasl_auth1(const char* prefix, const str* arg)
+{
+  static str mechanism;
+  int s;
+  if ((s = str_findfirst(arg, SPACE)) != -1) {
+    if (!str_copyb(&mechanism, arg->s, s)) return -1;
+    while (arg->s[s] == SPACE) ++s;
+    return sasl_auth2(prefix, mechanism.s, arg->s+s);
+  }
+  else
+    return sasl_auth2(prefix, arg->s, 0);
 }
 
 const char* sasl_auth_msg(int* code) 

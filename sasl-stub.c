@@ -11,7 +11,13 @@ int sasl_auth_cap(str* ignored)
   return 1;
 }
 
-int sasl_auth(const char* ignored1, const str* ignored2)
+int sasl_auth1(const char* ignored1, const str* ignored2)
+{
+  return -1;
+}
+
+int sasl_auth2(const char* ignored1,
+	       const char* ignored2, const char* ignored3)
 {
   return -1;
 }

@@ -52,7 +52,7 @@ static void do_exec(void)
 static void cmd_auth(const str* s)
 {
   int i;
-  if ((i = sasl_auth("+ ", s)) == 0) 
+  if ((i = sasl_auth1("+ ", s)) == 0) 
     do_exec();
   obuf_write(&outbuf, "-ERR ", 5);
   respond(sasl_auth_msg(&i));

@@ -277,7 +277,7 @@ static int AUTH(void)
   int i;
   if (authenticated) return respond_resp(&resp_auth_already, 1);
   if (arg.len == 0) return respond_resp(&resp_needsparam, 1);
-  if ((i = sasl_auth("334 ", &arg)) != 0) {
+  if ((i = sasl_auth1("334 ", &arg)) != 0) {
     const char* msg = sasl_auth_msg(&i);
     return respond(i, 1, msg);
   }
