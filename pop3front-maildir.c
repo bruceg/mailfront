@@ -396,14 +396,7 @@ command commands[] = {
   { 0,      0,        0 }
 };
 
-static void report_bytes(void)
-{
-  if (str_copys(&tmp, "bytes in: ") &&
-      str_catu(&tmp, inbuf.io.offset) &&
-      str_cats(&tmp, " bytes out: ") &&
-      str_catu(&tmp, outbuf.io.offset))
-    msg1(tmp.s);
-}
+extern void report_io_bytes(void);
 
 int startup(int argc, char* argv[])
 {
@@ -432,6 +425,6 @@ int startup(int argc, char* argv[])
     respond("-ERR Could not access maildir");
     return 0;
   }
-  atexit(report_bytes);
+  atexit(report_io_bytes);
   return 1;
 }
