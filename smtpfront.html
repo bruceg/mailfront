@@ -42,7 +42,8 @@ data to the client.</p>
 <dt><tt>smtpfront-qmail</tt> <dd><p>Uses the <a
 href="qmail-validate.html">qmail validation features</a> to validate
 addresses, and the <a href="qmail-backend.html">qmail backend</a> to
-deliver messages.  Also uses SMTP AUTH to enable relaying.</p>
+deliver messages.  Also uses SMTP AUTH through <a
+href="cvm-sasl.html">cvm-sasl</a> to enable relaying.</p>
 
 <dt><tt>smtpfront-reject</tt> <dd><p>If <tt>$SMTPREJECT</tt> is set,
 all SMTP commands are rejected with this message.  If the message
