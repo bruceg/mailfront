@@ -352,6 +352,7 @@ static void free_response(const response* resp)
 
 static const response* build_response(int type, const str* message)
 {
+  static response resp_nomsg = { 0, 0, "OK" };
   static response* resp = 0;
   response* next;
   unsigned code;
@@ -361,6 +362,11 @@ static const response* build_response(int type, const str* message)
   case 'k': code = 250; break;
   case 'z': code = 553; break;
   default: code = 451;
+  }
+
+  if (message->len == 0) {
+    resp_nomsg.number = code;
+    return &resp_nomsg;
   }
 
   if (resp != 0) free_response(resp);
