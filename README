@@ -1,7 +1,7 @@
 mailfront
 Mail server network protocol front-ends
 Bruce Guenter <bruceg@em.ca>
-Version 0.74
+Version 0.75
 2002-01-31
 
 This is mailfront, a package containing customizeable network front-ends

@@ -7,6 +7,8 @@ Changes in version 0.75
 - Fixed a one-off bug in handling "@domain" entries in badmailfrom in
   smtpfront-qmail.
 
+- pop3front-auth now logs the user name.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
