@@ -133,24 +133,15 @@ static const char* date_string(void)
 
 int build_received(str* s, const str* helo_domain, const char* proto)
 {
-  if (!str_copys(s, "Received: from ")) return 0;
-  if (!str_cats(s, remote_host)) return 0;
+  if (!str_copy2s(s, "Received: from ", remote_host)) return 0;
   if (helo_domain && helo_domain->len && str_diffs(helo_domain, remote_host)) {
     if (!str_cats(s, " (HELO ")) return 0;
     if (!str_cat(s, helo_domain)) return 0;
     if (!str_catc(s, ')')) return 0;
   }
-  if (!str_cats(s, " (")) return 0;
-  if (!str_cats(s, remote_ip)) return 0;
-  if (!str_cats(s, ")\n  by ")) return 0;
-  if (!str_cats(s, local_host)) return 0;
-  if (!str_cats(s, " (")) return 0;
-  if (!str_cats(s, local_ip)) return 0;
-  if (!str_cats(s, ") with ")) return 0;
-  if (!str_cats(s, proto)) return 0;
-  if (!str_cats(s, "; ")) return 0;
-  if (!str_cats(s, date_string())) return 0;
-  if (!str_catc(s, '\n')) return 0;
+  if (!str_cat6s(s, " (", remote_ip, ")\n"
+		 " by ", local_host, " (", local_ip)) return 0;
+  if (!str_cat5s(s, ") with ", proto, "; ", date_string(), "\n")) return 0;
   return 1;
 }
 
