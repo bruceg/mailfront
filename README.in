@@ -32,6 +32,67 @@ Installation:
 	./instcheck
   These commands will produce no output if there are no errors.
 
+Configuration:
+
+- To take advantage of the SMTP AUTH features, make sure you have a CVM
+  authentication program such as:
+  http://www.untroubled.org/cvm/ or
+  http://www.untroubled.org/cvm-vmailmgr/
+- Run a CVM authentication module to provide the AUTH feature.
+  Example:  To run cvm-vmailmgr as a daemon:
+    exec /usr/local/bin/softlimit -m 9000000 \
+     /usr/local/bin/cvm-vmailmgr-local /tmp/.cvm-vmailmgr 2>&1
+- Configure your mail system to use the SMTP back-end with the appropriate
+  environment variables.
+
+  Example using tcpserver (highly recommended):
+    #!/bin/sh
+    QMAILDUID=`id -u qmaild`
+    NOFILESGID=`id -g qmaild`
+    MAXSMTPD=`head -1 /var/qmail/control/concurrencyincoming`
+    if [ -z "$QMAILDUID" -o -z "$NOFILESGID" -o -z "$MAXSMTPD" ]; then
+        echo $0: QMAILDUID, NOFILESGID, or MAXSMTPD is unset
+        exit 1
+    fi
+    exec \
+    /usr/local/bin/envdir /etc/smtpfront \
+    /usr/local/bin/softlimit -m 2000000 \
+    /usr/local/bin/tcpserver -v -R -H \
+      -l "`head -1 /var/qmail/control/me`" -x /etc/tcp.smtp.cdb \
+      -c "$MAXSMTPD" -u "$QMAILDUID" -g "$NOFILESGID" 0 25 \
+    /usr/local/bin/smtpfront-qmail 2>&1
+
+  /etc/smtpfront/CVM_SASL_PLAIN:
+    cvm-local:/tmp/.cvm-vmailmgr
+
+  Example using xinetd with TCP Wrappers:
+
+  /etc/xinetd.d/smtp:
+    # default: on
+    # description: smtp
+    service smtp
+    {
+    	disable	= no
+    	flags		= REUSE NAMEINARGS
+    	socket_type	= stream        
+    	protocol	= tcp
+    	wait		= no
+    	user		= qmaild
+    	server		= /usr/sbin/tcpd
+    	server_args 	= /var/qmail/bin/tcp-env -R /usr/local/sbin/smtpfront-wrapper
+    	log_on_success          += USERID
+    	log_on_failure          += USERID
+    }
+
+  /usr/local/sbin/smtpfront-wrapper:
+    #!/bin/sh
+    CVM_SASL_PLAIN=cvm-local:/tmp/.cvm-unix
+    export CVM_SASL_PLAIN
+    CVM_SASL_LOGIN=cvm-local:/tmp/.cvm-unix
+    export CVM_SASL_LOGIN
+    exec /usr/local/bin/smtpfront-qmail 2>> /tmp/smtpfront-errs.txt
+
+
 This project was initiated at FutureQuest, Inc.  We are releasing it
 as an open-source project because we felt it would be useful to others,
 as well as to repay our debt of gratitude to the larger open-source
