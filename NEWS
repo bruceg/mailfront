@@ -4,6 +4,8 @@ Changes in version 0.70
 - Added a POP3 authenticator and maildir handler.  If you can believe
   it, the maildir portion is actually smaller than qmail-pop3d!
 
+- Fixed the AUTH PLAIN mechanism in the cvm-sasl library.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
