@@ -4,6 +4,9 @@ Changes in version 0.75
 - Added an exit hook to both pop3front and mailfront to print the number
   of bytes input and output.
 
+- Fixed a one-off bug in handling "@domain" entries in badmailfrom in
+  smtpfront-qmail.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

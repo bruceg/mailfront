@@ -38,7 +38,6 @@ const response* qmail_validate_sender(const str* sender)
   int at;
   if (dict_get(&bmf, sender) != 0) return &resp;
   if ((at = str_findlast(sender, '@')) > 0) {
-    ++at;
     str_copyb(&tmp, sender->s + at, sender->len - at);
     str_lower(&tmp);
     if (dict_get(&bmf, &tmp)) return &resp;
