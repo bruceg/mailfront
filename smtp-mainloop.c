@@ -12,19 +12,6 @@ unsigned maxhops;
 
 const char UNKNOWN[] = "unknown";
 
-int smtp_get_line(void)
-{
-  unsigned len;
-  if (!ibuf_getstr(&inbuf, &line, LF)) return 0;
-  if (inbuf.count == 0) return 0;
-  /* Strip the trailing LF */
-  len = line.len-1;
-  /* Strip a trailing CRs if present */
-  if (line.s[len-1] == CR) --len;
-  str_truncate(&line, len);
-  return 1;
-}
-
 int smtp_mainloop(const char* welcome)
 {
   static str str_welcome;
