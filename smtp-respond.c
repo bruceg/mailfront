@@ -23,13 +23,6 @@ int respond_str(const char* s)
   return obuf_puts(&outbuf, s);
 }
 
-int respond(unsigned number, int final, const char* msg)
-{
-  return respond_start(number, final) &&
-    respond_str(msg) &&
-    respond_end();
-}
-
 static int respond_b(unsigned number, int final,
 		     const char* msg, long len)
 {
@@ -38,12 +31,20 @@ static int respond_b(unsigned number, int final,
     respond_end();
 }
 
-int respond_resp(const response* resp, int final)
+int respond(unsigned number, int final, const char* msg)
 {
   const char* nl;
-  const char* start;
-  for (start = nl = resp->message; (nl=strchr(start, '\n')) != 0; start = nl+1)
-    if (!respond_b(resp->number, 0, start, nl-start))
+  while ((nl = strchr(msg, '\n')) != 0) {
+    if (!respond_b(number, 0, msg, nl-msg))
       return 0;
-  return respond(resp->number, final, start);
+    msg = nl + 1;
+  }
+  return respond_start(number, final) &&
+    respond_str(msg) &&
+    respond_end();
+}
+
+int respond_resp(const response* resp, int final)
+{
+  return respond(resp->number, final, resp->message);
 }
