@@ -11,16 +11,12 @@
 <p>This document makes the following changes over the existing version:
 <ol>
 
-<li>The rule syntax is extended to allow specification when the rule is
-to be applied.  This change is completely backwards compatible with
-existing rules.
-
 <li>The pattern syntax is extended to allow negation of results.  This
 change is backwards compatible except in the (unlikely) case where a
 pattern would otherwise start with a "<tt>!</tt>".  No workaround is
 available at this time.
 
-</ol> These two changes correct two of the biggest problems with the
+</ol> This change corrects the biggest remaining problems with the
 original specification.</p>
 
 <h2>Selection</h2>
@@ -38,27 +34,47 @@ badmailfrom file).</p>
 
 <h2>Syntax</h2>
 
-<p>Each rule in the file occupies a single line and has exactly the same
-format.  Each line starts with one of the following prefixes: <dl>
+<p>Each rule in the file occupies a single line.  Blank lines and lines
+starting with "<tt>#</tt>" are ignored as comments.</p>
+
+<h3>Selector Lines</h3>
+
+<p>Selector lines specify when the following rules are to be applied.  A
+selector line starts with a colon ("<tt>:</tt>").  The following
+selectors are defined:<dl>
+
+<dt><tt>:sender</tt> <dd>Apply the following rules only to senders.  Any
+recipient pattern present in the rule is ignored.
+
+<dt><tt>:recipient</tt> <dd>Apply the following rules only to
+recipients.
+
+</dl> Rules that precede a selector are categorized as follows (for
+compatibility with existing rules:<ul>
+
+<li>If the rule has a recipient pattern of "<tt>*</tt>" (which matches
+everything), it will be applied as a sender only rule.
+
+<li>All other rules are applied as recipient rules.
+
+</ul></p>
+
+<h3>Rule Lines</h3>
+
+<p>Each rule line starts with one of the following prefixes: <dl>
 
 <dt><tt>k</tt> <dd>Accept the sender or recipient.
 <dt><tt>z</tt> <dd>Reject the sender or recipient with a temporary error
 code.
 <dt><tt>d</tt> <dd>Reject the sender or recipient with a permanent error
 code.
+<dt><tt>n</tt> <dd>NO-OP: apply the databytes, relayclient, and/or
+environment settings, but continue processing further rules.
 <dt><tt>p</tt> <dd>Pass the sender or recipient on to the next
 processing state (ie <tt>$RELAYCLIENT</tt> or back-end validation).
 
-</dl> Additionally, each line may be prefixed with one of the following
-selectors, which explicitly list when the rule will be applied: <dl>
-
-<dt><tt>s</tt> <dd>Sender valication
-
-<dt><tt>r</tt> <dd>Recipient validation
-
-</dl> Empty lines and lines starting with any other character are
-ignored.  The remainder of the line consists of a series of fields
-seperated by colons (":").  The fields are: <ol>
+</dl> The remainder of the line consists of a series of fields seperated
+by colons (":").  The fields are: <ol>
 
 <li><b>Sender</b>: A pattern applied to the envelope sender address.
 
@@ -80,7 +96,9 @@ suffixed with this string.  Only useful for "k" rules.
 
 <li><b>Environment</b>: Environment variables to set as a result of
 matching this rule.  This field contains a list of assignments seperated
-by commas.  Each assignment is formatted as <tt>NAME="VALUE"</tt>.
+by commas.  Each assignment is formatted as <tt>NAME=VALUE</tt>.  If a
+value needs to contain a comma, it must be quoted as follows:
+<tt>\.</tt>.
 
 </dl>
 
@@ -147,10 +165,6 @@ If the sender is not accepted, no recipients can be accepted, as usual.
 As long as at least one recipient is accepted the message data may be
 accepted.</p>
 
-<p>Rules with a recipient pattern of <tt>*</tt> will be tested when the
-client transmits the sender address.  Otherwise rules are be tested when
-the client transmits the recipient address.</p>
-
 <h2>Examples</h2>
 
 <h3>qmail Rules</h3>
@@ -161,7 +175,9 @@ routines already provide this functionality.  These rules are listed for
 illustrative purposes only.</p>
 
 <pre>
+:sender
 d[[/var/qmail/control/badmailfrom]]:*:sorry, your envelope sender is in my badmailfrom list (#5.7.1)
+:recipient
 k*:[[@/var/qmail/control/rcpthosts]]
 k*:[[@/var/qmail/control/morercpthosts.cdb]]
 </pre>

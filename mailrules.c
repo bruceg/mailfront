@@ -38,13 +38,17 @@ struct rule
 
 static struct rule* sender_rules = 0;
 static struct rule* recip_rules = 0;
+static struct rule** current_rules = 0;
 static void append_rule(struct rule* r)
 {
   static struct rule* sender_tail = 0;
   static struct rule* recip_tail = 0;
   struct rule** head;
   struct rule** tail;
-  if (r->recipient.pattern.len == 1 && r->recipient.pattern.s[0] == '*') {
+  if (current_rules != 0)
+    tail = ((head = current_rules) == &sender_rules) ?
+      &sender_rules : &recip_rules;
+  else if (r->recipient.pattern.len == 1 && r->recipient.pattern.s[0] == '*') {
     head = &sender_rules;
     tail = &sender_tail;
   }
@@ -321,7 +325,15 @@ const response* rules_init(void)
   while (ibuf_getstr(&in, &rule, LF)) {
     str_strip(&rule);
     if (rule.len == 0) continue;
-    if ((r = rules_add(rule.s)) != 0) return r;
+    if (rule.s[0] == ':') {
+      switch (rule.s[1]) {
+      case 's': current_rules = &sender_rules; break;
+      case 'r': current_rules = &recip_rules; break;
+      default: return &resp_syntax;
+      }
+    }
+    else if ((r = rules_add(rule.s)) != 0)
+      return r;
   }
   ibuf_close(&in);
   str_free(&rule);

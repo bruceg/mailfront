@@ -1,0 +1,29 @@
+cat >$tmp/rules <<EOF
+# This selector forces what would normally be a recipient rule to be
+# applied only to the sender.
+:sender
+kone@one:two@two:A
+# This selector forces what would normally be a sender rule to be
+# applied only to recipients.
+:recipient
+ktwo@two:*:B
+EOF
+
+MAILRULES=$tmp/rules sfecho <<EOF
+MAIL FROM:<one@one>
+RCPT TO:<three@three>
+RCPT TO:<four@four>
+MAIL FROM:<two@two>
+RCPT TO:<three@three>
+RCPT TO:<four@four>
+EOF
+
+rm -f $tmp/rules
+
+<result>
+250 A^M
+250 Recipient='three@three'.^M
+250 Recipient='four@four'.^M
+250 Sender='two@two'.^M
+250 B^M
+250 B^M
