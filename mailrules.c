@@ -312,6 +312,7 @@ static int pattern_match(const str* pattern, const str* addr)
 {
   const char* p;
   const char* a;
+  if (pattern->len == 0) return addr->len == 0;
   for (p = pattern->s, a = addr->s; *p != 0 && *a != 0; ++p, ++a) {
     if (*p == '*') {
       if (*++p == 0) return 1;
@@ -352,20 +353,22 @@ static void free_response(const response* resp)
 
 static const response* build_response(int type, const str* message)
 {
-  static response resp_nomsg = { 0, 0, "OK" };
+  static response resp_nomsg = { 0, 0, 0 };
   static response* resp = 0;
   response* next;
   unsigned code;
   int i;
+  const char* defmsg;
 
   switch (type) {
-  case 'k': code = 250; break;
-  case 'z': code = 553; break;
-  default: code = 451;
+  case 'k': code = 250; defmsg = "OK"; break;
+  case 'z': code = 553; defmsg = "Rejected"; break;
+  default: code = 451; defmsg = "Temporary failure";
   }
 
   if (message->len == 0) {
     resp_nomsg.number = code;
+    resp_nomsg.message = defmsg;
     return &resp_nomsg;
   }
 
