@@ -4,6 +4,9 @@ Changes in version 0.91
 - Fixed a bug in the CVM lookup code that would cause failures if
   $LOOKUP_SECRET was not set.  Thanks Bernhard Graf.
 
+- Explicitly set $MAILDIR in imapfront-auth, to provide the variable for
+  Courier-IMAP's imapd.  Thanks Bernhard Graf.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

@@ -235,6 +235,7 @@ void do_exec(void)
   if (!cvm_setugid())
     respond(0, "NO Internal error: could not set UID/GID");
   else if (!cvm_setenv() ||
+	   setenv("MAILDIR", cvm_fact_mailbox, 1) == -1 ||
 	   setenv("IMAPLOGINTAG", tag.s, 1) == -1 ||
 	   setenv("AUTHENTICATED", cvm_fact_username, 1) == -1)
     respond(0, "NO Internal error: could not set environment");
