@@ -9,6 +9,8 @@ Changes in version 0.93
 - Fixed omission of not resetting maxdatabytes, which could be set by a
   rule, after checking for sender rules.
 
+- Fixed bug in handling multiple sender or recipient specific rules.
+
 - Modified the CVM lookup secret handling to use $CVM_LOOKUP_SECRET just
   like the latest CVM code, falling back to $LOOKUP_SECRET if that isn't
   set.

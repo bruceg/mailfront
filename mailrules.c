@@ -48,7 +48,7 @@ static void append_rule(struct rule* r)
   struct rule** tail;
   if (current_rules != 0)
     tail = ((head = current_rules) == &sender_rules) ?
-      &sender_rules : &recip_rules;
+      &sender_tail : &recip_tail;
   else if (r->recipient.pattern.len == 1 && r->recipient.pattern.s[0] == '*') {
     head = &sender_rules;
     tail = &sender_tail;

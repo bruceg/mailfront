@@ -1,0 +1,38 @@
+cat >$tmp/rules <<EOF
+:r
+k*:[[$tmp/list]]:LIST
+k*:[[@$tmp/atlist]]:ATLIST
+d*:*:DD
+EOF
+
+cat >$tmp/list <<EOF
+a@a
+@c
+EOF
+
+cat >$tmp/atlist <<EOF
+b
+EOF
+
+MAILRULES=$tmp/rules $src/smtpfront-echo <<EOF | tail -n +2
+MAIL FROM:<nobody@nowhere>
+RCPT TO:<a@a>
+RCPT TO:<b@a>
+RCPT TO:<a@b>
+RCPT TO:<b@B>
+RCPT TO:<c@c>
+RCPT TO:<c@C>
+RCPT TO:<d@d>
+EOF
+
+rm -f $tmp/rules $tmp/list $tmp/atlist
+
+<result>
+250 Sender='nobody@nowhere'.^M
+250 LIST^M
+553 DD^M
+250 ATLIST^M
+250 ATLIST^M
+250 LIST^M
+250 LIST^M
+553 DD^M
