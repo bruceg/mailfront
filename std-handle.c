@@ -55,7 +55,6 @@ const response* handle_init(void)
 
   set_timeout();
 
-  relayclient = getenv("RELAYCLIENT");
   if ((linkproto = getenv("PROTO")) == 0) linkproto = "TCP";
   if ((local_host = getprotoenv("LOCALHOST")) == 0) local_host = UNKNOWN;
   if ((local_ip = getprotoenv("LOCALIP")) == 0) local_ip = UNKNOWN;
@@ -69,9 +68,6 @@ const response* handle_init(void)
     if (!str_copys(&fixup_ip, tmp)) return &resp_oom;
     str_strip(&fixup_ip);
   }
-
-  if ((tmp = getenv("MAXRCPTS")) != 0) maxrcpts = strtoul(tmp, 0, 10);
-  else maxrcpts = 0;
 
   if ((resp = backend_validate_init()) != 0) return resp;
 
@@ -106,7 +102,10 @@ const response* handle_sender(str* sender)
    * if rules_validate_sender returns a response, use it
    * else if backend_validate_sender returns a response, use it
    */
-  if ((resp = rules_validate_sender(sender)) == 0)
+  resp = rules_validate_sender(sender);
+  maxrcpts = rules_getenvu("MAXRCPTS");
+  relayclient = rules_getenv("RELAYCLIENT");
+  if (resp == 0)
     resp = backend_validate_sender(sender);
   if (!response_ok(resp))
     return resp;
@@ -212,7 +211,6 @@ const response* handle_data_start(const str* helo_domain,
 				      const char* protocol)
 {
   const response* resp;
-  const char* tmp;
   maxdatabytes = rules_getenvu("DATABYTES");
   if (is_bounce && rcpt_count > 1) return &resp_badbounce;
   resp = backend_handle_data_start();
@@ -225,9 +223,8 @@ const response* handle_data_start(const str* helo_domain,
     backend_handle_data_bytes(received.s, received.len);
   }
 
-  maxhops = 0;
-  if ((tmp = rules_getenv("MAXHOPS")) != 0) maxhops = strtoul(tmp, 0, 10);
-  if (maxhops == 0) maxhops = 100;
+  if ((maxhops = rules_getenvu("MAXHOPS")) == 0)
+    maxhops = 100;
   
   data_bytes = 0;
   count_rec = 0;
