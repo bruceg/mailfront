@@ -1,4 +1,11 @@
 -------------------------------------------------------------------------------
+Changes in version 0.77
+
+- Added missing imapfront-auth to insthier.
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 0.76
 
 - Fixed missing "OK" bug in imapfront-auth.
