@@ -255,7 +255,7 @@ void handle_data_bytes(const char* bytes, unsigned len)
       in_rec = in_dt = in_header;
     }
     else {
-      if (in_header) {
+      if (in_header && linepos < 13) {
 	if (in_rec) {
 	  if (ch != "received:"[linepos] &&
 	      ch != "RECEIVED:"[linepos])
