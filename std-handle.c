@@ -68,6 +68,10 @@ const response* handle_init(void)
     if (!str_copys(&fixup_ip, tmp)) return &resp_oom;
     str_strip(&fixup_ip);
   }
+  /* The value of maxdatabytes gets reset in handle_data_start below.
+   * This is here simply to provide a value for SMTP to report in its
+   * EHLO response. */
+  maxdatabytes = rules_getenvu("DATABYTES");
 
   if ((resp = backend_validate_init()) != 0) return resp;
 
