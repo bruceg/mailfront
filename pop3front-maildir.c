@@ -90,6 +90,23 @@ static long scan_dir(const char* subdir, str* list, long* countptr, long max)
   return 1;
 }
 
+static void make_msg(msg* msg, const char* filename)
+{
+  struct stat s;
+  const char* c;
+  msg->filename = filename;
+  if (stat(filename, &s) == -1)
+    msg->size = 0, msg->deleted = 1;
+  else
+    msg->size = s.st_size, msg->deleted = 0;
+  msg->read = 0;
+  if ((c = strchr(filename, ':')) != 0)
+    if (c[1] == '2' && c[2] == ',')
+      for (c += 3; *c; ++c)
+	if (*c == 'S')
+	  msg->read = 1;
+}
+
 static int scan_maildir(void)
 {
   long pos;
@@ -107,16 +124,9 @@ static int scan_maildir(void)
   if (msgs != 0) free(msgs);
   if ((msgs = malloc(msg_count * sizeof msgs[0])) == 0) return 0;
 
-  for (i = pos = 0; i < msg_count; pos += strlen(msg_filenames.s+pos)+1, ++i) {
-    msg* msg = &msgs[i];
-    struct stat s;
-    msg->filename = msg_filenames.s + pos;
-    if (stat(msg->filename, &s) == -1)
-      msg->size = 0, msg->deleted = 1;
-    else
-      msg->size = s.st_size, msg->deleted = 0;
-    msg->read = 0;
-  }
+  for (i = pos = 0; i < msg_count; pos += strlen(msg_filenames.s+pos)+1, ++i)
+    make_msg(&msgs[i], msg_filenames.s + pos);
+
   return 1;
 }
 
