@@ -101,7 +101,7 @@ static const response* check_line()
   linebuf[linepos] = 0;
   for (p = patterns, i = 0; i < pattern_count; ++i, ++p) {
     if (linepos >= p->s.len &&
-	(!p->after_blank == T_AFTER_BLANK || after_blank) &&
+	(!p->after_blank || after_blank) &&
 	str_glob(&fakeline, &p->s)) {
       resp_patmatch.message = p->message;
       return &resp_patmatch;

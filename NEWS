@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------
 Changes in version 0.90
 
+- Fixed a bug in handling patterns that are not after a blank line.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
