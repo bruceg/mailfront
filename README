@@ -23,7 +23,19 @@ Development versions of mailfront are available via anonymous CVS.
 Set your CVSROOT to ":pserver:cvs@bruce-guenter.dyndns.org:/CVS",
 login with an empty password, and check out the "mailfront" module.
 
-This program is Copyright(C) 2001 Bruce Guenter, and may be copied
-according to the GNU GENERAL PUBLIC LICENSE (GPL) Version 2 or a later
-version.  A copy of this license is included with this package.  This
-package comes with no warranty of any kind.
+This project was initiated to scratch an itch at FutureQuest, Inc.   We
+are releasing it as an open-source project because we felt it would be
+useful to others, as well as to repay our debt of gratitude to the
+larger open-source community for the excellent packages we have used.
+
+For more details, you may contact FutureQuest, Inc. at:
+FutureQuest, Inc.
+PO BOX 623127
+Oviedo FL 32762-3127 USA
+http://www.FutureQuest.net/
+ossi@FutureQuest.net
+
+This package is Copyright(C) 2001 Bruce Guenter or FutureQuest, Inc.,
+and may be copied according to the GNU GENERAL PUBLIC LICENSE (GPL)
+Version 2 or a later version.  A copy of this license is included with
+this package.  This package comes with no warranty of any kind.
