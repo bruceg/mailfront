@@ -179,7 +179,10 @@ static int RCPT(void)
   msg2("RCPT ", arg.s);
   if (!saw_mail) return respond_resp(&resp_no_mail, 1);
   parse_addr_arg();
-  if (is_bounce && saw_rcpt > 0) return respond_resp(&resp_badbounce, 1);
+  if (is_bounce && saw_rcpt > 0) {
+    ++saw_rcpt;
+    return respond_resp(&resp_badbounce, 1);
+  }
   if ((resp = rules_validate_recipient(&addr)) != 0) {
     if (!number_ok(resp))
       return respond_resp(resp, 1);
