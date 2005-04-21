@@ -1,5 +1,5 @@
 /* timeout.c - Timeout setup function
- * Copyright (C) 2002  Bruce Guenter <bruceg@em.ca> or FutureQuest, Inc.
+ * Copyright (C) 2005  Bruce Guenter <bruceg@em.ca> or FutureQuest, Inc.
  * Development of this program was sponsored by FutureQuest, Inc.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -30,6 +30,7 @@
 
 unsigned long timeout;
 unsigned long session_timeout;
+extern const int authenticating;
 
 static void handle_alarm(int unused)
 {
@@ -41,14 +42,16 @@ void set_timeout(void)
   const char* tmp;
 
   timeout = 0;
-  if ((tmp = getenv("TIMEOUT")) != 0)
+  if ((authenticating && (tmp = getenv("AUTH_TIMEOUT")) != 0)
+      || (tmp = getenv("TIMEOUT")) != 0)
     timeout = strtoul(tmp, 0, 10);
   if (timeout <= 0) timeout = 1200;
   inbuf.io.timeout = timeout * 1000;
   outbuf.io.timeout = timeout * 1000;
 
   session_timeout = 0;
-  if ((tmp = getenv("SESSION_TIMEOUT")) != 0)
+  if ((authenticating && (tmp = getenv("AUTH_SESSION_TIMEOUT")) != 0)
+      || (tmp = getenv("SESSION_TIMEOUT")) != 0)
     session_timeout = strtoul(tmp, 0, 10);
   if (session_timeout <= 0) timeout = 86400;
   sig_alarm_catch(handle_alarm);

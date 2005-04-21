@@ -15,6 +15,9 @@ Changes in version 0.93
   like the latest CVM code, falling back to $LOOKUP_SECRET if that isn't
   set.
 
+- Added seperate $AUTH_TIMEOUT and $AUTH_SESSION_TIMEOUT overrides for
+  the authentication front-ends (imapfront-auth and pop3front-auth).
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

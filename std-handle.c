@@ -28,6 +28,7 @@ unsigned long maxdatabytes = 0;
 unsigned maxhops = 0;
 unsigned maxrcpts = 0;
 
+const int authenticating = 0;
 extern void set_timeout(void);
 extern void report_io_bytes(void);
 

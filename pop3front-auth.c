@@ -1,5 +1,5 @@
 /* pop3front-auth.c -- POP3 authentication front-end
- * Copyright (C) 2001  Bruce Guenter <bruceg@em.ca> or FutureQuest, Inc.
+ * Copyright (C) 2005  Bruce Guenter <bruceg@em.ca> or FutureQuest, Inc.
  * Development of this program was sponsored by FutureQuest, Inc.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -31,6 +31,7 @@
 #include "pop3.h"
 
 const char program[] = "pop3front-auth";
+const int authenticating = 1;
 
 static const char* cvm;
 static char** nextcmd;

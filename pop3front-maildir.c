@@ -1,5 +1,5 @@
 /* pop3front-maildir.c -- POP3 main program
- * Copyright (C) 2001  Bruce Guenter <bruceg@em.ca> or FutureQuest, Inc.
+ * Copyright (C) 2005  Bruce Guenter <bruceg@em.ca> or FutureQuest, Inc.
  * Development of this program was sponsored by FutureQuest, Inc.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -46,6 +46,7 @@ typedef struct
 #define MSG_DELETED ((unsigned long)-1)
 
 const char program[] = "pop3front-maildir";
+const int authenticating = 0;
 
 static str msg_filenames;
 static msg* msgs;

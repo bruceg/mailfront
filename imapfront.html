@@ -19,10 +19,11 @@ RFC 1734 compliant AUTH support through <a
 href="cvm-sasl.html">cvm-sasl</a>. The environment is set up for use
 with Courier IMAP.</p>
 
-<p>Connections are timed out after <tt>$TIMEOUT</tt> seconds of
-inactivity (defaults to 1200 seconds or 20 minutes), or
-<tt>$SESSION_TIMEOUT</tt> seconds after the connection was established
-(defaults to 86400 seconds or 24 hours).</p>
+<p>Connections are timed out after <tt>$AUTH_TIMEOUT</tt> (or
+<tt>$TIMEOUT</tt> if that is not set) seconds of inactivity (defaults to
+1200 seconds or 20 minutes), or <tt>$AUTH_SESSION_TIMEOUT</tt> (or
+<tt>$SESSION_TIMEOUT</tt> if that is not set) seconds after the
+connection was established (defaults to 86400 seconds or 24 hours).</p>
 
 </body>
 </html>
