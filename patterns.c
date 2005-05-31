@@ -11,7 +11,7 @@
 
 struct pattern
 {
-  int after_blank;
+  int mode;
   str s;
   const char* message;
 };
@@ -19,12 +19,14 @@ struct pattern
 #define T_AFTER_BLANK ('\\')
 #define T_RESPONSE ('=')
 #define T_COMMENT ('#')
+#define T_HEADER (':')
+#define T_NORMAL (0)
 
 static response resp_patmatch = { 554, 0 };
 static struct pattern* patterns;
 static str responses;
 static unsigned pattern_count;
-static int after_blank;
+static int linemode;
 static unsigned linepos;
 static unsigned linemax = 256;
 static char* linebuf;
@@ -32,6 +34,7 @@ static char* linebuf;
 static int patterns_read(const char* filename)
 {
   ibuf in;
+  int mode;
   unsigned i;
   unsigned count;
   str line = {0,0,0};
@@ -58,17 +61,24 @@ static int patterns_read(const char* filename)
   memset(patterns, 0, count * sizeof *patterns);
   for (i = 0; i < count && ibuf_getstr(&in, &line, LF); ) {
     str_rstrip(&line);
-    if (line.len > 0 && line.s[0] != T_COMMENT) {
-      if (line.s[0] == T_RESPONSE) {
+    if (line.len > 0) {
+      switch (mode = line.s[0]) {
+      case T_COMMENT:
+	continue;
+      case T_RESPONSE:
 	currmsg = responses.s + responses.len;
 	str_catb(&responses, line.s+1, line.len);
+	continue;
+      case T_AFTER_BLANK:
+      case T_HEADER:
+	break;
+      default:
+	mode = T_NORMAL;
       }
-      else {
-	patterns[i].after_blank = line.s[0] == T_AFTER_BLANK;
-	wrap_str(str_copyb(&patterns[i].s, line.s+1, line.len-1));
-	patterns[i].message = currmsg;
-	++i;
-      }
+      patterns[i].mode = mode;
+      wrap_str(str_copyb(&patterns[i].s, line.s+1, line.len-1));
+      patterns[i].message = currmsg;
+      ++i;
     }
   }
   pattern_count = i;
@@ -89,7 +99,7 @@ void patterns_init(void)
       linemax = u;
   if ((linebuf = malloc(linemax+1)) == 0)
     return;
-  after_blank = 0;
+  linemode = T_HEADER;
   linepos = 0;
 }
 
@@ -100,8 +110,9 @@ static const response* check_line()
   const str fakeline = { linebuf, linepos, 0 };
   linebuf[linepos] = 0;
   for (p = patterns, i = 0; i < pattern_count; ++i, ++p) {
-    if ((!p->after_blank || after_blank) &&
-	str_glob(&fakeline, &p->s)) {
+    if ((p->mode == T_NORMAL
+	 || p->mode == linemode)
+	&& str_glob(&fakeline, &p->s)) {
       resp_patmatch.message = p->message;
       return &resp_patmatch;
     }
@@ -118,10 +129,13 @@ const response* patterns_check(const char* bytes, unsigned len)
   for (p = bytes; p < end; ++p) {
     const char ch = *p;
     if (ch == LF) {
-      if (linepos > 0)
+      if (linepos > 0) {
 	if ((r = check_line()) != 0)
 	  return r;
-      after_blank = (linepos == 0);
+	linemode = T_NORMAL;
+      }
+      else
+	linemode = T_AFTER_BLANK;
       linepos = 0;
     }
     else {

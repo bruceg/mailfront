@@ -1,0 +1,46 @@
+cat >$tmp/patterns <<EOF
+:header
+EOF
+
+PATTERNS=$tmp/patterns sfecho <<EOF
+MAIL FROM:<>
+RCPT TO:<nobody>
+DATA
+header
+
+not
+
+also
+.
+EOF
+
+echo
+
+cat >$tmp/patterns <<EOF
+:not
+:also
+EOF
+
+PATTERNS=$tmp/patterns sfecho <<EOF
+MAIL FROM:<>
+RCPT TO:<nobody>
+DATA
+header
+
+not
+
+also
+.
+EOF
+
+rm -f $tmp/patterns
+<result>
+250 Sender=''.^M
+250 Recipient='nobody'.^M
+354 End your message with a period.^M
+554 This message contains prohibited content^M
+
+250 Sender=''.^M
+250 Recipient='nobody'.^M
+354 End your message with a period.^M
+250 Received 146 bytes.^M

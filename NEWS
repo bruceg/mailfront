@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------
 Changes in version 0.94
 
+- Added support for restricting patterns to match only in headers.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/

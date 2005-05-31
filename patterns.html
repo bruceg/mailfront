@@ -20,13 +20,21 @@ prohibited content</tt>").<p>
 
 <p>The patterns file contains a list of standard glob-style patterns.
 Each line of the file starts with a control character, which is
-<i>not</i> part of the pattern itself.  Blank lines and lines beginning
-with "<tt>#</tt>" are ignored as comments.  Lines beginning with
-"<tt>=</tt>" set the response given when a message is rejected,
-effective for all following patterns, until another response line is
-seen.  Lines beginning with "<tt>\</tt>" match only immediately after a
-blank line.  Lines beginning with any other character match any
-non-blank line.</p>
+<i>not</i> part of the pattern itself: <dl>
+
+<dt><tt>#</tt> <dd>Comment line, ignored.
+
+<dt><tt>=</tt> <dd>Sets the response text given when a message is
+rejected.  All following patterns use this response until the next
+response line.
+
+<dt><tt>:</tt> <dd>The pattern will be applied only in the header.
+
+<dt><tt>\</tt> <dd>The pattern will be applied only after a blank line.
+
+<dt>Anything else <dd>A normal pattern, applied to any non-blank line.
+
+</dl></p>
 
 <p>The following patterns list is a much simplified version of Russell
 Nelson's <a
