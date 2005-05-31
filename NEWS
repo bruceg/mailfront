@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+Changes in version 0.94
+
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 0.93
 
 - Fixed bug in pattern matching where the pattern was longer than the
