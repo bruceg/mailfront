@@ -14,7 +14,7 @@ cat >$tmp/atlist <<EOF
 b
 EOF
 
-MAILRULES=$tmp/rules $src/smtpfront-echo <<EOF | tail -n +2
+MAILRULES=$tmp/rules $src/smtpfront-echo <<EOF 2>/dev/null | tail -n +2
 MAIL FROM:<nobody@nowhere>
 RCPT TO:<a@a>
 RCPT TO:<b@a>
