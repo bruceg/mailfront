@@ -25,14 +25,7 @@ TESTREMOTEHOST=remote.host
 
 export PROTO TESTLOCALIP TESTREMOTEIP TESTLOCALHOST TESTREMOTEHOST
 
-cat >$tmp/cvm <<EOF
-#!/bin/sh
-req="\`cat -v\`"
-if [ "x\$req" = 'x^Atestuser^@^@testpass^@^@' ]; then
-  printf '\\0\\0010500\\0\\1testuser\\0\\0002500\\0\\0003500\\0\\4Test User\\0\\5$tmp\\0\\6/bin/false\\0\\7testgroup\\0\\0'
-  exit 0
-fi
-printf \\\\0144
-exit 100
-EOF
-chmod +x $tmp/cvm
+CVM_PWFILE_PATH=$tmp/pwfile
+export CVM_PWFILE_PATH
+echo testuser:testpass:500:500:Test User:$tmp:/bin/false >$CVM_PWFILE_PATH
+ln -s `which cvm-pwfile` $tmp/cvm
