@@ -1,6 +1,5 @@
-sasl-auth.o
 timeout.o
 -lcvm-sasl
--lcvm-client
+-lcvm-v2client
 -lbg
 socket.lib

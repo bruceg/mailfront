@@ -8,6 +8,9 @@
 extern str line;
 extern str domain_name;
 
+struct sasl_auth;
+extern struct sasl_auth saslauth;
+
 #define smtp_get_line() (ibuf_getstr_crlf(&inbuf, &line))
 extern int smtp_mainloop(void);
 extern int smtp_dispatch(void);

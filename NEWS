@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------
 Changes in version 0.94
 
+- Switched to CVM 2 support.
+
 - Added support for restricting patterns to match only in headers.
 
 Development of this version has been sponsored by FutureQuest, Inc.

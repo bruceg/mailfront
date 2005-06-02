@@ -1,6 +1,5 @@
 pop3.a
-sasl-auth.o
 -lcvm-sasl
--lcvm-client
+-lcvm-v2client
 -lbg
 socket.lib

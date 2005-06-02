@@ -1,25 +1,32 @@
-#include "sasl-auth.h"
+#include <cvm/sasl.h>
 #include <str/str.h>
 
-int sasl_auth_init(void)
+int sasl_auth_init(struct sasl_auth* sa)
 {
   return 1;
+  (void)sa;
 }
 
-int sasl_auth_cap(str* ignored)
+int sasl_auth_caps(str* ignored)
 {
   return 1;
+  (void)ignored;
 }
 
-int sasl_auth1(const char* ignored1, const str* ignored2)
+int sasl_auth1(struct sasl_auth* sa, const str* ignored2)
 {
   return -1;
+  (void)sa;
+  (void)ignored2;
 }
 
-int sasl_auth2(const char* ignored1,
+int sasl_auth2(struct sasl_auth* sa,
 	       const char* ignored2, const char* ignored3)
 {
   return -1;
+  (void)sa;
+  (void)ignored2;
+  (void)ignored3;
 }
 
 const char* sasl_auth_msg(int* code)

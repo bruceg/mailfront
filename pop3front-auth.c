@@ -24,10 +24,10 @@
  */
 #include <stdlib.h>
 #include <unistd.h>
-#include <cvm/client.h>
+#include <cvm/v2client.h>
 #include <iobuf/iobuf.h>
 #include <str/str.h>
-#include "sasl-auth.h"
+#include <cvm/sasl.h>
 #include "pop3.h"
 
 const char program[] = "pop3front-auth";
@@ -38,6 +38,8 @@ static char** nextcmd;
 static const char* domain;
 
 static str user;
+
+static struct sasl_auth saslauth = { .prefix = "+ " };
 
 static void do_exec(void)
 {
@@ -53,7 +55,7 @@ static void do_exec(void)
 static void cmd_auth(const str* s)
 {
   int i;
-  if ((i = sasl_auth1("+ ", s)) == 0) 
+  if ((i = sasl_auth1(&saslauth, s)) == 0) 
     do_exec();
   obuf_write(&outbuf, "-ERR ", 5);
   respond(sasl_auth_msg(&i));
@@ -73,8 +75,7 @@ static void cmd_pass(const str* s)
     respond("-ERR Send USER first");
   else {
     int cr;
-    const char* credentials[2] = { s->s, 0 };
-    if ((cr = cvm_authenticate(cvm, user.s, domain, credentials, 1)) == 0)
+    if ((cr = cvm_authenticate_password(cvm, user.s, domain, s->s, 1)) == 0)
       do_exec();
     str_truncate(&user, 0);
     if (cr == CVME_PERMFAIL)
@@ -108,7 +109,7 @@ int startup(int argc, char* argv[])
   }
   cvm = argv[1];
   nextcmd = argv+2;
-  if (!sasl_auth_init()) {
+  if (!sasl_auth_init(&saslauth)) {
     respond("-ERR Could not initialize SASL AUTH");
     return 0;
   }

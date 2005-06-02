@@ -27,8 +27,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <sysdeps.h>
-#include "sasl-auth.h"
-#include <cvm/client.h>
+#include <cvm/sasl.h>
+#include <cvm/v2client.h>
 #include <iobuf/iobuf.h>
 #include <str/str.h>
 
@@ -53,6 +53,8 @@ static str line;
 static str cmd;
 static str line_args[MAX_ARGC];
 static int line_argc;
+
+static struct sasl_auth saslauth = { .prefix = "+ " };
 
 void log_start(const char* tagstr)
 {
@@ -253,8 +255,8 @@ void cmd_login(int argc, str* argv)
   if (argc != 2)
     respond(0, "BAD LOGIN command requires exactly two arguments");
   else {
-    const char* credentials[2] = { argv[1].s, 0 };
-    if ((cr = cvm_authenticate(cvm, argv[0].s, domain, credentials, 1)) == 0)
+    if ((cr = cvm_authenticate_password(cvm, argv[0].s, domain,
+					argv[1].s, 1)) == 0)
       do_exec();
     else
       respond(0, "NO LOGIN failed");
@@ -264,8 +266,10 @@ void cmd_login(int argc, str* argv)
 void cmd_authenticate(int argc, str* argv)
 {
   int i;
-  if (argc == 1)      i = sasl_auth2("+ ", argv[0].s, 0);
-  else if (argc == 2) i = sasl_auth2("+ ", argv[0].s, argv[1].s);
+  if (argc == 1)
+    i = sasl_auth2(&saslauth, argv[0].s, 0);
+  else if (argc == 2)
+    i = sasl_auth2(&saslauth, argv[0].s, argv[1].s);
   else {
     respond(0, "BAD AUTHENTICATE command requires only one or two arguments");
     return;
@@ -330,7 +334,7 @@ static int startup(int argc, char* argv[])
     respond(NOTAG, "NO $CVM_SASL_PLAIN is not set");
     return 0;
   }
-  if (!sasl_auth_init()) {
+  if (!sasl_auth_init(&saslauth)) {
     respond(NOTAG, "NO Could not initialize SASL AUTH");
     return 0;
   }

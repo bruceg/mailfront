@@ -1,6 +1,8 @@
 #include <stdlib.h>
+#include <string.h>
 #include "mailfront.h"
-#include <cvm/client.h>
+#include <cvm/v2client.h>
+#include <cvm/credentials.h>
 
 static const char* lookup_secret;
 static const char* cvm_lookup;
@@ -25,23 +27,27 @@ const response* cvm_validate_init(void)
 
 const response* cvm_validate_recipient(const str* recipient)
 {
-  const char* credentials[2] = { lookup_secret, 0 };
-  str domain = {0,0,0};
-  str user = {0,0,0};
+  struct cvm_credential creds[3];
   unsigned i;
   const response* r = &resp_failed;
 
   if (cvm_lookup == 0) return 0;
   if ((i = str_findlast(recipient, '@')) == (unsigned)-1)
     return 0;
-  if (str_copyb(&user, recipient->s, i) &&
-      str_copyb(&domain, recipient->s+i+1, recipient->len-i-1)) {
-    switch (cvm_authenticate(cvm_lookup, user.s, domain.s, credentials, 0)) {
+  memset(creds, 0, sizeof creds);
+  creds[0].type = CVM_CRED_ACCOUNT;
+  creds[1].type = CVM_CRED_DOMAIN;
+  creds[2].type = CVM_CRED_SECRET;
+  if (str_copyb(&creds[0].value, recipient->s, i)
+      && str_copyb(&creds[1].value, recipient->s+i+1, recipient->len-i-1)
+      && str_copys(&creds[2].value, cvm_lookup)) {
+    switch (cvm_authenticate(cvm_lookup, 3, creds)) {
     case 0: r = 0; break;
     case CVME_PERMFAIL: r = &resp_norcpt;
     }
   }
-  str_free(&user);
-  str_free(&domain);
+  str_free(&creds[0].value);
+  str_free(&creds[1].value);
+  str_free(&creds[2].value);
   return r;
 }
