@@ -14,6 +14,7 @@ LISTURL = 'http://lists.untroubled.org/?list=bgware'
 # base directory in the destination site.
 EXTRAS = [
 	'ANNOUNCEMENT',
+	'ChangeLog',
 	'NEWS',
 	'README',
 	'TODO',
