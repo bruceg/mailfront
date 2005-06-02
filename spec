@@ -6,14 +6,15 @@ Copyright: GPL
 Group: Utilities/System
 Source: http://untroubled.org/@PACKAGE@/@PACKAGE@-@VERSION@.tar.gz
 BuildRoot: %{_tmppath}/@PACKAGE@-buildroot
-BuildRequires: bglibs >= 1.016
-BuildRequires: cvm-devel >= 0.18
+BuildRequires: bglibs >= 1.020
+BuildRequires: cvm-devel >= 0.71
 URL: http://untroubled.org/@PACKAGE@/
 Packager: Bruce Guenter <bruceg@em.ca>
 
 %description
 This is mailfront, a package containing customizeable network front-ends
-for mail servers.  Right now the only protocol that is handled is SMTP.
+for mail servers.  Handles POP3, QMQP, QMTP, SMTP, and IMAP
+(authentication only).
 
 %prep
 %setup

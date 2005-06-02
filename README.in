@@ -24,11 +24,13 @@ A mailing list archive is available at:
 Development versions of @PACKAGE@ are available via Subversion at:
 	svn://bruce-guenter.dyndns.org/@PACKAGE@/trunk
 
+Requirements:
+
+- bglibs version 1.020
+- cvm version 0.71
+
 Installation:
 
-- Make sure the latest versions of bglibs from
-  http://untroubled.org/bglibs/ and cvm from http://untroubled.org/cvm/
-  are compiled and installed.
 - Build the sources by running "make"
 - Run the "instshow" command to see what will be installed (optional).
 - After the package has been compiled, run the following commands as root:
