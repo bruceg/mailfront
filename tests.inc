@@ -27,5 +27,5 @@ export PROTO TESTLOCALIP TESTREMOTEIP TESTLOCALHOST TESTREMOTEHOST
 
 CVM_PWFILE_PATH=$tmp/pwfile
 export CVM_PWFILE_PATH
-echo testuser:testpass:500:500:Test User:$tmp:/bin/false >$CVM_PWFILE_PATH
+echo testuser:testpass:$_UID:$_GID:Test User:$tmp:/bin/false >$CVM_PWFILE_PATH
 ln -s `which cvm-pwfile` $tmp/cvm
