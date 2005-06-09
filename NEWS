@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------
 Changes in version 0.95
 
+- Fixed bug in header pattern matching that made it only look at the
+  first header line.  Thanks Janos Farkas.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/

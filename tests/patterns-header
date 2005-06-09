@@ -1,12 +1,13 @@
 cat >$tmp/patterns <<EOF
-:header
+:header2:*field*
 EOF
 
 PATTERNS=$tmp/patterns sfecho <<EOF
 MAIL FROM:<>
 RCPT TO:<nobody>
 DATA
-header
+header1: data
+header2: another field
 
 not
 

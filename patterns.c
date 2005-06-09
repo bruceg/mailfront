@@ -132,7 +132,8 @@ const response* patterns_check(const char* bytes, unsigned len)
       if (linepos > 0) {
 	if ((r = check_line()) != 0)
 	  return r;
-	linemode = T_NORMAL;
+	if (linemode != T_HEADER)
+	  linemode = T_NORMAL;
       }
       else
 	linemode = T_AFTER_BLANK;
