@@ -5,7 +5,9 @@ cat >$tmp/patterns <<EOF
 # comment
 EOF
 
-PATTERNS=$tmp/patterns sfecho <<EOF
+PATTERNS=$tmp/patterns
+
+sfecho <<EOF
 MAIL FROM:<>
 RCPT TO:<nobody>
 DATA

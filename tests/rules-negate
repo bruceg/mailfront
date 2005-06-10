@@ -3,7 +3,9 @@ k!a@a:*:A
 k!!a@a:*:B
 EOF
 
-MAILRULES=$tmp/rules sfecho <<EOF
+MAILRULES=$tmp/rules
+
+sfecho <<EOF
 MAIL FROM:<a@a>
 MAIL FROM:<b@b>
 EOF

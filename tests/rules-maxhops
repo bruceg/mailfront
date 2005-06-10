@@ -2,7 +2,10 @@ cat >$tmp/rules <<EOF
 ka:b:K1:::MAXHOPS=1
 EOF
 
-MAILRULES=$tmp/rules sfecho <<EOF
+MAILRULES=$tmp/rules
+export MAILRULES
+
+sfecho <<EOF
 MAIL FROM:<a>
 RCPT TO:<b>
 DATA

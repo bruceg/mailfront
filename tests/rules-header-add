@@ -2,13 +2,16 @@ cat >$tmp/rules <<EOF
 ka:b:K1:::HEADER_ADD="X-Header: testing!!!"
 EOF
 
-MAILRULES=$tmp/rules sfecho <<EOF
+MAILRULES=$tmp/rules
+
+sfecho <<EOF
 MAIL FROM:<a>
 RCPT TO:<b>
 DATA
 .
 EOF
-MAILRULES=$tmp/rules sfecho <<EOF
+
+sfecho <<EOF
 MAIL FROM:<a>
 RCPT TO:<c>
 DATA

@@ -2,7 +2,9 @@ cat >$tmp/patterns <<EOF
 :header2:*field*
 EOF
 
-PATTERNS=$tmp/patterns sfecho <<EOF
+PATTERNS=$tmp/patterns
+
+sfecho <<EOF
 MAIL FROM:<>
 RCPT TO:<nobody>
 DATA
@@ -22,7 +24,7 @@ cat >$tmp/patterns <<EOF
 :also
 EOF
 
-PATTERNS=$tmp/patterns sfecho <<EOF
+sfecho <<EOF
 MAIL FROM:<>
 RCPT TO:<nobody>
 DATA

@@ -15,7 +15,9 @@ cat <<EOF | cdbmake $tmp/atlist.cdb $tmp/atlist.tmp
 
 EOF
 
-MAILRULES=$tmp/rules sfecho <<EOF
+MAILRULES=$tmp/rules
+
+sfecho <<EOF
 MAIL FROM:<a@a>
 MAIL FROM:<b@a>
 MAIL FROM:<a@b>

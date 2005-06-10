@@ -1,4 +1,7 @@
-MAXHOPS=1 sfecho <<EOF
+MAXHOPS=1
+export MAXHOPS
+
+sfecho <<EOF
 MAIL FROM:<somebody>
 RCPT TO:<nobody@nowhere>
 DATA
@@ -8,7 +11,7 @@ EOF
 
 echo
 
-MAXHOPS=1 sfecho <<EOF
+sfecho <<EOF
 MAIL FROM:<somebody>
 RCPT TO:<nobody@nowhere>
 DATA

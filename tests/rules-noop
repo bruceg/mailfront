@@ -2,7 +2,9 @@ cat >$tmp/rules <<EOF
 n*:*:Do not see this:::RELAYCLIENT=@rc
 EOF
 
-MAILRULES=$tmp/rules sfecho <<EOF
+MAILRULES=$tmp/rules
+
+sfecho <<EOF
 MAIL FROM:<a@a>
 RCPT TO:<b@b>
 EOF

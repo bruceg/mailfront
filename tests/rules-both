@@ -5,7 +5,9 @@ kb@a:a@b:K3
 kb@a:b@b:K4
 EOF
 
-MAILRULES=$tmp/rules sfecho <<EOF
+MAILRULES=$tmp/rules
+
+sfecho <<EOF
 MAIL FROM:<a@a>
 RCPT TO:<a@b>
 RCPT TO:<b@b>

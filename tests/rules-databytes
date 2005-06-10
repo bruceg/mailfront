@@ -2,7 +2,9 @@ cat >$tmp/rules <<EOF
 ksomebody:*::123
 EOF
 
-MAILRULES=$tmp/rules sfecho <<EOF
+MAILRULES=$tmp/rules
+
+sfecho <<EOF
 EHLO hostname
 MAIL FROM:<somebody>
 MAIL FROM:<somebody> SIZE

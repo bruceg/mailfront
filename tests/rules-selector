@@ -9,7 +9,9 @@ kone@one:two@two:A
 ktwo@two:*:B
 EOF
 
-MAILRULES=$tmp/rules sfecho <<EOF
+MAILRULES=$tmp/rules
+
+sfecho <<EOF
 MAIL FROM:<one@one>
 RCPT TO:<three@three>
 RCPT TO:<four@four>

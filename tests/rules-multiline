@@ -4,7 +4,10 @@ ka@b:*:ONE\:TWO
 ka@c:*:ONE\\\\TWO:
 EOF
 
-MAILRULES=$tmp/rules sfecho <<EOF
+MAILRULES=$tmp/rules
+export MAILRULES
+
+sfecho <<EOF
 MAIL FROM:<a@a>
 MAIL FROM:<a@b>
 MAIL FROM:<a@c>

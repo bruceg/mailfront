@@ -6,7 +6,9 @@ pfmaildir() { $src/pop3front-maildir "$@" 2>/dev/null | tail -n +2; }
 maildir=$tmp/Maildir
 maildir() {
   rm -rf $maildir
-  mkdir -p $maildir/{cur,new,tmp}
+  mkdir -p $maildir/cur
+  mkdir -p $maildir/new
+  mkdir -p $maildir/tmp
 }
 tstmsg() {
   fn=$1
@@ -22,10 +24,10 @@ TESTLOCALIP=1.2.3.4
 TESTREMOTEIP=5.6.7.8
 TESTLOCALHOST=local.host
 TESTREMOTEHOST=remote.host
+CVM_PWFILE_PATH=$tmp/pwfile
 
 export PROTO TESTLOCALIP TESTREMOTEIP TESTLOCALHOST TESTREMOTEHOST
+export CVM_PWFILE_PATH MAILRULES DATABYTES MAXHOPS PATTERNS MAXNOTIMPL
 
-CVM_PWFILE_PATH=$tmp/pwfile
-export CVM_PWFILE_PATH
 echo testuser:testpass:$_UID:$_GID:Test User:$tmp:/bin/false >$CVM_PWFILE_PATH
 ln -s `which cvm-pwfile` $tmp/cvm

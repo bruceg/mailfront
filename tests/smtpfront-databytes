@@ -1,4 +1,6 @@
-DATABYTES=123 sfecho <<EOF
+DATABYTES=123
+
+sfecho <<EOF
 EHLO hostname
 MAIL FROM:<somebody>
 MAIL FROM:<somebody> SIZE

@@ -13,7 +13,9 @@ cat >$tmp/atlist <<EOF
 b
 EOF
 
-MAILRULES=$tmp/rules sfecho <<EOF
+MAILRULES=$tmp/rules
+
+sfecho <<EOF
 MAIL FROM:<a@a>
 MAIL FROM:<b@a>
 MAIL FROM:<a@b>

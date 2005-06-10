@@ -6,7 +6,9 @@ zx@y:four@four:ZZZ
 p*:five@five:PP
 EOF
 
-MAILRULES=$tmp/rules sfecho <<EOF
+MAILRULES=$tmp/rules
+
+sfecho <<EOF
 MAIL FROM:<nobody@nobody>
 RCPT TO:<one@one>
 RCPT TO:<two@two>

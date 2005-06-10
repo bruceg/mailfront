@@ -7,7 +7,9 @@ z*:z
 k*:k
 EOF
 
-MAILRULES=$tmp/rules sfecho <<EOF
+MAILRULES=$tmp/rules
+
+sfecho <<EOF
 MAIL FROM:<d>
 MAIL FROM:<z>
 MAIL FROM:<k>

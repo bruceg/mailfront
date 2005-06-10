@@ -2,7 +2,10 @@ cat >$tmp/patterns <<EOF
 \after
 EOF
 
-PATTERNS=$tmp/patterns sfecho <<EOF
+PATTERNS=$tmp/patterns
+export PATTERNS
+
+sfecho <<EOF
 MAIL FROM:<>
 RCPT TO:<nobody>
 DATA
@@ -18,7 +21,7 @@ cat >$tmp/patterns <<EOF
 \before
 EOF
 
-PATTERNS=$tmp/patterns sfecho <<EOF
+sfecho <<EOF
 MAIL FROM:<>
 RCPT TO:<nobody>
 DATA

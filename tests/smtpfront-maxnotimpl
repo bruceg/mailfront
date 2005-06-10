@@ -1,11 +1,15 @@
-MAXNOTIMPL=1 sfecho <<EOF
+MAXNOTIMPL=1
+
+sfecho <<EOF
 a
 b
 c
 d
 EOF
 
-MAXNOTIMPL=0 sfecho <<EOF
+MAXNOTIMPL=0
+
+sfecho <<EOF
 a
 b
 c
