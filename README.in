@@ -26,7 +26,7 @@ Development versions of @PACKAGE@ are available via Subversion at:
 
 Requirements:
 
-- bglibs version 1.020
+- bglibs version 1.022
 - cvm version 0.71
 
 Installation:
