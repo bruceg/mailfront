@@ -1,0 +1,29 @@
+cat >$tmp/rules <<EOF
+k*:a::1
+k*:b::9999
+k*:c::
+EOF
+
+MAILRULES=$tmp/rules
+
+sfecho <<EOF
+EHLO hostname
+MAIL FROM:<somebody>
+RCPT TO:<a>
+RCPT TO:<b>
+RCPT TO:<c>
+DATA
+testing
+.
+EOF
+<result>
+250-unknown^M
+250-SIZE 0^M
+250-8BITMIME^M
+250 PIPELINING^M
+250 Sender='somebody'.^M
+250 OK^M
+250 OK^M
+250 OK^M
+354 End your message with a period.^M
+552 Sorry, that message exceeds the maximum message length.^M

@@ -214,7 +214,8 @@ static void apply_environment(const str* s)
   unsigned len;
   for (i = 0; i < s->len; i += len + 1) {
     len = strlen(s->s + i);
-    if (i > 0) str_catc(&envars, NUL);
+    if (envars.len > 0)
+      str_catc(&envars, NUL);
     str_catb(&envars, s->s + i, len);
   }
 }
