@@ -7,12 +7,7 @@
 - Add better MIME attachment discrimination to patterns, instead of just
   keying on a blank line.
 
-- Add negation to rule patterns:
-  - Each leading ! increments a counter (parsed when parsing the rules,
-    not when using the pattern)
-  - If the counter is odd, negate the result of the pattern match
-  - Check for both a zero negate counter and a pattern of "*" when
-    deciding if it's a sender-only rule.
+- Allow selecting based on authentication state in rules.
 
 - Write install document.
 
