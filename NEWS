@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+Changes in version 0.96
+
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 0.95
 
 - Fixed bug in header pattern matching that made it only look at the
