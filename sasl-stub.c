@@ -7,10 +7,9 @@ int sasl_auth_init(struct sasl_auth* sa)
   (void)sa;
 }
 
-int sasl_auth_caps(str* ignored)
+int sasl_auth_caps(str* resp)
 {
-  return 1;
-  (void)ignored;
+  return resp->s != 0;
 }
 
 int sasl_auth1(struct sasl_auth* sa, const str* ignored2)

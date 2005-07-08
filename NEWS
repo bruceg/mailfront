@@ -4,6 +4,9 @@ Changes in version 0.96
 - Fixed the SMTP front-end's inability to handle quoted or escaped
   characters, or to strip source routing addresses.
 
+- Fixed smtpfront-reject crashing on receipt of EHLO.
+  Thanks Janos Farkas.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

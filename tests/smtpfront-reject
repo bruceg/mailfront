@@ -1,0 +1,27 @@
+<loop msg rej -rej>
+env SMTPREJECT="$msg" $src/smtpfront-reject 2>/dev/null <<EOF
+HELO nobody
+EHLO somebody
+MAIL FROM:<somewhere>
+RCPT TO:<elsewhere>
+EOF
+
+<result rej>
+220 unknown mailfront ESMTP^M
+250 unknown^M
+250-unknown^M
+250-SIZE 0^M
+250-8BITMIME^M
+250 PIPELINING^M
+451 rej^M
+503 You must send MAIL FROM: first^M
+
+<result -rej>
+220 unknown mailfront ESMTP^M
+250 unknown^M
+250-unknown^M
+250-SIZE 0^M
+250-8BITMIME^M
+250 PIPELINING^M
+553 rej^M
+503 You must send MAIL FROM: first^M
