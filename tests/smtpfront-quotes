@@ -1,0 +1,12 @@
+sfecho <<EOF
+MAIL FROM:<"me, myself, and I"@remote>
+RCPT TO:<"you, yourself, and you"@local>
+RCPT TO:<him\,himself@local>
+RCPT TO:<@somewhere,@elsewhere:two@local>
+EOF
+
+<result>
+250 Sender='me, myself, and I@remote'.^M
+250 Recipient='you, yourself, and you@local'.^M
+250 Recipient='him,himself@local'.^M
+250 Recipient='two@local'.^M

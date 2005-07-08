@@ -42,27 +42,47 @@ unsigned long maxnotimpl = 0;
 
 static int parse_addr_arg(void)
 {
-  unsigned start;
-  unsigned len;
-  unsigned end;
+  unsigned i;
+  char term;
+  int quoted;
   
   if (!str_truncate(&addr, 0)) return 0;
   if (!str_truncate(&params, 0)) return 0;
-  
-  for (start = 0; start < arg.len &&
-	 (arg.s[start] != LBRACE && arg.s[start] != COLON); ++start) ;
-  if (arg.s[start] != LBRACE)
-    for (++start; start < arg.len &&
-	   (arg.s[start] == SPACE || arg.s[start] == TAB); ++start) ;
-  if (arg.s[start] == LBRACE) ++start;
-  if (start >= arg.len) return 1;
-  if ((end = str_findnext(&arg, RBRACE, start)) == (unsigned)-1) end = arg.len;
-  len = end - start;
-  if (!str_copyb(&addr, arg.s+start, len)) return 0;
-  if (arg.s[end] == RBRACE) ++end;
-  while (arg.s[end] == SPACE) ++end;
-  if (!str_copyb(&params, arg.s+end, arg.len-end)) return 0;
+
+  addr.len = 0;
+  if ((i = str_findfirst(&arg, LBRACE) + 1) != 0)
+    term = RBRACE;
+  else {
+    term = SPACE;
+    if ((i = str_findfirst(&arg, COLON) + 1) == 0)
+      if ((i = str_findfirst(&arg, SPACE) + 1) == 0)
+	return 0;
+    while (i < arg.len && arg.s[i] == SPACE)
+      ++i;
+  }
+
+  for (quoted = 0; i < arg.len && (quoted || arg.s[i] != term); ++i) {
+    switch (arg.s[i]) {
+    case QUOTE:
+      quoted = !quoted;
+      break;
+    case ESCAPE:
+      ++i;
+      /* fall through */
+    default:
+      if (!str_catc(&addr, arg.s[i])) return 0;
+    }
+  }
+  ++i;
+  while (i < arg.len && arg.s[i] == SPACE) ++i;
+  if (!str_copyb(&params, arg.s+i, arg.len-i)) return 0;
   str_subst(&params, ' ', 0);
+
+  /* strip source routing */
+  if (addr.s[0] == AT
+      && (i = str_findfirst(&addr, COLON) + 1) != 0)
+    str_lcut(&addr, i);
+    
   return 1;
 }
 

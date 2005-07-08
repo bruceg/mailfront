@@ -10,5 +10,7 @@
 #define LBRACE '<'
 #define RBRACE '>'
 #define PERIOD '.'
+#define ESCAPE '\\'
+#define QUOTE '"'
 
 #endif

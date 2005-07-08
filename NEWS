@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------
 Changes in version 0.96
 
+- Fixed the SMTP front-end's inability to handle quoted or escaped
+  characters, or to strip source routing addresses.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
