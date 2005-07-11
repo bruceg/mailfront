@@ -362,24 +362,6 @@ const response* rules_reset(void)
 }
 
 /* rule application ******************************************************** */
-static int pattern_match(const str* pattern, const str* addr)
-{
-  const char* p;
-  const char* a;
-  if (pattern->len == 0) return addr->len == 0;
-  for (p = pattern->s, a = addr->s; *p != 0; ++p, ++a) {
-    if (*p == '*') {
-      if (*++p == 0) return 1;
-      while (*a != 0 && *a != *p) ++a;
-      if (*a == 0) return 0;
-    }
-    else
-      if (*p != *a) return 0;
-    if (!*a) break;
-  }
-  return *p == 0 && *a == 0;
-}
-
 static int matches(const struct pattern* pattern,
 		   const str* addr, const str* atdomain)
 {
@@ -406,7 +388,7 @@ static int matches(const struct pattern* pattern,
     }
   }
   else
-    result = pattern_match(&pattern->pattern, addr);
+    result = str_case_glob(addr, &pattern->pattern);
   if (pattern->negated)
     result = !result;
   return result;

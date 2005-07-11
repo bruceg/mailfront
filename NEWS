@@ -1,6 +1,9 @@
 -------------------------------------------------------------------------------
 Changes in version 0.96
 
+- Switched Pattern matching from the simpler mechanism (originated in
+  multilog) to standard shell glob.
+
 - Fixed the SMTP front-end's inability to handle quoted or escaped
   characters, or to strip source routing addresses.
 
@@ -8,6 +11,10 @@ Changes in version 0.96
   Thanks Janos Farkas.
 
 - Fixed extern/static conflict in smtp-respond.c.  Thanks Gerrit Pape.
+
+NOTE: The pattern matching change has the (small) potential to break
+existing rules' behavior, if the rules were depending on specific
+behavior of the more simplistic pattern matching used previously.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/

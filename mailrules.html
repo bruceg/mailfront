@@ -111,13 +111,25 @@ value needs to contain a comma, it must be quoted as follows:
 
 <h3>Pattern Syntax</h3>
 
-<p>A pattern is a string of stars and non-stars.  It matches any
-concatenation of strings matched by all the stars and non-stars in the
-same order.  A non-star matches itself.  A star before the end of
-pattern matches any string that does not include the next character in
-pattern. A star at the end of pattern matches any string.  Patterns
-containing only "<tt>*</tt>" match anything.  <b>Note:</b> An empty
-pattern matches <i>only</i> the empty string.</p>
+<p>Patterns are globs, similar to UNIX shell-style wildcards (but quite
+different from full regular expressions).<table>
+
+<tr> <th>Pattern</th> <th>Matches</th> </tr>
+
+<tr> <td><tt>*</tt></td> <td>Any sequence of characters (including the
+empty sequence).</td> </tr>
+
+<tr> <td><tt>?</tt></td> <td>Any single character.</td> </tr>
+
+<tr> <td><tt>[seq]</tt></td> <td>A single occurance of any character in
+<tt>seq</tt>.</td> </tr>
+
+<tr> <td><tt>[!seq]</tt></td> <td>A single occurance of any character
+<i>not</i> in <tt>seq</tt>.</td> </tr>
+
+</table>Any other character matches itself, without regard for case.
+Patterns containing only "<tt>*</tt>" match anything.
+<b>Note:</b> An empty pattern matches <i>only</i> the empty string.</p>
 
 <h3>Special Patterns</h3>
 
