@@ -6,7 +6,7 @@ Copyright: GPL
 Group: Utilities/System
 Source: http://untroubled.org/@PACKAGE@/@PACKAGE@-@VERSION@.tar.gz
 BuildRoot: %{_tmppath}/@PACKAGE@-buildroot
-BuildRequires: bglibs >= 1.022
+BuildRequires: bglibs >= 1.024
 BuildRequires: cvm-devel >= 0.71
 URL: http://untroubled.org/@PACKAGE@/
 Packager: Bruce Guenter <bruceg@em.ca>
