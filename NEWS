@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------
 Changes in version 0.97
 
+- Clear session timeouts (via alarm) before executing authenticated
+  commands in imapfront-auth and pop3front-auth.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/

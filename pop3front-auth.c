@@ -46,6 +46,7 @@ static void do_exec(void)
   if (!cvm_setugid() || !cvm_setenv())
     respond(err_internal);
   else {
+    alarm(0);
     execvp(nextcmd[0], nextcmd);
     respond("-ERR Could not execute second stage");
   }

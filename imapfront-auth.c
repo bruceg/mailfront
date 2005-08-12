@@ -243,6 +243,7 @@ void do_exec(void)
 	   setenv("AUTHENTICATED", cvm_fact_username, 1) == -1)
     respond(0, "NO Internal error: could not set environment");
   else {
+    alarm(0);
     execvp(nextcmd[0], nextcmd);
     respond(0, "NO Could not execute second stage");
   }
