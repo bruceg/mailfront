@@ -5,12 +5,18 @@
 
 <h1>qmail Backend</h1>
 
+<p><ol>
+
 <li>The qmail home directory is compiled into the program, and defaults
 to <tt>/var/qmail</tt>, but may be overridden by <tt>$QMAILHOME</tt>.
 
 <li>Messages are delivered through the executable named in
 <tt>$QMAILQUEUE</tt>, or <tt>$QMAILHOME/bin/qmail-queue</tt> if it is
 not set.
+
+<li>If <tt>qmail-queue</tt> exits non-zero, the qmail backend looks for
+an error message in <tt>$QQERRMSG_#</tt>, where <tt>#</tt> is the exit
+code of <tt>qmail-queue</tt>.
 
 <li>The qmail-queue PID is logged in success messages for correlation
 with the qmail logs.

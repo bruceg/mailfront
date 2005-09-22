@@ -1,6 +1,9 @@
 -------------------------------------------------------------------------------
 Changes in version 0.97
 
+- Add support to the qmail backend for custom qmail-queue error messages
+  taken from $QQERRMSG_#.
+
 - Clear session timeouts (via alarm) before executing authenticated
   commands in imapfront-auth and pop3front-auth.
 

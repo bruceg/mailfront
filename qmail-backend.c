@@ -1,11 +1,13 @@
+#include <sysdeps.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <misc/misc.h>
 #include <msg/msg.h>
 #include <unix/sig.h>
 #include "mailfront.h"
 #include "mailrules.h"
-#include <sysdeps.h>
 #include "conf_qmail.h"
 
 static str buffer;
@@ -118,32 +120,37 @@ void backend_handle_data_bytes(const char* bytes, unsigned long len)
 
 static void parse_status(int status, response* resp)
 {
+  char var[20];
   const char* message;
-  switch (status) {
-  case 11: message = "Address too long."; break;
-  case 31: message = "Message refused."; break;
-  case 51: message = "Out of memory."; break;
-  case 52: message = "Timeout."; break;
-  case 53: message = "Write error (queue full?)."; break;
-  case 54: message = "Unable to read the message or envelope."; break;
-  case 55: message = "Unable to read a configuration file."; break;
-  case 56: message = "Network problem."; break;
-  case 61: message = "Problem with the qmail home directory."; break;
-  case 62: message = "Problem with the qmail queue directory."; break;
-  case 63: message = "Problem with queue/pid."; break;
-  case 64: message = "Problem with queue/mess."; break;
-  case 65: message = "Problem with queue/intd."; break;
-  case 66: message = "Problem with queue/todo."; break;
-  case 71: message = "Message refused by mail server."; break;
-  case 72: message = "Connection to mail server timed out."; break;
-  case 73: message = "Connection to mail server rejected."; break;
-  case 74: message = "Communication with mail server failed."; break;
-  case 81: message = "Internal qmail-queue bug."; break;
-  case 91: message = "Envelope format error."; break;
-  default:
-    message = (status <= 40)
-      ? "Permanent qmail-queue failure."
-      : "Temporary qmail-queue failure.";
+  memcpy(var, "QQERRMSG_", 9);
+  strcpy(var+9, utoa(status));
+  if ((message = rules_getenv(var)) == 0) {
+    switch (status) {
+    case 11: message = "Address too long."; break;
+    case 31: message = "Message refused."; break;
+    case 51: message = "Out of memory."; break;
+    case 52: message = "Timeout."; break;
+    case 53: message = "Write error (queue full?)."; break;
+    case 54: message = "Unable to read the message or envelope."; break;
+    case 55: message = "Unable to read a configuration file."; break;
+    case 56: message = "Network problem."; break;
+    case 61: message = "Problem with the qmail home directory."; break;
+    case 62: message = "Problem with the qmail queue directory."; break;
+    case 63: message = "Problem with queue/pid."; break;
+    case 64: message = "Problem with queue/mess."; break;
+    case 65: message = "Problem with queue/intd."; break;
+    case 66: message = "Problem with queue/todo."; break;
+    case 71: message = "Message refused by mail server."; break;
+    case 72: message = "Connection to mail server timed out."; break;
+    case 73: message = "Connection to mail server rejected."; break;
+    case 74: message = "Communication with mail server failed."; break;
+    case 81: message = "Internal qmail-queue bug."; break;
+    case 91: message = "Envelope format error."; break;
+    default:
+      message = (status <= 40)
+	? "Permanent qmail-queue failure."
+	: "Temporary qmail-queue failure.";
+    }
   }
   resp->number = (status <= 40) ? 554 : 451;
   resp->message = message;
