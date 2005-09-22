@@ -16,7 +16,8 @@ not set.
 
 <li>If <tt>qmail-queue</tt> exits non-zero, the qmail backend looks for
 an error message in <tt>$QQERRMSG_#</tt>, where <tt>#</tt> is the exit
-code of <tt>qmail-queue</tt>.
+code of <tt>qmail-queue</tt>.  As usual, exit codes between 11 and 40
+indicate permanent errors, and all others indicate temporary errors.
 
 <li>The qmail-queue PID is logged in success messages for correlation
 with the qmail logs.

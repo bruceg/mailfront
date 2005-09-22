@@ -122,6 +122,7 @@ static void parse_status(int status, response* resp)
 {
   char var[20];
   const char* message;
+  resp->number = (status <= 40 && status => 11) ? 554 : 451;
   memcpy(var, "QQERRMSG_", 9);
   strcpy(var+9, utoa(status));
   if ((message = rules_getenv(var)) == 0) {
@@ -147,12 +148,11 @@ static void parse_status(int status, response* resp)
     case 81: message = "Internal qmail-queue bug."; break;
     case 91: message = "Envelope format error."; break;
     default:
-      message = (status <= 40)
+      message = (resp->number >= 500)
 	? "Permanent qmail-queue failure."
 	: "Temporary qmail-queue failure.";
     }
   }
-  resp->number = (status <= 40) ? 554 : 451;
   resp->message = message;
 }
 
