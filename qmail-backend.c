@@ -122,7 +122,7 @@ static void parse_status(int status, response* resp)
 {
   char var[20];
   const char* message;
-  resp->number = (status <= 40 && status => 11) ? 554 : 451;
+  resp->number = (status <= 40 && status >= 11) ? 554 : 451;
   memcpy(var, "QQERRMSG_", 9);
   strcpy(var+9, utoa(status));
   if ((message = rules_getenv(var)) == 0) {
