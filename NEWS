@@ -7,6 +7,9 @@ Changes in version 0.97
 - Clear session timeouts (via alarm) before executing authenticated
   commands in imapfront-auth and pop3front-auth.
 
+- Fixed typo in the CVM lookup code that would prevent the proper
+  operation of lookup secrets.  Thanks Dale Woolridge.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

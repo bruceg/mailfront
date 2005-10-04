@@ -40,7 +40,7 @@ const response* cvm_validate_recipient(const str* recipient)
   creds[2].type = CVM_CRED_SECRET;
   if (str_copyb(&creds[0].value, recipient->s, i)
       && str_copyb(&creds[1].value, recipient->s+i+1, recipient->len-i-1)
-      && str_copys(&creds[2].value, cvm_lookup)) {
+      && str_copys(&creds[2].value, lookup_secret)) {
     switch (cvm_authenticate(cvm_lookup, 3, creds)) {
     case 0: r = 0; break;
     case CVME_PERMFAIL: r = &resp_norcpt;
