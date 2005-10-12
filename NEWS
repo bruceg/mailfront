@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+Changes in version 0.98
+
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 0.97
 
 - Add support to the qmail backend for custom qmail-queue error messages
