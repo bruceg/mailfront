@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------
 Changes in version 0.98
 
+- Fixed one-off bug in counting recipients for $MAXRCPTS.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
