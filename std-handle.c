@@ -8,7 +8,6 @@
 #include "mailrules.h"
 #include "smtp.h"
 
-static RESPONSE(badbounce, 550, "Bounce messages should have a single recipient.");
 static RESPONSE(too_long, 552, "Sorry, that message exceeds the maximum message length.");
 static RESPONSE(hops, 554, "This message is looping, too many hops.");
 static RESPONSE(internal, 451, "Internal error.");
@@ -132,7 +131,6 @@ const response* handle_recipient(str* recip)
   const response* hresp;
   ++rcpt_count;
   if (maxrcpts > 0 && rcpt_count > maxrcpts) return &resp_manyrcpt;
-  if (rcpt_count > 1 && is_bounce) return &resp_badbounce;
   if ((resp = rules_validate_recipient(recip)) != 0) {
     if (!number_ok(resp))
       return resp;
@@ -237,7 +235,6 @@ const response* handle_data_start(const char* helo_domain,
 {
   const response* resp;
   maxdatabytes = rules_getenvu("DATABYTES");
-  if (is_bounce && rcpt_count > 1) return &resp_badbounce;
   resp = backend_handle_data_start();
   if (response_ok(resp)) {
     received.len = 0;

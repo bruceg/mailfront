@@ -1,6 +1,10 @@
 -------------------------------------------------------------------------------
 Changes in version 0.98
 
+- Removed the "bounce must have a single recipient" rule, as it is
+  currently causing more problems (with address checkers) than it is
+  solving (spammers no longer use this technique).
+
 - Fixed one-off bug in counting recipients for $MAXRCPTS.
 
 Development of this version has been sponsored by FutureQuest, Inc.
