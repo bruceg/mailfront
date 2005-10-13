@@ -15,7 +15,7 @@ static RESPONSE(str,451,"Could not perform string operation.");
 static RESPONSE(no_write,451,"Writing data to qmail-queue failed.");
 static unsigned long databytes;
 
-static char* qqargs[2] = { 0, 0 };
+static const char* qqargs[2] = { 0, 0 };
 static int qqpid = -1;
 static int qqepipe = -1;
 static int qqmpipe = -1;
@@ -88,7 +88,7 @@ const response* backend_handle_data_start(void)
     if (dup2(epipe[0], 1) == -1) exit(120);
     close(mpipe[0]);
     close(epipe[0]);
-    execvp(qqargs[0], qqargs);
+    execvp(qqargs[0], (char**)qqargs);
     exit(120);
   }
   else {
