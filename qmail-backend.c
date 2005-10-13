@@ -149,7 +149,7 @@ static void parse_status(int status, response* resp)
     case 91: message = "Envelope format error."; break;
     default:
       message = (resp->number >= 500)
-	? "Permanent qmail-queue failure."
+	? "Message rejected by qmail-queue."
 	: "Temporary qmail-queue failure.";
     }
   }
