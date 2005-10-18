@@ -1,5 +1,6 @@
 smtp.a
 echo-backend.o
+null-validate.o
 -lcvm-sasl
 -lcvm-v2client
 -lbg
