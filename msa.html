@@ -1,0 +1,203 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">MailFront</a></h2>
+<h2><a href="smtpfront.html">SMTP Front Ends</a></h2>
+
+<h1>Message Submission Agent</h1>
+
+<hr>
+
+<h2>Summary</h2>
+
+<p>An MSA (message submission agent) is a mail component specifically
+designed to accept mail submitted by an MUA (message user agent, or mail
+client) for further delivery or relaying.  This is in contrast to a MTA
+(message transfer agent) which is designed to accept mail from other
+MTAs primarily for local delivery.  The most important standard
+governing the behavior of an MSA is <a
+href="http://www.faqs.org/rfcs/rfc2476.html">RFC 2476</a>.</p>
+
+<p>In MailFront, enabling MSA mode is accomplished by setting the
+<tt>$MSA</tt> environment variable.  When set, the following operational
+changes are made:<ul>
+
+<li>All addresses (excluding the null sender) are required to have a
+fully qualified domain name.
+
+</ul></p>
+
+<p>Message submission is currently an incomplete work-in-progress.</p>
+
+<h2>RFC 2476 Details</h2>
+
+<table border="1">
+
+<tr> <th>Section</th> <th>Description</th> <th>Status</th> </tr>
+
+<tr> <th colspan="3">Requirements</th> </tr>
+
+<tr> <td>3.2</td> <td>A null return path, that is, MAIL FROM:<>, is
+permitted and MUST be accepted. (MUAs need to generate null return-path
+messages for a variety of reasons, including disposition
+notifications.)</td> <td>Yes</td> </tr>
+
+<tr> <td>4.1</td> <td>Unless covered by a more precise response code,
+response code 554 is to be used to reject a MAIL FROM, RCPT TO, or DATA
+command that contains something improper.  Enhanced status code 5.6.0 is
+to be used if no other code is more specific.</td> <td>?</td> </tr>
+
+<tr> <td>4.2</td> <td>The MSA MUST ensure that all domains in the
+envelope are fully-qualified.</td> <td>Yes</td> </tr>
+
+<tr> <td>4.2</td> <td>If the MSA examines or alters the message text in
+way, except to add trace header fields [RFC 821 / RFC 2821], it MUST
+ensure that all domains in address header fields are
+fully-qualified.</td> <td>N/A</td> </tr>
+
+<tr> <td>4.2</td> <td>Reply code 554 is to be used to reject a MAIL
+FROM, RCPT TO, or DATA command which contains improper domain
+references.</td> <td>Yes</td> </tr>
+
+<tr> <td>5.1</td> <td>Reply code 501 is to be used to reject a MAIL FROM
+or RCPT TO command that contains a detectably improper address.</td>
+<td>?</td> </tr>
+
+<tr> <td>5.1</td> <td>When addresses are resolved after submission of
+the message body, reply code 554 with enhanced status code 5.6.2 is to
+be used after end-of-data, if the message contains invalid addresses in
+the header.</td> <td>N/A</td> </tr>
+
+<tr> <td>6.4</td> <td>Reply code 554 is used for syntactic problems in
+the data.  Reply code 501 is used if the command itself is not
+syntactically valid.  Reply code 550 with enhanced status code 5.7.1 is
+used to reject based on the submitting user.  Reply code 550 with
+enhanced status code 5.7.0 is used if the message violates site
+policy.</td> <td></td> </tr>
+
+<tr> <td>7</td> <td>The MSA MUST NOT accept ETRN. [RFC 1985]</td>
+<td>Yes</td> </tr>
+
+<tr> <td>7</td> <td>The MSA MUST NOT send the SMTP 521 Reply Code [RFC
+1845]</td> <td>Yes</td> </tr>
+
+<tr> <td>8.1</td> <td>The MSA MUST ensure that any address it places in
+a 'Sender' field is in fact a valid mail address.</td> <td>N/A</td>
+</tr>
+
+<tr> <th colspan="3">Recommendations</th> </tr>
+
+<tr> <td>3.2</td> <td>If an MSA is not able to determine a return path
+to the submitting user, from a valid MAIL FROM, a valid source IP
+address, or based on authenticated identity, then the MSA SHOULD
+immediately reject the message.  A message can be immediately rejected
+by returning a 550 code to the MAIL FROM command.</td> <td></td> </tr>
+
+<tr> <td>4.2</td> <td>Local conventions that permit single-level domains
+SHOULD reject, rather than expand, incomplete multi-level domains.</td>
+<td>?</td> </tr>
+
+<tr> <td>5.1</td> <td>An MSA SHOULD reject messages with illegal syntax
+in a sender or recipient envelope address.</td> <td></td> </tr>
+
+<tr> <td>5.1</td> <td>If the MSA examines or alters the message text in
+way, except to add trace header fields, it SHOULD reject messages with
+illegal address syntax in address header fields.</td> <td>N/A</td> </tr>
+
+<tr> <td>5.2</td> <td>The MSA SHOULD log message errors, especially
+apparent misconfigurations of client software.</td> <td>No</td> </tr>
+
+<tr> <td>7</td> <td>The MSA SHOULD accept pipelining. [RFC 2197]</td>
+<td>Yes</td> </tr>
+
+<tr> <td>7</td> <td>The MSA SHOULD send error codes. [RFC 2034]</td>
+<td>No?</td> </tr>
+
+<tr> <td>7</td> <td>The MSA SHOULD send extended response codes. [RFC
+1893]</td> <td>No</td> </tr>
+
+<tr> <td>7</td> <td>The MSA SHOULD support DSN. [RFC 1891]</td>
+<td>No</td> </tr>
+
+<tr> <td>7</td> <td>The MSA SHOULD accept 8-bit MIME data. [RFC
+1652]</td> <td>Yes?</td> </tr>
+
+<tr> <th colspan="3">Options</th> </tr>
+
+<tr> <td>3.2</td> <td>MTAs and MSAs MAY implement message rejection
+rules that rely in part on whether the message is a submission or a
+relay.</td> <td></td> </tr>
+
+<tr> <td>3.2</td> <td>Except in the case where the MSA is unable to
+determine a valid return path for the message being submitted, text in
+this specification which instructs an MSA to issue a rejection code MAY
+be complied with by accepting the message and subsequently generating a
+bounce message. (That is, if the MSA is going to reject a message for
+any reason except being unable to determine a return path, it can
+optionally do an immediate rejection or accept the message and then mail
+a bounce.)</td> <td></td> </tr>
+
+<tr> <td>6.1</td> <td>The MSA MAY issue an error response to the MAIL
+FROM command if the address in MAIL FROM appears to have insufficient
+submission rights, or is not authorized with the authentication used (if
+the session has been authenticated).  Reply code 550 with enhanced
+status code 5.7.1 is used for this purpose.</td> <td></td> </tr>
+
+<tr> <td>6.2</td> <td>The MSA MAY issue an error response to the MAIL
+FROM command if the session has not been authenticated.  Reply code 530
+[SMTP-AUTH] is used for this purpose.</td> <td></td> </tr>
+
+<tr> <td>6.3</td> <td>The MSA MAY issue an error response to the RCPT TO
+command if inconsistent with the permissions given to the user (if the
+session has been authenticated).  Reply code 550 with enhanced status
+code 5.7.1 is used for this purpose.</td> <td></td> </tr>
+
+<tr> <td>6.4</td> <td>The MSA MAY issue an error response to the DATA
+command or send a failure result after end-of-data if the submitted
+message is syntactically invalid, or seems inconsistent with permissions
+given to the user (if known), or violates site policy in some way.</td>
+<td></td> </tr>
+
+<tr> <td>7</td> <td>The MSA MAY support the SIZE extension. [RFC
+1870]</td> <td>Yes</td> </tr>
+
+<tr> <td>7</td> <td>The MSA MAY checkpoint. [RFC 1845]</td> <td>No</td>
+</tr>
+
+<tr> <td>7</td> <td>The MSA MAY accept binary chunked data. [RFC
+1830]</td> <td>No</td> </tr>
+
+<tr> <td>8.1</td> <td>The MSA MAY add or replace the 'Sender' field, if
+the identity of the sender is known and this is not given in the 'From'
+field.</td> <td>No</td> </tr>
+
+<tr> <td>8.2</td> <td>The MSA MAY add a 'Date' field to the submitted
+message, if it lacks it, or correct the 'Date' field if it does not
+conform to [RFC 822/2822/1123] syntax.</td> <td>No</td> </tr>
+
+<tr> <td>8.3</td> <td>The MSA MAY add or replace the 'Message-ID' field,
+if it lacks it, or it is not valid syntax (as defined by [RFC
+822/2822/1123]).</td> <td>No</td> </tr>
+
+<tr> <td>8.4</td> <td>The MSA MAY apply transfer encoding to the message
+according to MIME conventions, if needed and not harmful to the MIME
+type.</td> <td>No</td> </tr>
+
+<tr> <td>8.5</td> <td>The MSA MAY (digitally) sign or otherwise add
+authentication information to the message.</td> <td>No</td> </tr>
+
+<tr> <td>8.6</td> <td>The MSA MAY encrypt the message for transport to
+reflect organizational policies.</td> <td>No</td> </tr>
+
+<tr> <td>8.7</td> <td>The MSA MAY resolve aliases (CNAME records) for
+domain names, in the envelope and optionally in address fields of the
+header, subject to local policy.</td> <td>No</td> </tr>
+
+<tr> <td>8.8</td> <td>The MSA MAY rewrite local parts and/or domains, in
+the envelope and optionally in address fields of the header, according
+to local policy.</td> <td>No</td> </tr>
+
+</table>
+
+</body>
+</html>

@@ -38,6 +38,7 @@ static const char* remote_ip;
 static str fixup_host;
 static str fixup_ip;
 static const char* linkproto;
+static const char* msa;
 
 const char* getprotoenv(const char* name)
 {
@@ -55,6 +56,7 @@ const response* handle_init(void)
 
   set_timeout();
 
+  msa = getenv("MSA");
   if ((linkproto = getenv("PROTO")) == 0) linkproto = "TCP";
   if ((local_ip = getprotoenv("LOCALIP")) != 0 && *local_ip == 0)
     local_ip = 0;
@@ -78,6 +80,7 @@ const response* handle_init(void)
   maxdatabytes = rules_getenvu("DATABYTES");
 
   if ((resp = backend_validate_init()) != 0) return resp;
+  if (msa && (resp = msa_validate_init()) != 0) return resp;
 
   return rules_init();
 }
@@ -114,6 +117,8 @@ const response* handle_sender(str* sender)
   maxrcpts = rules_getenvu("MAXRCPTS");
   relayclient = rules_getenv("RELAYCLIENT");
   maxdatabytes = rules_getenvu("DATABYTES");
+  if (msa && resp == 0)
+    resp = msa_validate_sender(sender);
   if (resp == 0)
     resp = backend_validate_sender(sender);
   if (!response_ok(resp))
@@ -135,6 +140,8 @@ const response* handle_recipient(str* recip)
     if (!number_ok(resp))
       return resp;
   }
+  else if (msa && (resp = msa_validate_recipient(recip)) != 0)
+    return resp;
   else if (relayclient != 0)
     str_cats(recip, relayclient);
   else if (authenticated)

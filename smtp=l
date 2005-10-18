@@ -1,5 +1,6 @@
 iobytes.o
 mailrules.o
+msa.o
 patterns.o
 responses.o
 std-handle.o
