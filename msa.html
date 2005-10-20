@@ -22,8 +22,14 @@ href="http://www.faqs.org/rfcs/rfc2476.html">RFC 2476</a>.</p>
 <tt>$MSA</tt> environment variable.  When set, the following operational
 changes are made:<ul>
 
-<li>All addresses (excluding the null sender) are required to have a
-fully qualified domain name.
+<li>If <tt>$DEFAULTHOST</tt> is set, all envelope addresses without a
+host name have <tt>@$DEFAULTHOST</tt> appended to them.
+
+<li>If <tt>$DEFAULTDOMAIN</tt> is set, all envelope addresses without a
+full domain name have <tt>.$DEFAULTDOMAIN</tt> appended to them.
+
+<li>All envelope addresses (excluding the null sender) are required to
+have a fully qualified domain name.
 
 </ul></p>
 
