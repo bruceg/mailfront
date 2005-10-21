@@ -10,7 +10,7 @@
 #include <iobuf/iobuf.h>
 #include <msg/msg.h>
 
-static RESPONSE(authfail, 421, "Failed to initialize AUTH");
+static RESPONSE(authfail, 421, "4.3.0 Failed to initialize AUTH");
 
 str line = {0,0,0};
 str domain_name = {0,0,0};
