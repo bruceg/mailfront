@@ -110,9 +110,16 @@ static void make_msg(msg* m, const char* filename)
 
 static int fn_compare(const str_sortentry* a, const str_sortentry* b)
 {
-  int at = atoi(a->str+4);
-  int bt = atoi(b->str+4);
-  return at - bt;
+  if (a->str[4] < '0'
+      || a->str[4] > '9'
+      || b->str[4] < '0'
+      || b->str[4] > '9')
+    return strcmp(a->str+4, b->str+4);
+  else {
+    int at = atoi(a->str+4);
+    int bt = atoi(b->str+4);
+    return at - bt;
+  }
 }
 
 static int scan_maildir(void)
@@ -344,6 +351,18 @@ static void cmd_top(const str* arg)
   dump_msg(num, lines);
 }
 
+static unsigned long uidl_len(const char* filename)
+{
+  const char* end;
+  unsigned long len;
+  len = ((end = strchr(filename, ':')) != 0)
+    ? (unsigned long)(end - filename)
+    : strlen(filename);
+  if (len > 70)
+    len = 70;
+  return len;
+}
+
 static void cmd_uidl(void)
 {
   long i;
@@ -352,13 +371,9 @@ static void cmd_uidl(void)
     msg* m = &msgs[i];
     if (!m->deleted) {
       const char* fn = m->filename + 4;
-      const char* end;
       obuf_putu(&outbuf, i+1);
       obuf_putc(&outbuf, SPACE);
-      if ((end = strchr(fn, ':')) == 0)
-	obuf_puts(&outbuf, fn);
-      else
-	obuf_write(&outbuf, fn, end - fn);
+      obuf_write(&outbuf, fn, uidl_len(fn));
       obuf_puts(&outbuf, CRLF);
     }
   }
@@ -368,16 +383,13 @@ static void cmd_uidl(void)
 static void cmd_uidl_one(const str* arg)
 {
   long i;
-  const char* end;
   const char* fn;
   if ((i = msgnum(arg)) == 0) return;
   fn = msgs[i-1].filename + 4;
-  if ((end = strchr(fn, ':')) == 0)
-    end = fn + strlen(fn);
   if (!str_copys(&tmp, "+OK ") ||
       !str_catu(&tmp, i) ||
       !str_catc(&tmp, SPACE) ||
-      !str_catb(&tmp, fn, end-fn))
+      !str_catb(&tmp, fn, uidl_len(fn)))
     respond(err_internal);
   else
     respond(tmp.s);

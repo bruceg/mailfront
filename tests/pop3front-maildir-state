@@ -2,6 +2,7 @@
 <loop command UIDL 'TOP 1 0' 'RETR 1'>
 maildir
 tstmsg new/1
+tstmsg new/this.is.a.very.long.filename.that.should.get.truncated.after.the.X...XBUGBUGBUGBUG
 (
   echo $command
   if $quit; then echo QUIT; fi
@@ -10,8 +11,10 @@ tstmsg new/1
 <result false UIDL>
 +OK ^M
 1 1^M
+2 this.is.a.very.long.filename.that.should.get.truncated.after.the.X...X^M
 .^M
 new/1
+new/this.is.a.very.long.filename.that.should.get.truncated.after.the.X...XBUGBUGBUGBUG
 <result false 'TOP 1 0'>
 +OK ^M
 Header: foo^M
@@ -19,6 +22,7 @@ Header: foo^M
 ^M
 .^M
 new/1
+new/this.is.a.very.long.filename.that.should.get.truncated.after.the.X...XBUGBUGBUGBUG
 <result false 'RETR 1'>
 +OK ^M
 Header: foo^M
@@ -27,12 +31,15 @@ body^M
 ^M
 .^M
 new/1
+new/this.is.a.very.long.filename.that.should.get.truncated.after.the.X...XBUGBUGBUGBUG
 <result true UIDL>
 +OK ^M
 1 1^M
+2 this.is.a.very.long.filename.that.should.get.truncated.after.the.X...X^M
 .^M
 +OK ^M
 cur/1
+cur/this.is.a.very.long.filename.that.should.get.truncated.after.the.X...XBUGBUGBUGBUG
 <result true 'TOP 1 0'>
 +OK ^M
 Header: foo^M
@@ -41,6 +48,7 @@ Header: foo^M
 .^M
 +OK ^M
 cur/1
+cur/this.is.a.very.long.filename.that.should.get.truncated.after.the.X...XBUGBUGBUGBUG
 <result true 'RETR 1'>
 +OK ^M
 Header: foo^M
@@ -50,3 +58,4 @@ body^M
 .^M
 +OK ^M
 cur/1:2,S
+cur/this.is.a.very.long.filename.that.should.get.truncated.after.the.X...XBUGBUGBUGBUG
