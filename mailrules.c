@@ -11,9 +11,9 @@
 #include <iobuf/iobuf.h>
 #include <str/str.h>
 
-static RESPONSE(erropen,421,"Could not open $MAILRULES file");
-static RESPONSE(syntax,421,"Syntax error in $MAILRULES");
-static RESPONSE(erropenref,421,"Error opening file referenced from $MAILRULES");
+static RESPONSE(erropen,421,"4.3.0 Could not open $MAILRULES file");
+static RESPONSE(syntax,421,"4.3.0 Syntax error in $MAILRULES");
+static RESPONSE(erropenref,421,"4.3.0 Error opening file referenced from $MAILRULES");
 
 #define NUL 0
 

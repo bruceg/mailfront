@@ -17,22 +17,22 @@ static str addr;
 static str params;
 static str helo_domain;
 
-static RESPONSE(ehlo,250,"8BITMIME\nPIPELINING");
-static RESPONSE(no_mail, 503, "You must send MAIL FROM: first");
-static RESPONSE(vrfy, 252, "Send some mail, I'll try my best.");
-static RESPONSE(help, 214, "Help not available.");
-static RESPONSE(mail_ok, 250, "Sender accepted.");
-static RESPONSE(rcpt_ok, 250, "Recipient accepted.");
-static RESPONSE(no_rcpt, 503, "You must send RCPT TO: first");
-static RESPONSE(data_ok, 354, "End your message with a period.");
-static RESPONSE(data_end, 250, "Message accepted.");
-static RESPONSE(ok, 250, "OK");
-static RESPONSE(unimp, 500, "Not implemented.");
-static RESPONSE(internal, 451, "Internal error.");
-static RESPONSE(needsparam, 501, "That command requires a parameter.");
-static RESPONSE(auth_already, 503, "You are already authenticated.");
-static RESPONSE(toobig, 552, "The message would exceed the maximum message size.");
-static RESPONSE(toomanyunimp, 503, "Too many unimplemented commands.\nClosing connection.");
+static RESPONSE(ehlo,250,"8BITMIME\nENHANCEDSTATUSCODES\nPIPELINING");
+static RESPONSE(no_mail, 503, "5.5.1 You must send MAIL FROM: first");
+static RESPONSE(vrfy, 252, "2.5.2 Send some mail, I'll try my best.");
+static RESPONSE(help, 214, "2.0.0 Help not available.");
+static RESPONSE(mail_ok, 250, "2.1.0 Sender accepted.");
+static RESPONSE(rcpt_ok, 250, "2.1.5 Recipient accepted.");
+static RESPONSE(no_rcpt, 503, "5.5.1 You must send RCPT TO: first");
+static RESPONSE(data_ok, 354, "End your message with a period on a line by itself.");
+static RESPONSE(ok, 250, "2.3.0 OK");
+static RESPONSE(unimp, 500, "5.5.1 Not implemented.");
+static RESPONSE(needsparam, 501, "5.5.2 That command requires a parameter.");
+static RESPONSE(auth_already, 503, "5.5.1 You are already authenticated.");
+static RESPONSE(toobig, 552, "5.2.3 The message would exceed the maximum message size.");
+static RESPONSE(toomanyunimp, 503, "5.5.0 Too many unimplemented commands.\n5.5.0 Closing connection.");
+static RESPONSE(goodbye, 221, "2.0.0 Good bye.");
+static RESPONSE(authenticated, 235, "2.7.0 Authentication succeeded.");
 
 static int saw_mail = 0;
 static int saw_rcpt = 0;
@@ -105,7 +105,7 @@ static const char* find_param(const char* name)
 
 static int QUIT(void)
 {
-  respond(221, 1, "Good bye.");
+  respond_resp(&resp_goodbye, 1);
   exit(0);
   return 0;
 }
@@ -260,7 +260,7 @@ static int DATA(void)
     do_reset();
     return 0;
   }
-  if ((resp = handle_data_end()) == 0) resp = &resp_data_end;
+  if ((resp = handle_data_end()) == 0) resp = &resp_accepted;
   return respond_resp(resp, 1);
 }
 
@@ -286,7 +286,7 @@ static int AUTH(void)
   else {
     authenticated = 1;
     str_truncate(&helo_domain, 0);
-    respond(235, 1, "Authentication succeeded.");
+    respond_resp(&resp_authenticated, 1);
   }
   return 1;
 }

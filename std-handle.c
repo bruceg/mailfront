@@ -8,10 +8,9 @@
 #include "mailrules.h"
 #include "smtp.h"
 
-static RESPONSE(too_long, 552, "Sorry, that message exceeds the maximum message length.");
-static RESPONSE(hops, 554, "This message is looping, too many hops.");
-static RESPONSE(internal, 451, "Internal error.");
-static RESPONSE(manyrcpt, 550, "Too many recipients");
+static RESPONSE(too_long, 552, "5.2.3 Sorry, that message exceeds the maximum message length.");
+static RESPONSE(hops, 554, "5.6.0 This message is looping, too many hops.");
+static RESPONSE(manyrcpt, 550, "5.5.3 Too many recipients");
 
 const char UNKNOWN[] = "unknown";
 

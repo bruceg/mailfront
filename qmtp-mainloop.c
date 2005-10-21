@@ -12,8 +12,6 @@
 
 unsigned long maxdatabytes;
 
-static RESPONSE(accepted,256,"Message accepted");
-
 static const response* resp;
 
 static char buf[8192];

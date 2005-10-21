@@ -10,6 +10,8 @@
 #include <iobuf/iobuf.h>
 #include <msg/msg.h>
 
+static RESPONSE(authfail, 421, "Failed to initialize AUTH");
+
 str line = {0,0,0};
 str domain_name = {0,0,0};
 
@@ -40,7 +42,7 @@ int smtp_mainloop(void)
   if ((resp = handle_init()) != 0) { respond_resp(resp, 1); return 1; }
 
   if (!sasl_auth_init(&saslauth))
-    return respond(421, 1, "Failed to initialize AUTH");
+    return respond_resp(&resp_authfail, 1);
 
   if (!respond(220, 1, str_welcome.s)) return 1;
   while (smtp_get_line())

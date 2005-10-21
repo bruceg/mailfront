@@ -6,6 +6,11 @@
 #include "conf_qmail.h"
 #include <cdb/cdb.h>
 
+static RESPONSE(no_chdir,451,"4.3.0 Could not change to the qmail directory.");
+static RESPONSE(badmailfrom,553,"5.1.0 Sorry, your envelope sender is in my badmailfrom list.");
+static RESPONSE(rh,553,"5.1.1 Sorry, that domain isn't in my list of allowed rcpthosts.");
+static RESPONSE(bmt,553,"5.1.1 Sorry, that address is in my badrcptto list.");
+
 static dict bmf;
 static dict rh;
 static dict brt;
@@ -21,19 +26,17 @@ static int lower(str* s)
 
 const response* backend_validate_init(void)
 {
-  static RESPONSE(no_chdir,451,"Could not change to the qmail directory.");
-  static RESPONSE(error,451,"Internal error.");
   const char* qh;
   
   if ((qh = getenv("QMAILHOME")) == 0)
     qh = conf_qmail;
   if (chdir(qh) == -1) return &resp_no_chdir;
   if (!dict_load_list(&bmf, "control/badmailfrom", 0, lower))
-    return &resp_error;
+    return &resp_internal;
   if (!dict_load_list(&rh, "control/rcpthosts", 0, lower))
-    return &resp_error;
+    return &resp_internal;
   if (!dict_load_list(&brt, "control/badrcptto", 0, lower))
-    return &resp_error;
+    return &resp_internal;
   if ((mrh_fd = open("control/morercpthosts.cdb", O_RDONLY)) != -1)
     cdb_init(&mrh, mrh_fd);
   return cvm_validate_init();
@@ -41,7 +44,6 @@ const response* backend_validate_init(void)
 
 const response* backend_validate_sender(str* sender)
 {
-  static RESPONSE(badmailfrom,553,"Sorry, your envelope sender is in my badmailfrom list.");
   int at;
   str_copy(&tmp, sender);
   str_lower(&tmp);
@@ -56,8 +58,6 @@ const response* backend_validate_sender(str* sender)
 
 const response* backend_validate_recipient(str* recipient)
 {
-  static RESPONSE(rh,553,"Sorry, that domain isn't in my list of allowed rcpthosts.");
-  static RESPONSE(bmt,553,"Sorry, that address is in my badrcptto list.");
   int at;
 
   str_copy(&tmp, recipient);

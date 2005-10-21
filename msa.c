@@ -2,8 +2,8 @@
 #include <msg/wrap.h>
 #include "mailfront.h"
 
-static RESPONSE(nodomain,554,"Address is missing a domain name");
-static RESPONSE(nofqdn,554,"Address does not contain a fully qualified domain name");
+static RESPONSE(nodomain,554,"5.1.2 Address is missing a domain name");
+static RESPONSE(nofqdn,554,"5.1.2 Address does not contain a fully qualified domain name");
 
 const char *defaultdomain;
 const char *defaulthost;

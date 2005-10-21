@@ -10,9 +10,13 @@
 #include "mailrules.h"
 #include "conf_qmail.h"
 
+static RESPONSE(no_write,451,"4.3.0 Writing data to qmail-queue failed.");
+static RESPONSE(no_pipe,451,"4.3.0 Could not open pipe to qmail-queue.");
+static RESPONSE(no_fork,451,"4.3.0 Could not start qmail-queue.");
+static RESPONSE(no_chdir,451,"4.3.0 Could not change to the qmail directory.");
+static RESPONSE(qq_crashed,451,"4.3.0 qmail-queue crashed.");
+
 static str buffer;
-static RESPONSE(str,451,"Could not perform string operation.");
-static RESPONSE(no_write,451,"Writing data to qmail-queue failed.");
 static unsigned long databytes;
 
 static const char* qqargs[2] = { 0, 0 };
@@ -37,7 +41,7 @@ const response* backend_handle_sender(str* sender)
 {
   if (!str_catc(&buffer, 'F') ||
       !str_cat(&buffer, sender) ||
-      !str_catc(&buffer, 0)) return &resp_str;
+      !str_catc(&buffer, 0)) return &resp_oom;
   return 0;
 }
 
@@ -45,16 +49,12 @@ const response* backend_handle_recipient(str* recipient)
 {
   if (!str_catc(&buffer, 'T') ||
       !str_cat(&buffer, recipient) ||
-      !str_catc(&buffer, 0)) return &resp_str;
+      !str_catc(&buffer, 0)) return &resp_oom;
   return 0;
 }
 
 const response* backend_handle_data_start(void)
 {
-  static RESPONSE(no_pipe,451,"Could not open pipe to qmail-queue.");
-  static RESPONSE(no_fork,451,"Could not start qmail-queue.");
-  static RESPONSE(no_chdir,451,"Could not change to the qmail directory.");
-
   int mpipe[2];
   int epipe[2];
   const char* qh;
@@ -127,30 +127,30 @@ static void parse_status(int status, response* resp)
   strcpy(var+9, utoa(status));
   if ((message = rules_getenv(var)) == 0) {
     switch (status) {
-    case 11: message = "Address too long."; break;
-    case 31: message = "Message refused."; break;
-    case 51: message = "Out of memory."; break;
-    case 52: message = "Timeout."; break;
-    case 53: message = "Write error (queue full?)."; break;
-    case 54: message = "Unable to read the message or envelope."; break;
-    case 55: message = "Unable to read a configuration file."; break;
-    case 56: message = "Network problem."; break;
-    case 61: message = "Problem with the qmail home directory."; break;
-    case 62: message = "Problem with the qmail queue directory."; break;
-    case 63: message = "Problem with queue/pid."; break;
-    case 64: message = "Problem with queue/mess."; break;
-    case 65: message = "Problem with queue/intd."; break;
-    case 66: message = "Problem with queue/todo."; break;
-    case 71: message = "Message refused by mail server."; break;
-    case 72: message = "Connection to mail server timed out."; break;
-    case 73: message = "Connection to mail server rejected."; break;
-    case 74: message = "Communication with mail server failed."; break;
-    case 81: message = "Internal qmail-queue bug."; break;
-    case 91: message = "Envelope format error."; break;
+    case 11: message = "5.1.3 Address too long."; break;
+    case 31: message = "5.3.0 Message refused."; break;
+    case 51: message = "4.3.0 Out of memory."; break;
+    case 52: message = "4.3.0 Timeout."; break;
+    case 53: message = "4.3.0 Write error (queue full?)."; break;
+    case 54: message = "4.3.0 Unable to read the message or envelope."; break;
+    case 55: message = "4.3.0 Unable to read a configuration file."; break;
+    case 56: message = "4.3.0 Network problem."; break;
+    case 61: message = "4.3.0 Problem with the qmail home directory."; break;
+    case 62: message = "4.3.0 Problem with the qmail queue directory."; break;
+    case 63: message = "4.3.0 Problem with queue/pid."; break;
+    case 64: message = "4.3.0 Problem with queue/mess."; break;
+    case 65: message = "4.3.0 Problem with queue/intd."; break;
+    case 66: message = "4.3.0 Problem with queue/todo."; break;
+    case 71: message = "4.3.0 Message refused by mail server."; break;
+    case 72: message = "4.3.0 Connection to mail server timed out."; break;
+    case 73: message = "4.3.0 Connection to mail server rejected."; break;
+    case 74: message = "4.3.0 Communication with mail server failed."; break;
+    case 81: message = "4.3.0 Internal qmail-queue bug."; break;
+    case 91: message = "4.3.0 Envelope format error."; break;
     default:
       message = (resp->number >= 500)
-	? "Message rejected by qmail-queue."
-	: "Temporary qmail-queue failure.";
+	? "5.3.0 Message rejected by qmail-queue."
+	: "4.3.0 Temporary qmail-queue failure.";
     }
   }
   resp->message = message;
@@ -158,7 +158,6 @@ static void parse_status(int status, response* resp)
 
 const response* backend_handle_data_end(void)
 {
-  static RESPONSE(qq_crashed,451,"qmail-queue crashed.");
   static response resp;
 
   int status;
@@ -172,7 +171,7 @@ const response* backend_handle_data_end(void)
   if ((status = WEXITSTATUS(status)) != 0)
     parse_status(status, &resp);
   else {
-    str_copys(&buffer, "Accepted message qp ");
+    str_copys(&buffer, "2.6.0 Accepted message qp ");
     str_catu(&buffer, qqpid);
     str_cats(&buffer, " bytes ");
     str_catu(&buffer, databytes);

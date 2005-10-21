@@ -7,8 +7,8 @@
 static const char* lookup_secret;
 static const char* cvm_lookup;
 
-static RESPONSE(norcpt,553,"Sorry, that recipient does not exist.");
-static RESPONSE(failed,451,"Sorry, I could not verify that recipient (internal temporary error).");
+static RESPONSE(norcpt,553,"5.1.1 Sorry, that recipient does not exist.");
+static RESPONSE(failed,451,"4.1.0 Sorry, I could not verify that recipient (internal temporary error).");
 
 const response* cvm_validate_init(void)
 {

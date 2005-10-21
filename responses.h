@@ -8,7 +8,10 @@ struct response
 };
 typedef struct response response;
 
+extern const response resp_accepted;
+extern const response resp_internal;
 extern const response resp_oom;
+
 #define RESPONSE(NAME,CODE,MSG) const response resp_##NAME = {CODE,MSG}
 
 #endif
