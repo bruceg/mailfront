@@ -34,21 +34,21 @@ EOF
 unset CVM_SASL_PLAIN
 <result>
 504 Unrecognized authentication mechanism.^M
-250 Sender accepted.^M
-553 Sorry, that domain isn't in my list of allowed rcpthosts.^M
+250 2.1.0 Sender accepted.^M
+553 5.1.1 Sorry, that domain isn't in my list of allowed rcpthosts.^M
 334 VXNlcm5hbWU6^M
 334 UGFzc3dvcmQ6^M
 501 Authentication failed.^M
 334 VXNlcm5hbWU6^M
 334 UGFzc3dvcmQ6^M
-235 Authentication succeeded.^M
-503 You are already authenticated.^M
-250 Sender accepted.^M
-250 Recipient accepted.^M
+235 2.7.0 Authentication succeeded.^M
+503 5.5.1 You are already authenticated.^M
+250 2.1.0 Sender accepted.^M
+250 2.1.5 Recipient accepted.^M
 334 UGFzc3dvcmQ6^M
-235 Authentication succeeded.^M
+235 2.7.0 Authentication succeeded.^M
 334 VXNlcm5hbWU6^M
 334 UGFzc3dvcmQ6^M
 501 Authentication failed.^M
-250 Sender accepted.^M
-553 Sorry, that domain isn't in my list of allowed rcpthosts.^M
+250 2.1.0 Sender accepted.^M
+553 5.1.1 Sorry, that domain isn't in my list of allowed rcpthosts.^M

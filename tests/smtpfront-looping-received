@@ -21,10 +21,10 @@ EOF
 <result>
 250 Sender='somebody'.^M
 250 Recipient='nobody@nowhere'.^M
-354 End your message with a period.^M
+354 End your message with a period on a line by itself.^M
 250 Received 142 bytes.^M
 
 250 Sender='somebody'.^M
 250 Recipient='nobody@nowhere'.^M
-354 End your message with a period.^M
-554 This message is looping, too many hops.^M
+354 End your message with a period on a line by itself.^M
+554 5.6.0 This message is looping, too many hops.^M

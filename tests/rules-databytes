@@ -18,11 +18,12 @@ EOF
 250-unknown^M
 250-SIZE 0^M
 250-8BITMIME^M
+250-ENHANCEDSTATUSCODES^M
 250 PIPELINING^M
 250 OK^M
 250 OK^M
 250 OK^M
 250 OK^M
 250 OK^M
-552 The message would exceed the maximum message size.^M
-503 You must send MAIL FROM: first^M
+552 5.2.3 The message would exceed the maximum message size.^M
+503 5.5.1 You must send MAIL FROM: first^M

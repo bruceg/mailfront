@@ -14,5 +14,5 @@ unset MAXRCPTS
 250 Sender='not@bounce'.^M
 250 Recipient='addr1@domain'.^M
 250 Recipient='addr2@domain'.^M
-550 Too many recipients^M
-550 Too many recipients^M
+550 5.5.3 Too many recipients^M
+550 5.5.3 Too many recipients^M

@@ -26,14 +26,14 @@ EOF
 250 Sender='not@bounce'.^M
 250 Recipient='addr1@domain'.^M
 250 Recipient='addr2@domain'.^M
-354 End your message with a period.^M
+354 End your message with a period on a line by itself.^M
 250 Received 128 bytes.^M
 250 Sender=''.^M
 250 Recipient='addr1@domain'.^M
-354 End your message with a period.^M
+354 End your message with a period on a line by itself.^M
 250 Received 128 bytes.^M
 250 Sender=''.^M
 250 Recipient='addr1@domain'.^M
 250 Recipient='addr2@domain'.^M
-354 End your message with a period.^M
+354 End your message with a period on a line by itself.^M
 250 Received 128 bytes.^M

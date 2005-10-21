@@ -27,9 +27,9 @@ rm -f $tmp/rules
 <result>
 250 Sender='a'.^M
 250 K1^M
-354 End your message with a period.^M
-554 This message is looping, too many hops.^M
+354 End your message with a period on a line by itself.^M
+554 5.6.0 This message is looping, too many hops.^M
 250 Sender='a'.^M
 250 Recipient='c'.^M
-354 End your message with a period.^M
+354 End your message with a period on a line by itself.^M
 250 Received 158 bytes.^M

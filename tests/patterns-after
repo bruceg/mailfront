@@ -35,10 +35,10 @@ rm -f $tmp/patterns
 <result>
 250 Sender=''.^M
 250 Recipient='nobody'.^M
-354 End your message with a period.^M
+354 End your message with a period on a line by itself.^M
 554 This message contains prohibited content^M
 
 250 Sender=''.^M
 250 Recipient='nobody'.^M
-354 End your message with a period.^M
+354 End your message with a period on a line by itself.^M
 250 Received 142 bytes.^M

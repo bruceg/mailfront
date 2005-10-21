@@ -17,10 +17,10 @@ d
 EOF
 
 <result>
-500 Not implemented.^M
-503-Too many unimplemented commands.^M
-503 Closing connection.^M
-500 Not implemented.^M
-500 Not implemented.^M
-500 Not implemented.^M
-500 Not implemented.^M
+500 5.5.1 Not implemented.^M
+503-5.5.0 Too many unimplemented commands.^M
+503 5.5.0 Closing connection.^M
+500 5.5.1 Not implemented.^M
+500 5.5.1 Not implemented.^M
+500 5.5.1 Not implemented.^M
+500 5.5.1 Not implemented.^M

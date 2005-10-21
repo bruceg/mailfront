@@ -20,10 +20,11 @@ EOF
 250-unknown^M
 250-SIZE 0^M
 250-8BITMIME^M
+250-ENHANCEDSTATUSCODES^M
 250 PIPELINING^M
 250 Sender='somebody'.^M
 250 OK^M
 250 OK^M
 250 OK^M
-354 End your message with a period.^M
-552 Sorry, that message exceeds the maximum message length.^M
+354 End your message with a period on a line by itself.^M
+552 5.2.3 Sorry, that message exceeds the maximum message length.^M

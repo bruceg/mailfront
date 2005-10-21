@@ -12,9 +12,10 @@ EOF
 250-unknown^M
 250-SIZE 0^M
 250-8BITMIME^M
+250-ENHANCEDSTATUSCODES^M
 250 PIPELINING^M
 451 rej^M
-503 You must send MAIL FROM: first^M
+503 5.5.1 You must send MAIL FROM: first^M
 
 <result -rej>
 220 unknown mailfront ESMTP^M
@@ -22,6 +23,7 @@ EOF
 250-unknown^M
 250-SIZE 0^M
 250-8BITMIME^M
+250-ENHANCEDSTATUSCODES^M
 250 PIPELINING^M
 553 rej^M
-503 You must send MAIL FROM: first^M
+503 5.5.1 You must send MAIL FROM: first^M

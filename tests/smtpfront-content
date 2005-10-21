@@ -22,9 +22,9 @@ EOF
 <result>
 250 Sender='user@remote'.^M
 250 Recipient='user@local'.^M
-354 End your message with a period.^M
+354 End your message with a period on a line by itself.^M
 250 Received 153 bytes.^M
 250 Sender='user@remote'.^M
 250 Recipient='user@local'.^M
-354 End your message with a period.^M
+354 End your message with a period on a line by itself.^M
 250 Received 154 bytes.^M
