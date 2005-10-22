@@ -11,7 +11,7 @@
 static RESPONSE(too_long, 552, "5.2.3 Sorry, that message exceeds the maximum message length.");
 static RESPONSE(hops, 554, "5.6.0 This message is looping, too many hops.");
 static RESPONSE(manyrcpt, 550, "5.5.3 Too many recipients");
-static RESPONSE(mustauth, 503, "5.7.1 You must authenticate first.");
+static RESPONSE(mustauth, 530, "5.7.1 You must authenticate first.");
 
 const char UNKNOWN[] = "unknown";
 
