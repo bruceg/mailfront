@@ -11,6 +11,7 @@
 static RESPONSE(too_long, 552, "5.2.3 Sorry, that message exceeds the maximum message length.");
 static RESPONSE(hops, 554, "5.6.0 This message is looping, too many hops.");
 static RESPONSE(manyrcpt, 550, "5.5.3 Too many recipients");
+static RESPONSE(mustauth, 503, "5.7.1 You must authenticate first.");
 
 const char UNKNOWN[] = "unknown";
 
@@ -38,6 +39,7 @@ static str fixup_host;
 static str fixup_ip;
 static const char* linkproto;
 static const char* msa;
+static const char* require_auth;
 
 const char* getprotoenv(const char* name)
 {
@@ -56,6 +58,7 @@ const response* handle_init(void)
   set_timeout();
 
   msa = getenv("MSA");
+  require_auth = getenv("REQUIRE_AUTH");
   if ((linkproto = getenv("PROTO")) == 0) linkproto = "TCP";
   if ((local_ip = getprotoenv("LOCALIP")) != 0 && *local_ip == 0)
     local_ip = 0;
@@ -108,6 +111,8 @@ const response* handle_sender(str* sender)
 {
   const response* resp;
   const response* tmpresp;
+  if (require_auth && !(authenticated || relayclient != 0))
+    return &resp_mustauth;
   /* Logic:
    * if rules_validate_sender returns a response, use it
    * else if backend_validate_sender returns a response, use it

@@ -32,6 +32,9 @@ each recipient address.  Back-end validation is omitted.
 recipients not rejected by mail rules are allowed, and back-end
 validation is omitted.
 
+<li>If <tt>$REQUIRE_AUTH</tt> is set, all mail is rejected unless either
+<tt>$RELAYCLIENT</tt> is set or the sender authenticates.
+
 <li>Automatically handles either bare NL or RFC 821/2821 compliant
 CR/NL end-of-line conventions.
 

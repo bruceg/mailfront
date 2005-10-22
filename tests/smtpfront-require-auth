@@ -1,0 +1,19 @@
+export CVM_SASL_PLAIN=$tmp/cvm
+export REQUIRE_AUTH=1
+
+sfqmail <<EOF
+MAIL FROM: <user@remote>
+RCPT TO: <user@remote>
+AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
+MAIL FROM: <user@remote>
+RCPT TO: <user@remote>
+EOF
+
+unset CVM_SASL_PLAIN
+unset REQUIRE_AUTH
+<result>
+503 5.7.1 You must authenticate first.^M
+503 5.5.1 You must send MAIL FROM: first^M
+235 2.7.0 Authentication succeeded.^M
+250 2.1.0 Sender accepted.^M
+250 2.1.5 Recipient accepted.^M

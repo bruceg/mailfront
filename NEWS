@@ -3,6 +3,10 @@ Changes in version 0.98
 
 - Added enhanced mail system status codes (RFC 1893/2034).
 
+- Added support for rejecting all mail unless client is authenticated
+  (either as a relay client or with SMTP authentication) if
+  $REQUIRE_AUTH is set.
+
 - Removed the "bounce must have a single recipient" rule, as it is
   currently causing more problems (with address checkers) than it is
   solving (spammers no longer use this technique).
