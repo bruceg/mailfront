@@ -1,0 +1,63 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">MailFront</a></h2>
+
+<h1>Standard Handlers</h1>
+
+<hr>
+
+<h2>Overview</h2>
+
+<p>The code for SMTP is divided internally into two sections:
+front-end and back-end code.  The front-end code handles the low-level
+details of the protocol.  The back-end code handles the validation and
+delivery details in a protocol-independant fashion.</p>
+
+<h2>Features</h2>
+
+<p>The following features are common to all front-ends that use the
+standard handlers: <ul>
+
+<li>Validates senders and recipients according to <a
+href="mailrules.html">mail rules</a> processing.
+
+<li>If <tt>$MSA</tt> is set, the front end functions as a <a
+href="msa.html">message submission agent</a>.
+
+<li>If <tt>$RELAYCLIENT</tt> is set, all recipient addresses not
+rejected by mail rules are allowed, and its contents are appended to
+each recipient address.  Back-end validation is omitted.
+
+<li>If <tt>$REQUIRE_AUTH</tt> is set, all mail is rejected unless either
+<tt>$RELAYCLIENT</tt> is set or the sender authenticates.
+
+<li>Rejects messages that exceed <tt>$DATABYTES</tt> bytes in length.
+
+<li>Counts the number of "<tt>Received:</tt>" and
+"<tt>Delivered-To:</tt>" headers, and rejects the message if more than
+<tt>$MAXHOPS</tt> of either are seen (defaults to 100).
+
+<li>Optionally adds a fixup "<tt>Received:</tt>" header for hosts that
+have different incoming and outgoing hostnames or IPs.  Set
+<tt>$FIXUP_RECEIVED_HOST</tt> and <tt>$FIXUP_RECEIVED_IP</tt> if you
+want this header added.
+
+<li>Optional user-specified headers may be added by setting
+<tt>$HEADER_ADD</tt>.
+
+<li>If <tt>$CVM_LOOKUP</tt> is set, recipients are sent to the named CVM
+to see if they are valid.  If <tt>CVM_LOOKUP_SECRET</tt> or
+<tt>$LOOKUP_SECRET</tt> are set and not empty, the value is sent as a
+single credential to the CVM.</tt>
+
+<li>If <tt>$MAXRCPTS</tt> is set, the number of recipients allowed per
+message is limited to that number.</tt>
+
+<li>Support for <a href="patterns.html">pattern matching</a> in the
+message data.
+
+</ul></p>
+
+</body>
+</html>

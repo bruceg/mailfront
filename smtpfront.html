@@ -18,36 +18,17 @@ delivery details in a protocol-independant fashion.</p>
 
 <p>The following features are common to all SMTP front-ends: <ul>
 
-<li>Validates senders and recipients according to <a
-href="mailrules.html">mail rules</a> processing.
-
-<li>If <tt>$MSA</tt> is set, the front end functions as a <a
-href="msa.html">message submission agent</a>.
-
-<li>If <tt>$RELAYCLIENT</tt> is set, all recipient addresses not
-rejected by mail rules are allowed, and its contents are appended to
-each recipient address.  Back-end validation is omitted.
-
 <li>Handles RFC 2554 SMTP authentication.  After authentication all
 recipients not rejected by mail rules are allowed, and back-end
 validation is omitted.
 
-<li>If <tt>$REQUIRE_AUTH</tt> is set, all mail is rejected unless either
-<tt>$RELAYCLIENT</tt> is set or the sender authenticates.
-
 <li>Automatically handles either bare NL or RFC 821/2821 compliant
 CR/NL end-of-line conventions.
-
-<li>Rejects messages that exceed <tt>$DATABYTES</tt> bytes in length.
 
 <li>Times out connections after <tt>$TIMEOUT</tt> seconds of inactivity
 (defaults to 1200 seconds or 20 minutes), or <tt>$SESSION_TIMEOUT</tt>
 seconds after the connection was established (defaults to 86400 seconds
 or 24 hours).
-
-<li>Counts the number of "<tt>Received:</tt>" and
-"<tt>Delivered-To:</tt>" headers, and rejects the message if more than
-<tt>$MAXHOPS</tt> of either are seen (defaults to 100).
 
 <li>All error responses are logged.
 
@@ -57,30 +38,8 @@ TO:</tt> and <tt>MAIL FROM:</tt> commands.
 <li>Initial greeting message is configureable by
 <tt>$SMTPGREETING</tt>.
 
-<li>Rejects bounce messages (messages with an empty envelope sender)
-that attempt to deliver to multiple recipients.
-
-<li>Optionally adds a fixup "<tt>Received:</tt>" header for hosts that
-have different incoming and outgoing hostnames or IPs.  Set
-<tt>$FIXUP_RECEIVED_HOST</tt> and <tt>$FIXUP_RECEIVED_IP</tt> if you
-want this header added.
-
-<li>Optional user-specified headers may be added by setting
-<tt>$HEADER_ADD</tt>.
-
-<li>If <tt>$CVM_LOOKUP</tt> is set, recipients are sent to the named CVM
-to see if they are valid.  If <tt>CVM_LOOKUP_SECRET</tt> or
-<tt>$LOOKUP_SECRET</tt> are set and not empty, the value is sent as a
-single credential to the CVM.</tt>
-
 <li>Supports RFC 1870 SMTP Service Extension for Message Size
 Declaration.
-
-<li>If <tt>$MAXRCPTS</tt> is set, the number of recipients allowed per
-message is limited to that number.</tt>
-
-<li>Support for <a href="patterns.html">pattern matching</a> in the
-message data.
 
 <li>If <tt>$MAXNOTIMPL</tt> is set, clients are disconnected if they
 send more than the specified number of commands that result in a
@@ -92,11 +51,13 @@ send more than the specified number of commands that result in a
 
 <dl>
 
-<dt><tt>smtpfront-echo</tt> <dd><p>Uses the echo backend to simply
-echo back the sender and recipient parameters, and the size of the
-data to the client.</p>
+<dt><tt>smtpfront-echo</tt> <dd><p>Uses <a
+href="std-handle.html">standard handlers</a> with the echo backend to
+simply echo back the sender and recipient parameters, and the size of
+the data to the client.</p>
 
-<dt><tt>smtpfront-qmail</tt> <dd><p>Uses the <a
+<dt><tt>smtpfront-qmail</tt> <dd><p>Uses <a
+href="std-handle.html">standard handlers</a> with the <a
 href="qmail-validate.html">qmail validation features</a> to validate
 addresses, and the <a href="qmail-backend.html">qmail backend</a> to
 deliver messages.</p>
