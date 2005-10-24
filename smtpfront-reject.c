@@ -8,53 +8,52 @@ const char program[] = "smtpfront-reject";
 
 static response resp = {451,"You are not allowed to use this mail server."};
 
-const response* backend_validate_init(void)
+int authenticated = 0;
+const int authenticating = 0;
+unsigned long maxdatabytes = 0;
+const char UNKNOWN[] = "unknown";
+
+int number_ok(const response* r)
+{
+  return r->number < 400;
+}
+
+const response* handle_init(void)
 {
   return 0;
 }
 
-void backend_handle_reset(void)
+const response* handle_reset(void)
 {
-  relayclient = 0;
-  authenticated = 0;
+  return 0;
 }
 
-const response* backend_validate_sender(str* unused)
-{
-  return &resp;
-  (void)unused;
-}
-
-const response* backend_validate_recipient(str* unused)
+const response* handle_sender(str* unused)
 {
   return &resp;
   (void)unused;
 }
 
-const response* backend_handle_sender(str* unused)
+const response* handle_recipient(str* unused)
 {
   return &resp;
   (void)unused;
 }
 
-const response* backend_handle_recipient(str* unused)
+const response* handle_data_start(const char* unused1, const char* unused2)
 {
   return &resp;
-  (void)unused;
+  (void)unused1;
+  (void)unused2;
 }
 
-const response* backend_handle_data_start(void)
-{
-  return &resp;
-}
-
-void backend_handle_data_bytes(const char* unused1, unsigned long unused2)
+void handle_data_bytes(const char* unused1, unsigned unused2)
 {
   (void)unused1;
   (void)unused2;
 }
 
-const response* backend_handle_data_end(void)
+const response* handle_data_end(void)
 {
   return &resp;
 }
