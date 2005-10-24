@@ -1,6 +1,5 @@
 qmtp.a
 qmail.a
-cvm-validate.o
 -lcvm-v2client
 -lbg
 socket.lib

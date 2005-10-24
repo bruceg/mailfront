@@ -39,7 +39,7 @@ const response* backend_validate_init(void)
     return &resp_internal;
   if ((mrh_fd = open("control/morercpthosts.cdb", O_RDONLY)) != -1)
     cdb_init(&mrh, mrh_fd);
-  return cvm_validate_init();
+  return 0;
 }
 
 const response* backend_validate_sender(str* sender)
@@ -78,5 +78,5 @@ const response* backend_validate_recipient(str* recipient)
       str_lcut(&tmp, at);
     }
   }
-  return cvm_validate_recipient(recipient);
+  return 0;
 }

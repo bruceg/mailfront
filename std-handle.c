@@ -82,6 +82,7 @@ const response* handle_init(void)
   maxdatabytes = rules_getenvu("DATABYTES");
 
   if ((resp = backend_validate_init()) != 0) return resp;
+  if ((resp = cvm_validate_init()) != 0) return resp;
   if (msa && (resp = msa_validate_init()) != 0) return resp;
 
   return rules_init();
@@ -151,6 +152,10 @@ const response* handle_recipient(str* recip)
   else if (authenticated)
     resp = 0;
   else if ((resp = backend_validate_recipient(recip)) != 0) {
+    if (!number_ok(resp))
+      return resp;
+  }
+  else if ((resp = cvm_validate_recipient(recip)) != 0) {
     if (!number_ok(resp))
       return resp;
   }
