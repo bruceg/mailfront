@@ -98,16 +98,6 @@ const response* handle_reset(void)
   return 0;
 }
 
-int number_ok(const response* resp)
-{
-  return resp->number < 400;
-}
-
-int response_ok(const response* resp)
-{
-  return resp == 0 || number_ok(resp);
-}
-
 const response* handle_sender(str* sender)
 {
   const response* resp;

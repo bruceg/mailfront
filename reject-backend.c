@@ -11,16 +11,6 @@ unsigned long maxdatabytes = 0;
 const char* relayclient = "";
 const char UNKNOWN[] = "unknown";
 
-int number_ok(const response* r)
-{
-  return r->number < 400;
-}
-
-int response_ok(const response* r)
-{
-  return r == 0 || number_ok(r);
-}
-
 const response* handle_init(void)
 {
   return 0;

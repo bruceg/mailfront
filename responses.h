@@ -14,4 +14,7 @@ extern const response resp_oom;
 
 #define RESPONSE(NAME,CODE,MSG) const response resp_##NAME = {CODE,MSG}
 
+extern int number_ok(const response* r);
+extern int response_ok(const response* r);
+
 #endif
