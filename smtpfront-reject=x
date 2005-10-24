@@ -1,3 +1,4 @@
+reject-backend.o
 smtp.a
 sasl-stub.o
 -lbg
