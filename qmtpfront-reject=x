@@ -1,0 +1,3 @@
+reject-backend.o
+qmtp.a
+-lbg

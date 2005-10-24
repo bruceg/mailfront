@@ -15,6 +15,8 @@ Changes in version 0.98
 
 - Truncate UIDL responses to 70 characters as per RFC 1939.
 
+- Added QMQP and QMTP "reject" front ends, for completeness.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

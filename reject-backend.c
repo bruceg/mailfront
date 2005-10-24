@@ -8,11 +8,17 @@ static response resp = {451,"You are not allowed to use this mail server."};
 int authenticated = 0;
 const int authenticating = 0;
 unsigned long maxdatabytes = 0;
+const char* relayclient = "";
 const char UNKNOWN[] = "unknown";
 
 int number_ok(const response* r)
 {
   return r->number < 400;
+}
+
+int response_ok(const response* r)
+{
+  return r == 0 || number_ok(r);
 }
 
 const response* handle_init(void)
