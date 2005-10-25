@@ -1,6 +1,6 @@
 RELAYCLIENT= sfecho <<EOF
-MAIL FROM:<user@remote>
-RCPT TO:<user@local>
+MAIL FROM:<user@example.net>
+RCPT TO:<user@example.com>
 DATA
 Subject: test
 
@@ -8,8 +8,8 @@ foo
 ..
 bar
 .
-MAIL FROM:<user@remote>
-RCPT TO:<user@local>
+MAIL FROM:<user@example.net>
+RCPT TO:<user@example.com>
 DATA
 Subject: test
 
@@ -20,11 +20,11 @@ bar
 .
 EOF
 <result>
-250 Sender='user@remote'.^M
-250 Recipient='user@local'.^M
+250 Sender='user@example.net'.^M
+250 Recipient='user@example.com'.^M
 354 End your message with a period on a line by itself.^M
 250 Received 153 bytes.^M
-250 Sender='user@remote'.^M
-250 Recipient='user@local'.^M
+250 Sender='user@example.net'.^M
+250 Recipient='user@example.com'.^M
 354 End your message with a period on a line by itself.^M
 250 Received 154 bytes.^M

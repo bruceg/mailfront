@@ -5,8 +5,8 @@ EOF
 export CVM_SASL_LOGIN=$tmp/cvm
 
 sfqmail <<EOF
-MAIL FROM: <user@remote>
-RCPT TO: <user@remote>
+MAIL FROM: <user@example.com>
+RCPT TO: <user@example.com>
 AUTH LOGIN
 dGVzdHVzZXI=
 dGVzdHBhc3x=
@@ -14,8 +14,8 @@ AUTH LOGIN
 dGVzdHVzZXI=
 dGVzdHBhc3M=
 AUTH LOGIN
-MAIL FROM: <user@remote>
-RCPT TO: <user@remote>
+MAIL FROM: <user@example.com>
+RCPT TO: <user@example.com>
 EOF
 
 sfqmail << EOF
@@ -27,8 +27,8 @@ sfqmail <<EOF
 AUTH LOGIN
 dGVzdHVzZXI=
 *
-MAIL FROM: <user@remote>
-RCPT TO: <user@remote>
+MAIL FROM: <user@example.com>
+RCPT TO: <user@example.com>
 EOF
 
 unset CVM_SASL_PLAIN

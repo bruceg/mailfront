@@ -1,6 +1,6 @@
 cat >$tmp/rules <<EOF
-ka@a:*:K1
-k*@a:*:K2
+ka@example.com:*:K1
+k*@example.com:*:K2
 kc@*:*:K3
 k*:*:K4
 EOF
@@ -9,12 +9,12 @@ MAILRULES=$tmp/rules
 export MAILRULES
 
 sfecho <<EOF
-MAIL FROM:<a@a>
-MAIL FROM:<b@a>
-MAIL FROM:<c@b>
-MAIL FROM:<d@d>
+MAIL FROM:<a@example.com>
+MAIL FROM:<b@example.com>
+MAIL FROM:<c@example.net>
+MAIL FROM:<d@example.org>
 MAIL FROM:<>
-MAIL FROM:<1@2@a@a>
+MAIL FROM:<1@2@example.com@example.com>
 EOF
 
 rm -f $tmp/rules

@@ -27,11 +27,6 @@ extern const response* handle_data_end(void);
 extern const response* cvm_validate_init(void);
 extern const response* cvm_validate_recipient(const str*);
 
-/* From msa.c */
-extern const response* msa_validate_init(void);
-extern const response* msa_validate_sender(str*);
-extern const response* msa_validate_recipient(str*);
-
 /* From netstring.c */
 int get_netstring_len(ibuf* in, unsigned long* i);
 int get_netstring(ibuf* in, str* s);

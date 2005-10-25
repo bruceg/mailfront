@@ -7,7 +7,7 @@ MAILRULES=$tmp/rules
 
 sfecho <<EOF
 MAIL FROM:<>
-MAIL FROM:<foo>
+MAIL FROM:<foo@example.com>
 EOF
 
 rm -f $tmp/rules

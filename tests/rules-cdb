@@ -5,26 +5,26 @@ d*:*:DD
 EOF
 
 cat <<EOF | cdbmake $tmp/list.cdb $tmp/list.tmp
-+3,0:a@a->
-+2,0:@c->
++13,0:a@example.net->
++12,0:@example.com->
 
 EOF
 
 cat <<EOF | cdbmake $tmp/atlist.cdb $tmp/atlist.tmp
-+1,0:b->
++11,0:example.org->
 
 EOF
 
 MAILRULES=$tmp/rules
 
 sfecho <<EOF
-MAIL FROM:<a@a>
-MAIL FROM:<b@a>
-MAIL FROM:<a@b>
-MAIL FROM:<b@B>
-MAIL FROM:<c@c>
-MAIL FROM:<c@C>
-MAIL FROM:<d@d>
+MAIL FROM:<a@example.net>
+MAIL FROM:<b@example.net>
+MAIL FROM:<a@example.org>
+MAIL FROM:<b@Example.ORG>
+MAIL FROM:<c@example.com>
+MAIL FROM:<c@Example.COM>
+MAIL FROM:<d@example.biz>
 EOF
 
 rm -f $tmp/rules $tmp/list.cdb $tmp/atlist.cdb

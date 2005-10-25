@@ -2,8 +2,8 @@ MAXHOPS=1
 export MAXHOPS
 
 sfecho <<EOF
-MAIL FROM:<somebody>
-RCPT TO:<nobody@nowhere>
+MAIL FROM:<somebody@example.com>
+RCPT TO:<nobody@example.org>
 DATA
 Delivered-To: foo
 .
@@ -12,20 +12,20 @@ EOF
 echo
 
 sfecho <<EOF
-MAIL FROM:<somebody>
-RCPT TO:<nobody@nowhere>
+MAIL FROM:<somebody@example.com>
+RCPT TO:<nobody@example.org>
 DATA
 Delivered-To: foo
 Delivered-To: foo
 .
 EOF
 <result>
-250 Sender='somebody'.^M
-250 Recipient='nobody@nowhere'.^M
+250 Sender='somebody@example.com'.^M
+250 Recipient='nobody@example.org'.^M
 354 End your message with a period on a line by itself.^M
 250 Received 146 bytes.^M
 
-250 Sender='somebody'.^M
-250 Recipient='nobody@nowhere'.^M
+250 Sender='somebody@example.com'.^M
+250 Recipient='nobody@example.org'.^M
 354 End your message with a period on a line by itself.^M
 554 5.6.0 This message is looping, too many hops.^M

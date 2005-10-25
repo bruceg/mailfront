@@ -6,29 +6,29 @@ d*:*:DD
 EOF
 
 cat >$tmp/list <<EOF
-a@a
-@c
+a@example.net
+@example.com
 EOF
 
 cat >$tmp/atlist <<EOF
-b
+example.org
 EOF
 
 MAILRULES=$tmp/rules $src/smtpfront-echo <<EOF 2>/dev/null | tail -n +2
-MAIL FROM:<nobody@nowhere>
-RCPT TO:<a@a>
-RCPT TO:<b@a>
-RCPT TO:<a@b>
-RCPT TO:<b@B>
-RCPT TO:<c@c>
-RCPT TO:<c@C>
-RCPT TO:<d@d>
+MAIL FROM:<nobody@example.com>
+RCPT TO:<a@example.net>
+RCPT TO:<b@example.net>
+RCPT TO:<a@example.org>
+RCPT TO:<b@example.org>
+RCPT TO:<c@example.com>
+RCPT TO:<c@Example.COM>
+RCPT TO:<d@example.biz>
 EOF
 
 rm -f $tmp/rules $tmp/list $tmp/atlist
 
 <result>
-250 Sender='nobody@nowhere'.^M
+250 Sender='nobody@example.com'.^M
 250 LIST^M
 553 DD^M
 250 ATLIST^M

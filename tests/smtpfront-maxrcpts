@@ -2,17 +2,17 @@ MAXRCPTS=2
 export MAXRCPTS
 
 sfecho <<EOF
-MAIL FROM:<not@bounce>
-RCPT TO:<addr1@domain>
-RCPT TO:<addr2@domain>
-RCPT TO:<addr3@domain>
-RCPT TO:<addr4@domain>
+MAIL FROM:<notbounce@example.com>
+RCPT TO:<addr1@example.net>
+RCPT TO:<addr2@example.net>
+RCPT TO:<addr3@example.net>
+RCPT TO:<addr4@example.net>
 EOF
 
 unset MAXRCPTS
 <result>
-250 Sender='not@bounce'.^M
-250 Recipient='addr1@domain'.^M
-250 Recipient='addr2@domain'.^M
+250 Sender='notbounce@example.com'.^M
+250 Recipient='addr1@example.net'.^M
+250 Recipient='addr2@example.net'.^M
 550 5.5.3 Too many recipients^M
 550 5.5.3 Too many recipients^M

@@ -1,21 +1,21 @@
 cat >$tmp/rules <<EOF
-dd:*
-zz:*
-kk:*
-d*:d
-z*:z
-k*:k
+dd@example.com:*
+zz@example.com:*
+kk@example.com:*
+d*:d@example.com
+z*:z@example.com
+k*:k@example.com
 EOF
 
 MAILRULES=$tmp/rules
 
 sfecho <<EOF
-MAIL FROM:<d>
-MAIL FROM:<z>
-MAIL FROM:<k>
-RCPT TO:<d>
-RCPT TO:<z>
-RCPT TO:<k>
+MAIL FROM:<d@example.com>
+MAIL FROM:<z@example.com>
+MAIL FROM:<k@example.com>
+RCPT TO:<d@example.com>
+RCPT TO:<z@example.com>
+RCPT TO:<k@example.com>
 EOF
 
 rm -f $tmp/rules

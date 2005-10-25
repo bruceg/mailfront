@@ -1,19 +1,19 @@
 cat >$tmp/rules <<EOF
-kone@one:*:KK
-dtwo@two:*:DD
-zthree@three:*:ZZ
-zfour@four:one@one:ZZ
-pfive@five:*:PP
+kone@one.example.com:*:KK
+dtwo@two.example.com:*:DD
+zthree@three.example.com:*:ZZ
+zfour@four.example.com:one@one.example.com:ZZ
+pfive@five.example.com:*:PP
 EOF
 
 MAILRULES=$tmp/rules
 
 sfecho <<EOF
-MAIL FROM:<one@one>
-MAIL FROM:<two@two>
-MAIL FROM:<three@three>
-MAIL FROM:<four@four>
-MAIL FROM:<five@five>
+MAIL FROM:<one@one.example.com>
+MAIL FROM:<two@two.example.com>
+MAIL FROM:<three@three.example.com>
+MAIL FROM:<four@four.example.com>
+MAIL FROM:<five@five.example.com>
 EOF
 
 rm -f $tmp/rules
@@ -22,6 +22,6 @@ rm -f $tmp/rules
 250 KK^M
 553 DD^M
 451 ZZ^M
-250 Sender='four@four'.^M
-250 Sender='five@five'.^M
+250 Sender='four@four.example.com'.^M
+250 Sender='five@five.example.com'.^M
 

@@ -1,7 +1,6 @@
 cvm-validate.o
 iobytes.o
 mailrules.o
-msa.o
 netstring.o
 patterns.o
 responses.o

@@ -23,8 +23,8 @@ standard handlers: <ul>
 <li>Validates senders and recipients according to <a
 href="mailrules.html">mail rules</a> processing.
 
-<li>If <tt>$MSA</tt> is set, the front end functions as a <a
-href="msa.html">message submission agent</a>.
+<li>Requires all addresses except the null sender to contain a fully
+qualified domain name.
 
 <li>If <tt>$RELAYCLIENT</tt> is set, all recipient addresses not
 rejected by mail rules are allowed, and its contents are appended to

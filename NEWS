@@ -7,6 +7,9 @@ Changes in version 0.98
   (either as a relay client or with SMTP authentication) if
   $REQUIRE_AUTH is set.
 
+- Full domain names are now required in all addresses except for the
+  null sender.
+
 - Removed the "bounce must have a single recipient" rule, as it is
   currently causing more problems (with address checkers) than it is
   solving (spammers no longer use this technique).

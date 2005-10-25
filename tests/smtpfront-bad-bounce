@@ -1,39 +1,39 @@
 # Note: this test no longer tests anything significant.
 
 sfecho <<EOF
-MAIL FROM:<not@bounce>
-RCPT TO:<addr1@domain>
-RCPT TO:<addr2@domain>
+MAIL FROM:<notbounce@example.com>
+RCPT TO:<addr1@example.com>
+RCPT TO:<addr2@example.com>
 DATA
 .
 EOF
 
 sfecho <<EOF
 MAIL FROM:<>
-RCPT TO:<addr1@domain>
+RCPT TO:<addr1@example.com>
 DATA
 .
 EOF
 
 sfecho <<EOF
 MAIL FROM:<>
-RCPT TO:<addr1@domain>
-RCPT TO:<addr2@domain>
+RCPT TO:<addr1@example.com>
+RCPT TO:<addr2@example.com>
 DATA
 .
 EOF
 <result>
-250 Sender='not@bounce'.^M
-250 Recipient='addr1@domain'.^M
-250 Recipient='addr2@domain'.^M
+250 Sender='notbounce@example.com'.^M
+250 Recipient='addr1@example.com'.^M
+250 Recipient='addr2@example.com'.^M
 354 End your message with a period on a line by itself.^M
 250 Received 128 bytes.^M
 250 Sender=''.^M
-250 Recipient='addr1@domain'.^M
+250 Recipient='addr1@example.com'.^M
 354 End your message with a period on a line by itself.^M
 250 Received 128 bytes.^M
 250 Sender=''.^M
-250 Recipient='addr1@domain'.^M
-250 Recipient='addr2@domain'.^M
+250 Recipient='addr1@example.com'.^M
+250 Recipient='addr2@example.com'.^M
 354 End your message with a period on a line by itself.^M
 250 Received 128 bytes.^M

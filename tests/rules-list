@@ -5,24 +5,24 @@ d*:*:DD
 EOF
 
 cat >$tmp/list <<EOF
-a@a
-@c
+a@example.net
+@example.com
 EOF
 
 cat >$tmp/atlist <<EOF
-b
+example.biz
 EOF
 
 MAILRULES=$tmp/rules
 
 sfecho <<EOF
-MAIL FROM:<a@a>
-MAIL FROM:<b@a>
-MAIL FROM:<a@b>
-MAIL FROM:<b@B>
-MAIL FROM:<c@c>
-MAIL FROM:<c@C>
-MAIL FROM:<d@d>
+MAIL FROM:<a@example.net>
+MAIL FROM:<b@example.net>
+MAIL FROM:<a@example.biz>
+MAIL FROM:<b@Example.BIZ>
+MAIL FROM:<c@example.com>
+MAIL FROM:<c@Example.COM>
+MAIL FROM:<d@example.org>
 EOF
 
 rm -f $tmp/rules $tmp/list $tmp/atlist

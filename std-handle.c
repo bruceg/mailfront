@@ -12,6 +12,8 @@ static RESPONSE(too_long, 552, "5.2.3 Sorry, that message exceeds the maximum me
 static RESPONSE(hops, 554, "5.6.0 This message is looping, too many hops.");
 static RESPONSE(manyrcpt, 550, "5.5.3 Too many recipients");
 static RESPONSE(mustauth, 530, "5.7.1 You must authenticate first.");
+static RESPONSE(nodomain,554,"5.1.2 Address is missing a domain name");
+static RESPONSE(nofqdn,554,"5.1.2 Address does not contain a fully qualified domain name");
 
 const char UNKNOWN[] = "unknown";
 
@@ -38,8 +40,18 @@ static const char* remote_ip;
 static str fixup_host;
 static str fixup_ip;
 static const char* linkproto;
-static const char* msa;
 static const char* require_auth;
+
+static const response* check_fqdn(const str* s)
+{
+  int at;
+  int dot;
+  if ((at = str_findlast(s, '@')) <= 0)
+    return &resp_nodomain;
+  if ((dot = str_findlast(s, '.')) < at)
+    return &resp_nofqdn;
+  return 0;
+}
 
 const char* getprotoenv(const char* name)
 {
@@ -57,7 +69,6 @@ const response* handle_init(void)
 
   set_timeout();
 
-  msa = getenv("MSA");
   require_auth = getenv("REQUIRE_AUTH");
   if ((linkproto = getenv("PROTO")) == 0) linkproto = "TCP";
   if ((local_ip = getprotoenv("LOCALIP")) != 0 && *local_ip == 0)
@@ -83,7 +94,6 @@ const response* handle_init(void)
 
   if ((resp = backend_validate_init()) != 0) return resp;
   if ((resp = cvm_validate_init()) != 0) return resp;
-  if (msa && (resp = msa_validate_init()) != 0) return resp;
 
   return rules_init();
 }
@@ -112,8 +122,8 @@ const response* handle_sender(str* sender)
   maxrcpts = rules_getenvu("MAXRCPTS");
   relayclient = rules_getenv("RELAYCLIENT");
   maxdatabytes = rules_getenvu("DATABYTES");
-  if (msa && resp == 0)
-    resp = msa_validate_sender(sender);
+  if (resp == 0 && sender->len > 0)
+    resp = check_fqdn(sender);
   if (resp == 0)
     resp = backend_validate_sender(sender);
   if (!response_ok(resp))
@@ -135,7 +145,7 @@ const response* handle_recipient(str* recip)
     if (!number_ok(resp))
       return resp;
   }
-  else if (msa && (resp = msa_validate_recipient(recip)) != 0)
+  else if ((resp = check_fqdn(recip)) != 0)
     return resp;
   else if (relayclient != 0)
     str_cats(recip, relayclient);

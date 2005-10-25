@@ -2,7 +2,7 @@ sfecho2() {
 $src/smtpfront-echo 2>&1 >/dev/null <<EOF | \
 	sed -n -e 's/^.* Received: //p'
 MAIL FROM:<>
-RCPT TO:<test>
+RCPT TO:<test@example.com>
 DATA
 .
 EOF
@@ -30,7 +30,7 @@ $src/smtpfront-echo 2>&1 >/dev/null <<EOF | \
 	sed -n -e 's/^.* Received: //p'
 EHLO hh
 MAIL FROM:<>
-RCPT TO:<test>
+RCPT TO:<test@example.com>
 DATA
 .
 EOF

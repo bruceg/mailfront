@@ -1,17 +1,17 @@
 cat >$tmp/rules <<EOF
-k*:a::1
-k*:b::9999
-k*:c::
+k*:a@example.com::1
+k*:b@example.com::9999
+k*:c@example.com::
 EOF
 
 MAILRULES=$tmp/rules
 
 sfecho <<EOF
 EHLO hostname
-MAIL FROM:<somebody>
-RCPT TO:<a>
-RCPT TO:<b>
-RCPT TO:<c>
+MAIL FROM:<somebody@example.net>
+RCPT TO:<a@example.com>
+RCPT TO:<b@example.com>
+RCPT TO:<c@example.com>
 DATA
 testing
 .
@@ -22,7 +22,7 @@ EOF
 250-8BITMIME^M
 250-ENHANCEDSTATUSCODES^M
 250 PIPELINING^M
-250 Sender='somebody'.^M
+250 Sender='somebody@example.net'.^M
 250 OK^M
 250 OK^M
 250 OK^M

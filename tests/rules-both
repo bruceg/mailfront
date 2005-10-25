@@ -1,27 +1,27 @@
 cat >$tmp/rules <<EOF
-ka@a:a@b:K1
-ka@a:b@b:K2
-kb@a:a@b:K3
-kb@a:b@b:K4
+ka@example.net:a@example.com:K1
+ka@example.net:b@example.com:K2
+kb@example.net:a@example.com:K3
+kb@example.net:b@example.com:K4
 EOF
 
 MAILRULES=$tmp/rules
 
 sfecho <<EOF
-MAIL FROM:<a@a>
-RCPT TO:<a@b>
-RCPT TO:<b@b>
-MAIL FROM:<b@a>
-RCPT TO:<a@b>
-RCPT TO:<b@b>
+MAIL FROM:<a@example.net>
+RCPT TO:<a@example.com>
+RCPT TO:<b@example.com>
+MAIL FROM:<b@example.net>
+RCPT TO:<a@example.com>
+RCPT TO:<b@example.com>
 EOF
 
 rm -f $tmp/rules
 
 <result>
-250 Sender='a@a'.^M
+250 Sender='a@example.net'.^M
 250 K1^M
 250 K2^M
-250 Sender='b@a'.^M
+250 Sender='b@example.net'.^M
 250 K3^M
 250 K4^M

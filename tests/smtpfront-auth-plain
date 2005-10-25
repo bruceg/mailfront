@@ -5,13 +5,13 @@ EOF
 export CVM_SASL_PLAIN=$tmp/cvm
 
 sfqmail <<EOF
-MAIL FROM: <user@remote>
-RCPT TO: <user@remote>
+MAIL FROM: <user@example.com>
+RCPT TO: <user@example.com>
 AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3x=
 AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
 AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
-MAIL FROM: <user@remote>
-RCPT TO: <user@remote>
+MAIL FROM: <user@example.com>
+RCPT TO: <user@example.com>
 EOF
 
 sfqmail << EOF
@@ -22,8 +22,8 @@ EOF
 sfqmail <<EOF
 AUTH PLAIN
 *
-MAIL FROM: <user@remote>
-RCPT TO: <user@remote>
+MAIL FROM: <user@example.com>
+RCPT TO: <user@example.com>
 EOF
 
 sfqmail << EOF

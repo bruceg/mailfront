@@ -1,13 +1,13 @@
 cat >$tmp/rules <<EOF
-k!a@a:*:A
-k!!a@a:*:B
+k!a@example.com:*:A
+k!!a@example.com:*:B
 EOF
 
 MAILRULES=$tmp/rules
 
 sfecho <<EOF
-MAIL FROM:<a@a>
-MAIL FROM:<b@b>
+MAIL FROM:<a@example.com>
+MAIL FROM:<b@example.net>
 EOF
 
 rm -f $tmp/rules

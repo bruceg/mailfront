@@ -2,11 +2,11 @@ export CVM_SASL_PLAIN=$tmp/cvm
 export REQUIRE_AUTH=1
 
 sfqmail <<EOF
-MAIL FROM: <user@remote>
-RCPT TO: <user@remote>
+MAIL FROM: <user@example.net>
+RCPT TO: <user@example.net>
 AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
-MAIL FROM: <user@remote>
-RCPT TO: <user@remote>
+MAIL FROM: <user@example.net>
+RCPT TO: <user@example.net>
 EOF
 
 unset CVM_SASL_PLAIN
