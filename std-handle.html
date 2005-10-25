@@ -9,10 +9,11 @@
 
 <h2>Overview</h2>
 
-<p>The code for SMTP is divided internally into two sections:
-front-end and back-end code.  The front-end code handles the low-level
-details of the protocol.  The back-end code handles the validation and
-delivery details in a protocol-independant fashion.</p>
+<p>The most useful protocol front-ends and delivery back-ends are joined
+by a set of standard handlers.  These handlers integrate the operation
+of <a href="mailrules.html">mail rules</a>, <a
+href="patterns.html">pattern matching</a>, several miscellaneous options
+and back-end validation and delivery functions.</p>
 
 <h2>Features</h2>
 
