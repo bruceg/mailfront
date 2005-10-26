@@ -20,6 +20,10 @@ Changes in version 0.98
 
 - Added QMQP and QMTP "reject" front ends, for completeness.
 
+The enhanced mail system status codes together with the $REQUIRE_AUTH
+change should make smtpfront compliant with RFC 2476's requirements for
+a "message submission agent", suitable for use on TCP port 587.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
