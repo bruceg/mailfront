@@ -20,7 +20,7 @@ href="http://www.faqs.org/rfcs/rfc2476.html">RFC 2476</a>.  All modules
 described as being "MSA compliant" can fill the role described by the
 standard.</p>
 
-<h2>RFC 2476 Details</h2>
+<h2><a href="http://www.faqs.org/rfcs/rfc2476.html">RFC 2476</a> Details</h2>
 
 <table border="1">
 
@@ -42,7 +42,9 @@ to be used if no other code is more specific.</td> <td>Yes</td> </tr>
 envelope are fully-qualified.</td> <td>Yes</td> </tr>
 
 <tr> <td>4.2</td> <td>If the MSA examines or alters the message text in
-way, except to add trace header fields [RFC 821 / RFC 2821], it MUST
+way, except to add trace header fields [<a
+href="http://www.faqs.org/rfcs/rfc821.html">RFC 821</a> / <a
+href="http://www.faqs.org/rfcs/rfc2821.html">RFC 2821</a>], it MUST
 ensure that all domains in address header fields are
 fully-qualified.</td> <td>N/A</td> </tr>
 
@@ -66,11 +68,13 @@ used to reject based on the submitting user.  Reply code 550 with
 enhanced status code 5.7.0 is used if the message violates site
 policy.</td> <td>N/A</td> </tr>
 
-<tr> <td>7</td> <td>The MSA MUST NOT accept ETRN. [RFC 1985]</td>
+<tr> <td>7</td> <td>The MSA MUST NOT accept ETRN. [<a
+href="http://www.faqs.org/rfcs/rfc1985.html">RFC 1985</a>]</td>
 <td>Yes</td> </tr>
 
-<tr> <td>7</td> <td>The MSA MUST NOT send the SMTP 521 Reply Code [RFC
-1845]</td> <td>Yes</td> </tr>
+<tr> <td>7</td> <td>The MSA MUST NOT send the SMTP 521 Reply Code [<a
+href="http://www.faqs.org/rfcs/rfc1845.html">RFC 1845</a>]</td>
+<td>Yes</td> </tr>
 
 <tr> <td>8.1</td> <td>The MSA MUST ensure that any address it places in
 a 'Sender' field is in fact a valid mail address.</td> <td>N/A</td>
@@ -99,20 +103,25 @@ illegal address syntax in address header fields.</td> <td>N/A</td> </tr>
 <tr> <td>5.2</td> <td>The MSA SHOULD log message errors, especially
 apparent misconfigurations of client software.</td> <td>No</td> </tr>
 
-<tr> <td>7</td> <td>The MSA SHOULD accept pipelining. [RFC 2197]</td>
+<tr> <td>7</td> <td>The MSA SHOULD accept pipelining. [<a
+href="http://www.faqs.org/rfcs/rfc2197.html">RFC 2197</a>]</td>
 <td>Yes</td> </tr>
 
-<tr> <td>7</td> <td>The MSA SHOULD send error codes. [RFC 2034]</td>
+<tr> <td>7</td> <td>The MSA SHOULD send error codes. [<a
+href="http://www.faqs.org/rfcs/rfc2034.html">RFC 2034</a>]</td>
 <td>Yes</td> </tr>
 
-<tr> <td>7</td> <td>The MSA SHOULD send extended response codes. [RFC
-1893]</td> <td>Yes</td> </tr>
+<tr> <td>7</td> <td>The MSA SHOULD send extended response codes. [<a
+href="http://www.faqs.org/rfcs/rfc1893.html">RFC 1893</a>]</td>
+<td>Yes</td> </tr>
 
-<tr> <td>7</td> <td>The MSA SHOULD support DSN. [RFC 1891]</td>
+<tr> <td>7</td> <td>The MSA SHOULD support DSN. [<a
+href="http://www.faqs.org/rfcs/rfc1891.html">RFC 1891</a>]</td>
 <td>No</td> </tr>
 
-<tr> <td>7</td> <td>The MSA SHOULD accept 8-bit MIME data. [RFC
-1652]</td> <td>Yes?</td> </tr>
+<tr> <td>7</td> <td>The MSA SHOULD accept 8-bit MIME data. [<a
+href="http://www.faqs.org/rfcs/rfc1652.html">RFC 1652</a>]</td>
+<td>Yes?</td> </tr>
 
 </table>
 

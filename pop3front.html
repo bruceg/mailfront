@@ -19,11 +19,11 @@ inactivity (defaults to 1200 seconds or 20 minutes), or
 
 <p>Usage: <tt>pop3front-auth CVM PROGRAM [ ARGS ... ]</tt></p>
 
-<p><tt>pop3front-auth</tt> authenticates the username and password
-sent by the client using the named CVM.  If successful, it sets up the
-environment and executes <tt>PROGRAM</tt>.  It also offers RFC 1734
-complient AUTH support through <a
-href="cvm-sasl.html">cvm-sasl</a>.</p>
+<p><tt>pop3front-auth</tt> authenticates the username and password sent
+by the client using the named CVM.  If successful, it sets up the
+environment and executes <tt>PROGRAM</tt>.  It also offers <a
+href="http://www.faqs.org/rfcs/rfc1734.html">RFC 1734</a> complient AUTH
+support through <a href="cvm-sasl.html">cvm-sasl</a>.</p>
 
 <p>If <tt>$AUTH_TIMEOUT</tt> or <tt>$AUTH_SESSION_TIMEOUT</tt> are set,
 they override <tt>$TIMEOUT</tt> and <tt>$SESSION_TIMEOUT</tt>

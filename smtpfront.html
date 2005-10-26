@@ -18,11 +18,13 @@ delivery details in a protocol-independant fashion.</p>
 
 <p>The following features are common to all SMTP front-ends: <ul>
 
-<li>Handles RFC 2554 SMTP authentication.  After authentication all
-recipients not rejected by mail rules are allowed, and back-end
-validation is omitted.
+<li>Handles <a href="http://www.faqs.org/rfcs/rfc2554.html">RFC 2554</a>
+SMTP authentication.  After authentication all recipients not rejected
+by mail rules are allowed, and back-end validation is omitted.
 
-<li>Automatically handles either bare NL or RFC 821/2821 compliant
+<li>Automatically handles either bare NL or <a
+href="http://www.faqs.org/rfcs/rfc821.html">RFC 821</a> / <a
+href="http://www.faqs.org/rfcs/rfc2821.html">RFC 2821</a> compliant
 CR/NL end-of-line conventions.
 
 <li>Times out connections after <tt>$TIMEOUT</tt> seconds of inactivity
@@ -32,14 +34,15 @@ or 24 hours).
 
 <li>All error responses are logged.
 
-<li>Handles (ignores) RFC 1869 extended parameters on the <tt>RCPT
-TO:</tt> and <tt>MAIL FROM:</tt> commands.
+<li>Handles (ignores) <a
+href="http://www.faqs.org/rfcs/rfc1869.html">RFC 1869</a> extended
+parameters on the <tt>RCPT TO:</tt> and <tt>MAIL FROM:</tt> commands.
 
 <li>Initial greeting message is configureable by
 <tt>$SMTPGREETING</tt>.
 
-<li>Supports RFC 1870 SMTP Service Extension for Message Size
-Declaration.
+<li>Supports <a href="http://www.faqs.org/rfcs/rfc1870.html">RFC
+1870</a> SMTP Service Extension for Message Size Declaration.
 
 <li>If <tt>$MAXNOTIMPL</tt> is set, clients are disconnected if they
 send more than the specified number of commands that result in a
