@@ -1,6 +1,6 @@
-- Add documentation for QMQP and QMTP back ends.
+- Fix SASL "Authentication failed" message to include EMSS code
 
-- Add echo/reject back-ends for QMQP and QMTP, and add tests using them.
+- Add documentation for QMQP and QMTP back ends.
 
 - Add variable substitution to pattern variable setting (ie x=${y} etc)
 
@@ -30,9 +30,6 @@
     smtpfront-qmail.
 
 - smtpfront:
-
-  - Rename handle_* to std_handle_*, and let the backend code override
-    handle_*.
 
   - Build a shared routine for breaking out the domain name.
 
