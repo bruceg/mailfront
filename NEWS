@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+Changes in version 0.98.1
+
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 0.98
 
 - Added enhanced mail system status codes (RFC 1893/2034).
