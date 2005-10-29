@@ -104,6 +104,7 @@ const response* handle_reset(void)
   is_bounce = 0;
   rcpt_count = 0;
   if ((resp = rules_reset()) != 0) return resp;
+  relayclient = getenv("RELAYCLIENT");
   backend_handle_reset();
   return 0;
 }
