@@ -59,9 +59,6 @@ void patterns_init(void);
 const response* patterns_check(const char* block, unsigned len);
 
 /* Defined by a back-end module */
-extern const response* backend_validate_init(void);
-extern const response* backend_validate_sender(str*);
-extern const response* backend_validate_recipient(str*);
 extern void backend_handle_reset(struct session*);
 extern const response* backend_handle_sender(str*);
 extern const response* backend_handle_recipient(str*);
