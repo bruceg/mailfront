@@ -20,10 +20,9 @@ const char UNKNOWN[] = "unknown";
 static int is_bounce = 0;
 static unsigned rcpt_count = 0;
 
-static str received;
+struct session session = {0,0};
 
-int authenticated = 0;
-const char* relayclient = 0;
+static str received;
 
 unsigned long maxdatabytes = 0;
 unsigned maxhops = 0;
@@ -104,7 +103,7 @@ const response* handle_reset(void)
   is_bounce = 0;
   rcpt_count = 0;
   if ((resp = rules_reset()) != 0) return resp;
-  relayclient = getenv("RELAYCLIENT");
+  session.relayclient = getenv("RELAYCLIENT");
   backend_handle_reset();
   return 0;
 }
@@ -113,7 +112,7 @@ const response* handle_sender(str* sender)
 {
   const response* resp;
   const response* tmpresp;
-  if (require_auth && !(authenticated || relayclient != 0))
+  if (require_auth && !(session.authenticated || session.relayclient != 0))
     return &resp_mustauth;
   /* Logic:
    * if rules_validate_sender returns a response, use it
@@ -121,7 +120,7 @@ const response* handle_sender(str* sender)
    */
   resp = rules_validate_sender(sender);
   maxrcpts = rules_getenvu("MAXRCPTS");
-  relayclient = rules_getenv("RELAYCLIENT");
+  session.relayclient = rules_getenv("RELAYCLIENT");
   maxdatabytes = rules_getenvu("DATABYTES");
   if (resp == 0 && sender->len > 0)
     resp = check_fqdn(sender);
@@ -148,9 +147,9 @@ const response* handle_recipient(str* recip)
   }
   else if ((resp = check_fqdn(recip)) != 0)
     return resp;
-  else if (relayclient != 0)
-    str_cats(recip, relayclient);
-  else if (authenticated)
+  else if (session.relayclient != 0)
+    str_cats(recip, session.relayclient);
+  else if (session.authenticated)
     resp = 0;
   else if ((resp = backend_validate_recipient(recip)) != 0) {
     if (!number_ok(resp))

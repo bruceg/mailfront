@@ -277,14 +277,14 @@ static int VRFY(void)
 static int AUTH(void)
 {
   int i;
-  if (authenticated) return respond_resp(&resp_auth_already, 1);
+  if (session.authenticated) return respond_resp(&resp_auth_already, 1);
   if (arg.len == 0) return respond_resp(&resp_needsparam, 1);
   if ((i = sasl_auth1(&saslauth, &arg)) != 0) {
     const char* msg = sasl_auth_msg(&i);
     return respond(i, 1, msg);
   }
   else {
-    authenticated = 1;
+    session.authenticated = 1;
     str_truncate(&helo_domain, 0);
     respond_resp(&resp_authenticated, 1);
   }

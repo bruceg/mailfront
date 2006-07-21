@@ -6,12 +6,18 @@
 #include <str/str.h>
 #include "constants.h"
 
+struct session
+{
+  const char* relayclient;
+  int authenticated;
+};
+
+extern struct session session;
+
 /* From std-handle.c */
 extern const char UNKNOWN[];
 extern unsigned long maxdatabytes;
 extern unsigned maxhops;
-extern int authenticated;
-extern const char* relayclient;
 extern int number_ok(const response* resp);
 extern int response_ok(const response* resp);
 extern const response* handle_init(void);

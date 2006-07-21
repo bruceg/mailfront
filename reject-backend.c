@@ -5,10 +5,9 @@
 
 static response resp = {451,"You are not allowed to use this mail server."};
 
-int authenticated = 0;
+struct session session = { "", 0 };
 const int authenticating = 0;
 unsigned long maxdatabytes = 0;
-const char* relayclient = "";
 const char UNKNOWN[] = "unknown";
 
 const response* handle_init(void)
