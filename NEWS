@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+Changes in version 0.99
+
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 0.98.1
 
 - Fixed the $REQUIRE_AUTH feature to properly check for $RELAYCLIENT
