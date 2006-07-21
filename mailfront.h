@@ -17,6 +17,21 @@ struct session
   unsigned int maxrcpts;
 };
 
+struct module
+{
+  struct module* next;
+  const response* (*init)(struct module*, struct session*);
+  const response* (*reset)(struct module*, struct session*);
+  const response* (*sender)(struct module*, struct session*,
+			    str*);
+  const response* (*recipient)(struct module*, struct session*,
+			       str*);
+  const response* (*data_start)(struct module*, struct session*);
+  const response* (*data_block)(struct module*, struct session*,
+				const char* bytes, unsigned long len);
+  const response* (*data_end)(struct module*, struct session*);
+};
+
 /* From std-handle.c */
 extern const char UNKNOWN[];
 extern int number_ok(const response* resp);
@@ -29,6 +44,7 @@ extern const response* handle_data_start(struct session* session);
 extern void handle_data_bytes(struct session* session,
 			      const char* bytes, unsigned len);
 extern const response* handle_data_end(struct session* session);
+extern void add_module(struct module*);
 
 /* From cvm-validate.c */
 extern const response* cvm_validate_init(void);

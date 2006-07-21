@@ -26,6 +26,9 @@ const int authenticating = 0;
 extern void set_timeout(void);
 extern void report_io_bytes(void);
 
+static struct module* module_list = 0;
+static struct module* module_tail = 0;
+
 static const char* local_host;
 static const char* local_ip;
 static const char* remote_host;
@@ -34,6 +37,15 @@ static str fixup_host;
 static str fixup_ip;
 static const char* linkproto;
 static const char* require_auth;
+
+void add_module(struct module* module)
+{
+  if (module_tail == 0)
+    module_list = module;
+  else
+    module_tail->next = module;
+  module_tail = module;
+}
 
 static const response* check_fqdn(const str* s)
 {
@@ -52,6 +64,14 @@ const char* getprotoenv(const char* name)
   if (!str_copy2s(&fullname, linkproto, name)) return 0;
   return getenv(fullname.s);
 }
+
+#define MODULE_CALL(NAME,PARAMS) do{ \
+  struct module* module; \
+  for (module = module_list; module != 0; module = module->next) \
+    if (module->NAME != 0) \
+      if ((resp = module->NAME PARAMS) != 0 && !response_ok(resp)) \
+        return resp; \
+} while(0)
 
 const response* handle_init(struct session* session)
 {
@@ -88,6 +108,8 @@ const response* handle_init(struct session* session)
   if ((resp = backend_validate_init()) != 0) return resp;
   if ((resp = cvm_validate_init()) != 0) return resp;
 
+  MODULE_CALL(init, (module, session));
+
   return rules_init();
   (void)session;
 }
@@ -100,6 +122,7 @@ const response* handle_reset(struct session* session)
   if ((resp = rules_reset()) != 0) return resp;
   session->relayclient = getenv("RELAYCLIENT");
   backend_handle_reset(session);
+  MODULE_CALL(init, (module, session));
   return 0;
 }
 
@@ -125,6 +148,8 @@ const response* handle_sender(struct session* session, str* sender)
     return resp;
   if (!response_ok(tmpresp = backend_handle_sender(sender)))
     return tmpresp;
+  if (resp == 0)
+    MODULE_CALL(sender, (module, session, sender));
   if (resp == 0) resp = tmpresp;
   is_bounce = sender->len == 0;
   return resp;
@@ -157,6 +182,8 @@ const response* handle_recipient(struct session* session, str* recip)
   }
   if (!response_ok(hresp = backend_handle_recipient(recip)))
     return hresp;
+  if (resp == 0)
+    MODULE_CALL(recipient, (module, session, recip));
   if (resp == 0) resp = hresp;
   return resp;
 }
@@ -249,6 +276,8 @@ const response* handle_data_start(struct session* session)
   const response* resp;
   session->maxdatabytes = rules_getenvu("DATABYTES");
   resp = backend_handle_data_start();
+  if (resp == 0)
+    MODULE_CALL(data_start, (module, session));
   if (response_ok(resp)) {
     received.len = 0;
     if (!fixup_received(&received) ||
@@ -256,20 +285,20 @@ const response* handle_data_start(struct session* session)
 	!build_received(session, &received))
       return &resp_internal;
     backend_handle_data_bytes(received.s, received.len);
-  }
 
-  if ((session->maxhops = rules_getenvu("MAXHOPS")) == 0)
-    session->maxhops = 100;
+    if ((session->maxhops = rules_getenvu("MAXHOPS")) == 0)
+      session->maxhops = 100;
   
-  patterns_init();
-  data_bytes = 0;
-  count_rec = 0;
-  count_dt = 0;
-  in_header = 1;
-  linepos = 0;
-  in_rec = 1;
-  in_dt = 1;
-  data_response = 0;
+    patterns_init();
+    data_bytes = 0;
+    count_rec = 0;
+    count_dt = 0;
+    in_header = 1;
+    linepos = 0;
+    in_rec = 1;
+    in_dt = 1;
+    data_response = 0;
+  }
   return resp;
 }
 
@@ -279,8 +308,16 @@ void handle_data_bytes(struct session* session,
   unsigned i;
   const char* p;
   const response* r;
+  struct module* module;
   data_bytes += len;
   if (data_response) return;
+  for (module = module_list; module != 0; module = module->next)
+    if (module->data_block != 0)
+      if ((r = module->data_block(module, session, bytes, len)) != 0
+	   && !response_ok(r)) {
+	data_response = r;
+	return;
+      }
   if (session->maxdatabytes && data_bytes > session->maxdatabytes) {
     data_response = &resp_too_long;
     return;
@@ -332,8 +369,10 @@ void handle_data_bytes(struct session* session,
 
 const response* handle_data_end(struct session* session)
 {
+  const response* resp;
   if (data_response)
     return data_response;
+  MODULE_CALL(data_end, (module, session));
   return backend_handle_data_end();
   (void)session;
 }
