@@ -7,9 +7,10 @@ static str tmp;
 
 static unsigned long databytes = 0;
 
-void backend_handle_reset(void)
+void backend_handle_reset(struct session* session)
 {
   databytes = 0;
+  (void)session;
 }
 
 const response* backend_handle_sender(str* sender)

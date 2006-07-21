@@ -9,43 +9,50 @@ const int authenticating = 0;
 unsigned long maxdatabytes = 0;
 const char UNKNOWN[] = "unknown";
 
-const response* handle_init(void)
-{
-  session.relayclient = "";
-  return 0;
-}
-
-const response* handle_reset(void)
+const response* handle_init(struct session* unused)
 {
   return 0;
-}
-
-const response* handle_sender(str* unused)
-{
-  return &resp;
   (void)unused;
 }
 
-const response* handle_recipient(str* unused)
+const response* handle_reset(struct session* session)
 {
-  return &resp;
-  (void)unused;
+  session->relayclient = "";
+  return 0;
 }
 
-const response* handle_data_start(void)
+const response* handle_sender(struct session* unused1, str* unused2)
 {
   return &resp;
-}
-
-void handle_data_bytes(const char* unused1, unsigned unused2)
-{
   (void)unused1;
   (void)unused2;
 }
 
-const response* handle_data_end(void)
+const response* handle_recipient(struct session* unused1, str* unused2)
 {
   return &resp;
+  (void)unused1;
+  (void)unused2;
+}
+
+const response* handle_data_start(struct session* unused)
+{
+  return &resp;
+  (void)unused;
+}
+
+void handle_data_bytes(struct session* unused1,
+		       const char* unused2, unsigned unused3)
+{
+  (void)unused1;
+  (void)unused2;
+  (void)unused3;
+}
+
+const response* handle_data_end(struct session* unused)
+{
+  return &resp;
+  (void)unused;
 }
 
 extern int mainloop(void);

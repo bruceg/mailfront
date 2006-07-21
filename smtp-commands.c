@@ -148,7 +148,7 @@ static int EHLO(void)
 static void do_reset(void)
 {
   const response* resp;
-  if ((resp = handle_reset()) != 0) {
+  if ((resp = handle_reset(&session)) != 0) {
     respond_resp(resp, 1);
     exit(0);
   }
@@ -165,7 +165,8 @@ static int MAIL(void)
   msg2("MAIL ", arg.s);
   do_reset();
   parse_addr_arg();
-  if ((resp = handle_sender(&addr)) == 0) resp = &resp_mail_ok;
+  if ((resp = handle_sender(&session, &addr)) == 0)
+    resp = &resp_mail_ok;
   if (number_ok(resp)) {
     /* Look up the size limit after handling the sender,
        in order to honour limits set in the mail rules. */
@@ -186,7 +187,8 @@ static int RCPT(void)
   msg2("RCPT ", arg.s);
   if (!saw_mail) return respond_resp(&resp_no_mail, 1);
   parse_addr_arg();
-  if ((resp = handle_recipient(&addr)) == 0) resp = &resp_rcpt_ok;
+  if ((resp = handle_recipient(&session, &addr)) == 0)
+    resp = &resp_rcpt_ok;
   if (number_ok(resp)) saw_rcpt = 1;
   return respond_resp(resp, 1);
 }
@@ -209,13 +211,14 @@ static void data_byte(char ch)
   data_buf[data_bufpos++] = ch;
   ++data_bytes;
   if (data_bufpos >= sizeof data_buf) {
-    handle_data_bytes(data_buf, data_bufpos);
+    handle_data_bytes(&session, data_buf, data_bufpos);
     data_bufpos = 0;
   }
 }
 static void data_end(void)
 {
-  if (data_bufpos) handle_data_bytes(data_buf, data_bufpos);
+  if (data_bufpos)
+    handle_data_bytes(&session, data_buf, data_bufpos);
 }
 
 static int copy_body(void)
@@ -256,7 +259,7 @@ static int DATA(void)
   
   if (!saw_mail) return respond_resp(&resp_no_mail, 1);
   if (!saw_rcpt) return respond_resp(&resp_no_rcpt, 1);
-  if ((resp = handle_data_start()) != 0)
+  if ((resp = handle_data_start(&session)) != 0)
     return respond_resp(resp, 1);
   if (!respond_resp(&resp_data_ok, 1)) return 0;
 
@@ -264,7 +267,8 @@ static int DATA(void)
     do_reset();
     return 0;
   }
-  if ((resp = handle_data_end()) == 0) resp = &resp_accepted;
+  if ((resp = handle_data_end(&session)) == 0)
+    resp = &resp_accepted;
   return respond_resp(resp, 1);
 }
 

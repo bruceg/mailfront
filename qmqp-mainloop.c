@@ -10,7 +10,7 @@
 #include "mailfront.h"
 #include "qmtp.h"
 
-struct session session = {
+static struct session session = {
   .protocol = "QMQP",
 };
 
@@ -39,13 +39,15 @@ static void get_body(ibuf* in)
   case 0: die1(111, "Invalid message body netstring");
   }
   if (bodylen == 0) die1(111, "Zero length body");
-  if (response_ok(resp)) resp = handle_data_start();
+  if (response_ok(resp))
+    resp = handle_data_start(&session);
   while (bodylen > 0) {
     unsigned long len = sizeof buf;
     if (len > bodylen) len = bodylen;
     if (!ibuf_read(in, buf, len) && in->count == 0)
       die1(111, "EOF while reading body");
-    if (response_ok(resp)) handle_data_bytes(buf, in->count);
+    if (response_ok(resp))
+      handle_data_bytes(&session, buf, in->count);
     bodylen -= in->count;
   }
   if (!ibuf_getc(in, &nl)) die1(111, "EOF while reading comma");
@@ -60,7 +62,7 @@ static void get_sender(ibuf* in)
   }
   msg3("sender <", line.s, ">");
   if (response_ok(resp))
-    resp = handle_sender(&line);
+    resp = handle_sender(&session, &line);
   if (session.relayclient == 0)
     session.relayclient = "";
 }
@@ -76,19 +78,20 @@ static void get_recips(ibuf* in)
     }
     msg3("recipient <", line.s, ">");
     if (response_ok(resp))
-      resp = handle_recipient(&line);
+      resp = handle_recipient(&session, &line);
   }
   die1(111, "EOF before end of recipient list");
 }
 
 static void get_package(ibuf* in)
 {
-  resp = handle_reset();
+  resp = handle_reset(&session);
   get_wrapper(in);
   get_body(in);
   get_sender(in);
   get_recips(in);
-  if (response_ok(resp)) resp = handle_data_end();
+  if (response_ok(resp))
+    resp = handle_data_end(&session);
   if (!resp) resp = &resp_accepted;
   if (!respond_resp(resp, 1)) die1(111, "EOF while sending response");
 }
@@ -96,7 +99,7 @@ static void get_package(ibuf* in)
 int qmqp_mainloop(void)
 {
   const response* r;
-  if ((r = handle_init()) != 0) {
+  if ((r = handle_init(&session)) != 0) {
     respond_resp(r, 1);
     return 1;
   }

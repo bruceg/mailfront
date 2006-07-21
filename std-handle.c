@@ -57,7 +57,7 @@ const char* getprotoenv(const char* name)
   return getenv(fullname.s);
 }
 
-const response* handle_init(void)
+const response* handle_init(struct session* session)
 {
   const char* tmp;
   const response* resp;
@@ -93,24 +93,25 @@ const response* handle_init(void)
   if ((resp = cvm_validate_init()) != 0) return resp;
 
   return rules_init();
+  (void)session;
 }
 
-const response* handle_reset(void)
+const response* handle_reset(struct session* session)
 {
   const response* resp;
   is_bounce = 0;
   rcpt_count = 0;
   if ((resp = rules_reset()) != 0) return resp;
-  session.relayclient = getenv("RELAYCLIENT");
-  backend_handle_reset();
+  session->relayclient = getenv("RELAYCLIENT");
+  backend_handle_reset(session);
   return 0;
 }
 
-const response* handle_sender(str* sender)
+const response* handle_sender(struct session* session, str* sender)
 {
   const response* resp;
   const response* tmpresp;
-  if (require_auth && !(session.authenticated || session.relayclient != 0))
+  if (require_auth && !(session->authenticated || session->relayclient != 0))
     return &resp_mustauth;
   /* Logic:
    * if rules_validate_sender returns a response, use it
@@ -118,7 +119,7 @@ const response* handle_sender(str* sender)
    */
   resp = rules_validate_sender(sender);
   maxrcpts = rules_getenvu("MAXRCPTS");
-  session.relayclient = rules_getenv("RELAYCLIENT");
+  session->relayclient = rules_getenv("RELAYCLIENT");
   maxdatabytes = rules_getenvu("DATABYTES");
   if (resp == 0 && sender->len > 0)
     resp = check_fqdn(sender);
@@ -133,7 +134,7 @@ const response* handle_sender(str* sender)
   return resp;
 }
 
-const response* handle_recipient(str* recip)
+const response* handle_recipient(struct session* session, str* recip)
 {
   const response* resp;
   const response* hresp;
@@ -145,9 +146,9 @@ const response* handle_recipient(str* recip)
   }
   else if ((resp = check_fqdn(recip)) != 0)
     return resp;
-  else if (session.relayclient != 0)
-    str_cats(recip, session.relayclient);
-  else if (session.authenticated)
+  else if (session->relayclient != 0)
+    str_cats(recip, session->relayclient);
+  else if (session->authenticated)
     resp = 0;
   else if ((resp = backend_validate_recipient(recip)) != 0) {
     if (!number_ok(resp))
@@ -224,13 +225,14 @@ static int str_catfromby(str* s, const char* helo_domain,
   return 1;
 }
 
-int build_received(str* s)
+int build_received(struct session* session, str* s)
 {
   if (!str_cats(s, "Received: from ")) return 0;
-  if (!str_catfromby(s, session.helo_domain, remote_host, remote_ip)) return 0;
+  if (!str_catfromby(s, session->helo_domain, remote_host, remote_ip))
+    return 0;
   if (!str_cats(s, "\n  by ")) return 0;
   if (!str_catfromby(s, local_host, 0, local_ip)) return 0;
-  if (!str_cat4s(s, "\n  with ", session.protocol, " via ", linkproto))
+  if (!str_cat4s(s, "\n  with ", session->protocol, " via ", linkproto))
     return 0;
   if (!str_cat3s(s, "; ", date_string(), "\n")) return 0;
   return 1;
@@ -245,7 +247,7 @@ static int in_rec;	      /* True if we might be seeing Received: */
 static int in_dt;	  /* True if we might be seeing Delivered-To: */
 static const response* data_response;
 
-const response* handle_data_start(void)
+const response* handle_data_start(struct session* session)
 {
   const response* resp;
   maxdatabytes = rules_getenvu("DATABYTES");
@@ -254,7 +256,7 @@ const response* handle_data_start(void)
     received.len = 0;
     if (!fixup_received(&received) ||
 	!add_header_add(&received) ||
-	!build_received(&received))
+	!build_received(session, &received))
       return &resp_internal;
     backend_handle_data_bytes(received.s, received.len);
   }
@@ -274,7 +276,8 @@ const response* handle_data_start(void)
   return resp;
 }
 
-void handle_data_bytes(const char* bytes, unsigned len)
+void handle_data_bytes(struct session* session,
+		       const char* bytes, unsigned len)
 {
   unsigned i;
   const char* p;
@@ -327,11 +330,13 @@ void handle_data_bytes(const char* bytes, unsigned len)
     }
   }
   backend_handle_data_bytes(bytes, len);
+  (void)session;
 }
 
-const response* handle_data_end(void)
+const response* handle_data_end(struct session* session)
 {
   if (data_response)
     return data_response;
   return backend_handle_data_end();
+  (void)session;
 }
