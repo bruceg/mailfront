@@ -22,10 +22,6 @@ static unsigned rcpt_count = 0;
 
 static str received;
 
-unsigned long maxdatabytes = 0;
-unsigned maxhops = 0;
-unsigned maxrcpts = 0;
-
 const int authenticating = 0;
 extern void set_timeout(void);
 extern void report_io_bytes(void);
@@ -87,7 +83,7 @@ const response* handle_init(struct session* session)
   /* The value of maxdatabytes gets reset in handle_data_start below.
    * This is here simply to provide a value for SMTP to report in its
    * EHLO response. */
-  maxdatabytes = rules_getenvu("DATABYTES");
+  session->maxdatabytes = rules_getenvu("DATABYTES");
 
   if ((resp = backend_validate_init()) != 0) return resp;
   if ((resp = cvm_validate_init()) != 0) return resp;
@@ -118,9 +114,9 @@ const response* handle_sender(struct session* session, str* sender)
    * else if backend_validate_sender returns a response, use it
    */
   resp = rules_validate_sender(sender);
-  maxrcpts = rules_getenvu("MAXRCPTS");
+  session->maxrcpts = rules_getenvu("MAXRCPTS");
   session->relayclient = rules_getenv("RELAYCLIENT");
-  maxdatabytes = rules_getenvu("DATABYTES");
+  session->maxdatabytes = rules_getenvu("DATABYTES");
   if (resp == 0 && sender->len > 0)
     resp = check_fqdn(sender);
   if (resp == 0)
@@ -139,7 +135,8 @@ const response* handle_recipient(struct session* session, str* recip)
   const response* resp;
   const response* hresp;
   ++rcpt_count;
-  if (maxrcpts > 0 && rcpt_count > maxrcpts) return &resp_manyrcpt;
+  if (session->maxrcpts > 0 && rcpt_count > session->maxrcpts)
+    return &resp_manyrcpt;
   if ((resp = rules_validate_recipient(recip)) != 0) {
     if (!number_ok(resp))
       return resp;
@@ -250,7 +247,7 @@ static const response* data_response;
 const response* handle_data_start(struct session* session)
 {
   const response* resp;
-  maxdatabytes = rules_getenvu("DATABYTES");
+  session->maxdatabytes = rules_getenvu("DATABYTES");
   resp = backend_handle_data_start();
   if (response_ok(resp)) {
     received.len = 0;
@@ -261,8 +258,8 @@ const response* handle_data_start(struct session* session)
     backend_handle_data_bytes(received.s, received.len);
   }
 
-  if ((maxhops = rules_getenvu("MAXHOPS")) == 0)
-    maxhops = 100;
+  if ((session->maxhops = rules_getenvu("MAXHOPS")) == 0)
+    session->maxhops = 100;
   
   patterns_init();
   data_bytes = 0;
@@ -284,7 +281,7 @@ void handle_data_bytes(struct session* session,
   const response* r;
   data_bytes += len;
   if (data_response) return;
-  if (maxdatabytes && data_bytes > maxdatabytes) {
+  if (session->maxdatabytes && data_bytes > session->maxdatabytes) {
     data_response = &resp_too_long;
     return;
   }
@@ -307,7 +304,7 @@ void handle_data_bytes(struct session* session,
 	    in_rec = 0;
 	  else if (linepos >= 8) {
 	    in_dt = in_rec = 0;
-	    if (++count_rec > maxhops) {
+	    if (++count_rec > session->maxhops) {
 	      data_response = &resp_hops;
 	      return;
 	    }
@@ -319,7 +316,7 @@ void handle_data_bytes(struct session* session,
 	    in_dt = 0;
 	  else if (linepos >= 12) {
 	    in_dt = in_rec = 0;
-	    if (++count_dt > maxhops) {
+	    if (++count_dt > session->maxhops) {
 	      data_response = &resp_hops;
 	      return;
 	    }

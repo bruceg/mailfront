@@ -14,8 +14,6 @@ static struct session session = {
   .protocol = "QMQP",
 };
 
-unsigned long maxdatabytes;
-
 static const response* resp;
 
 static char buf[8192];

@@ -12,12 +12,13 @@ struct session
   const char* helo_domain;
   const char* relayclient;
   int authenticated;
+  unsigned long maxdatabytes;
+  unsigned int maxhops;
+  unsigned int maxrcpts;
 };
 
 /* From std-handle.c */
 extern const char UNKNOWN[];
-extern unsigned long maxdatabytes;
-extern unsigned maxhops;
 extern int number_ok(const response* resp);
 extern int response_ok(const response* resp);
 extern const response* handle_init(struct session* session);

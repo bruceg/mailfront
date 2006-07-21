@@ -139,7 +139,7 @@ static int EHLO(void)
   default: return respond_resp(&resp_internal, 1);
   }
   str_copys(&auth_resp, "SIZE ");
-  str_catu(&auth_resp, maxdatabytes);
+  str_catu(&auth_resp, session.maxdatabytes);
   if (!respond(250, 0, auth_resp.s)) return 0;
 
   return respond_resp(&resp_ehlo, 1);
@@ -170,11 +170,11 @@ static int MAIL(void)
   if (number_ok(resp)) {
     /* Look up the size limit after handling the sender,
        in order to honour limits set in the mail rules. */
-    if (maxdatabytes > 0 &&
+    if (session.maxdatabytes > 0 &&
 	(param = find_param("SIZE")) != 0 &&
 	(size = strtoul(param, (char**)&param, 10)) > 0 &&
 	*param == 0 &&
-	size > maxdatabytes)
+	size > session.maxdatabytes)
       return respond_resp(&resp_toobig, 1);
     saw_mail = 1;
   }
