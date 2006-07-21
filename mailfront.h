@@ -46,10 +46,6 @@ extern void handle_data_bytes(struct session* session,
 extern const response* handle_data_end(struct session* session);
 extern void add_module(struct module*);
 
-/* From cvm-validate.c */
-extern const response* cvm_validate_init(void);
-extern const response* cvm_validate_recipient(const str*);
-
 /* From netstring.c */
 int get_netstring_len(ibuf* in, unsigned long* i);
 int get_netstring(ibuf* in, str* s);

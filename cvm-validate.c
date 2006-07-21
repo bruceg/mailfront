@@ -10,7 +10,8 @@ static const char* cvm_lookup;
 static RESPONSE(norcpt,553,"5.1.1 Sorry, that recipient does not exist.");
 static RESPONSE(failed,451,"4.1.0 Sorry, I could not verify that recipient (internal temporary error).");
 
-const response* cvm_validate_init(void)
+static const response* validate_init(struct module* module,
+				     struct session* session)
 {
   cvm_lookup = getenv("CVM_LOOKUP");
   if ((lookup_secret = getenv("CVM_LOOKUP_SECRET")) == 0)
@@ -23,9 +24,13 @@ const response* cvm_validate_init(void)
   if (lookup_secret != 0 && *lookup_secret == 0)
     lookup_secret = 0;
   return 0;
+  (void)module;
+  (void)session;
 }
 
-const response* cvm_validate_recipient(const str* recipient)
+static const response* validate_recipient(struct module* module,
+					  struct session* session,
+					  str* recipient)
 {
   struct cvm_credential creds[3];
   unsigned i;
@@ -50,4 +55,11 @@ const response* cvm_validate_recipient(const str* recipient)
   str_free(&creds[1].value);
   str_free(&creds[2].value);
   return r;
+  (void)module;
+  (void)session;
 }
+
+struct module cvm_validate = {
+  .init = validate_init,
+  .recipient = validate_recipient,
+};
