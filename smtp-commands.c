@@ -11,6 +11,10 @@
 #include <msg/msg.h>
 #include <str/iter.h>
 
+struct session session = {
+  .protocol = "SMTP",
+};
+
 static str cmd;
 static str arg;
 static str addr;
@@ -36,7 +40,6 @@ static RESPONSE(authenticated, 235, "2.7.0 Authentication succeeded.");
 
 static int saw_mail = 0;
 static int saw_rcpt = 0;
-static const char* smtp_mode = "SMTP";
 
 unsigned long maxnotimpl = 0;
 
@@ -118,14 +121,16 @@ static int HELP(void)
 static int HELO(void)
 {
   str_copy(&helo_domain, &arg);
+  session.helo_domain = helo_domain.s;
   return respond(250, 1, domain_name.s);
 }
 
 static int EHLO(void)
 {
   static str auth_resp;
-  smtp_mode = "ESMTP";
+  session.protocol = "ESMTP";
   str_copy(&helo_domain, &arg);
+  session.helo_domain = helo_domain.s;
   if (!respond(250, 0, domain_name.s)) return 0;
 
   switch (sasl_auth_caps(&auth_resp)) {
@@ -251,8 +256,7 @@ static int DATA(void)
   
   if (!saw_mail) return respond_resp(&resp_no_mail, 1);
   if (!saw_rcpt) return respond_resp(&resp_no_rcpt, 1);
-  if ((resp = handle_data_start((helo_domain.len > 0) ? helo_domain.s : 0,
-				smtp_mode)) != 0)
+  if ((resp = handle_data_start()) != 0)
     return respond_resp(resp, 1);
   if (!respond_resp(&resp_data_ok, 1)) return 0;
 

@@ -8,6 +8,8 @@
 
 struct session
 {
+  const char* protocol;
+  const char* helo_domain;
   const char* relayclient;
   int authenticated;
 };
@@ -24,8 +26,7 @@ extern const response* handle_init(void);
 extern const response* handle_reset(void);
 extern const response* handle_sender(str* sender);
 extern const response* handle_recipient(str* recip);
-extern const response* handle_data_start(const char* helo_domain,
-					     const char* protocol);
+extern const response* handle_data_start(void);
 extern void handle_data_bytes(const char* bytes, unsigned len);
 extern const response* handle_data_end(void);
 

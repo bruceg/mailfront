@@ -10,6 +10,10 @@
 #include "mailfront.h"
 #include "qmtp.h"
 
+struct session session = {
+  .protocol = "QMTP",
+};
+
 unsigned long maxdatabytes;
 
 static const response* resp;
@@ -30,7 +34,7 @@ static void get_body(ibuf* in)
   --bodylen;
   if (!ibuf_getc(in, &nl)) die1(111, "EOF while reading body NL");
   if (nl != LF) die1(111, "Cannot handle non-LF line terminator");
-  if (response_ok(resp)) resp = handle_data_start(0, "QMTP");
+  if (response_ok(resp)) resp = handle_data_start();
   while (bodylen > 0) {
     unsigned long len = sizeof buf;
     if (len > bodylen) len = bodylen;

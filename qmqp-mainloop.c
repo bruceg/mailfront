@@ -10,6 +10,10 @@
 #include "mailfront.h"
 #include "qmtp.h"
 
+struct session session = {
+  .protocol = "QMQP",
+};
+
 unsigned long maxdatabytes;
 
 static const response* resp;
@@ -35,7 +39,7 @@ static void get_body(ibuf* in)
   case 0: die1(111, "Invalid message body netstring");
   }
   if (bodylen == 0) die1(111, "Zero length body");
-  if (response_ok(resp)) resp = handle_data_start(0, "QMQP");
+  if (response_ok(resp)) resp = handle_data_start();
   while (bodylen > 0) {
     unsigned long len = sizeof buf;
     if (len > bodylen) len = bodylen;

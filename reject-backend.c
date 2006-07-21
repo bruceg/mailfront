@@ -5,13 +5,13 @@
 
 static response resp = {451,"You are not allowed to use this mail server."};
 
-struct session session = { "", 0 };
 const int authenticating = 0;
 unsigned long maxdatabytes = 0;
 const char UNKNOWN[] = "unknown";
 
 const response* handle_init(void)
 {
+  session.relayclient = "";
   return 0;
 }
 
@@ -32,11 +32,9 @@ const response* handle_recipient(str* unused)
   (void)unused;
 }
 
-const response* handle_data_start(const char* unused1, const char* unused2)
+const response* handle_data_start(void)
 {
   return &resp;
-  (void)unused1;
-  (void)unused2;
 }
 
 void handle_data_bytes(const char* unused1, unsigned unused2)

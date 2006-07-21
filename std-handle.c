@@ -20,8 +20,6 @@ const char UNKNOWN[] = "unknown";
 static int is_bounce = 0;
 static unsigned rcpt_count = 0;
 
-struct session session = {0,0};
-
 static str received;
 
 unsigned long maxdatabytes = 0;
@@ -226,13 +224,14 @@ static int str_catfromby(str* s, const char* helo_domain,
   return 1;
 }
 
-int build_received(str* s, const char* helo_domain, const char* proto)
+int build_received(str* s)
 {
   if (!str_cats(s, "Received: from ")) return 0;
-  if (!str_catfromby(s, helo_domain, remote_host, remote_ip)) return 0;
+  if (!str_catfromby(s, session.helo_domain, remote_host, remote_ip)) return 0;
   if (!str_cats(s, "\n  by ")) return 0;
   if (!str_catfromby(s, local_host, 0, local_ip)) return 0;
-  if (!str_cat4s(s, "\n  with ", proto, " via ", linkproto)) return 0;
+  if (!str_cat4s(s, "\n  with ", session.protocol, " via ", linkproto))
+    return 0;
   if (!str_cat3s(s, "; ", date_string(), "\n")) return 0;
   return 1;
 }
@@ -246,8 +245,7 @@ static int in_rec;	      /* True if we might be seeing Received: */
 static int in_dt;	  /* True if we might be seeing Delivered-To: */
 static const response* data_response;
 
-const response* handle_data_start(const char* helo_domain,
-				      const char* protocol)
+const response* handle_data_start(void)
 {
   const response* resp;
   maxdatabytes = rules_getenvu("DATABYTES");
@@ -256,7 +254,7 @@ const response* handle_data_start(const char* helo_domain,
     received.len = 0;
     if (!fixup_received(&received) ||
 	!add_header_add(&received) ||
-	!build_received(&received, helo_domain, protocol))
+	!build_received(&received))
       return &resp_internal;
     backend_handle_data_bytes(received.s, received.len);
   }
