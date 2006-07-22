@@ -1,3 +1,4 @@
+add-received.o
 cvm-validate.o
 iobytes.o
 mailrules.o
