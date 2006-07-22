@@ -27,6 +27,7 @@ extern void set_timeout(void);
 extern void report_io_bytes(void);
 extern struct module backend_validate;
 extern struct module cvm_validate;
+extern struct module relayclient;
 
 static struct module* module_list = 0;
 static struct module* module_tail = 0;
@@ -107,6 +108,7 @@ const response* handle_init(struct session* session)
    * EHLO response. */
   session->maxdatabytes = rules_getenvu("DATABYTES");
 
+  add_module(&relayclient);
   add_module(&backend_validate);
   add_module(&cvm_validate);
 
@@ -122,9 +124,8 @@ const response* handle_reset(struct session* session)
   is_bounce = 0;
   rcpt_count = 0;
   if ((resp = rules_reset()) != 0) return resp;
-  session->relayclient = getenv("RELAYCLIENT");
   backend_handle_reset(session);
-  MODULE_CALL(init, (module, session));
+  MODULE_CALL(reset, (module, session));
   return 0;
 }
 
@@ -140,13 +141,13 @@ const response* handle_sender(struct session* session, str* sender)
    */
   resp = rules_validate_sender(sender);
   session->maxrcpts = rules_getenvu("MAXRCPTS");
-  session->relayclient = rules_getenv("RELAYCLIENT");
   session->maxdatabytes = rules_getenvu("DATABYTES");
   if (resp == 0 && sender->len > 0)
     resp = check_fqdn(sender);
   if (!response_ok(resp))
     return resp;
-  MODULE_CALL(sender, (module, session, sender));
+  if (resp == 0)
+    MODULE_CALL(sender, (module, session, sender));
   if (!response_ok(tmpresp = backend_handle_sender(sender)))
     return tmpresp;
   if (resp == 0) resp = tmpresp;
@@ -167,8 +168,6 @@ const response* handle_recipient(struct session* session, str* recip)
   }
   else if ((resp = check_fqdn(recip)) != 0)
     return resp;
-  else if (session->relayclient != 0)
-    str_cats(recip, session->relayclient);
   else if (session->authenticated)
     resp = 0;
   else

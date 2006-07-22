@@ -3,6 +3,7 @@ iobytes.o
 mailrules.o
 netstring.o
 patterns.o
+relayclient.o
 responses.o
 std-handle.o
 timeout.o
