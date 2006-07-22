@@ -2,7 +2,7 @@
 #include "mailfront.h"
 #include "mailrules.h"
 
-static RESPONSE(ok, 250, "2.1.5 Recipient accepted.");
+static RESPONSE(ok, 250, 0);
 
 static const response* reset(struct module* module,
 			     struct session* session)

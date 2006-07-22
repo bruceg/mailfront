@@ -17,7 +17,6 @@ static RESPONSE(nofqdn,554,"5.1.2 Address does not contain a fully qualified dom
 
 const char UNKNOWN[] = "unknown";
 
-static int is_bounce = 0;
 static unsigned rcpt_count = 0;
 
 static str received;
@@ -70,10 +69,16 @@ const char* getprotoenv(const char* name)
 
 #define MODULE_CALL(NAME,PARAMS) do{ \
   struct module* module; \
-  for (module = module_list; module != 0; module = module->next) \
-    if (module->NAME != 0) \
-      if ((resp = module->NAME PARAMS) != 0 && !response_ok(resp)) \
-        return resp; \
+  for (module = module_list; module != 0; module = module->next) { \
+    if (module->NAME != 0) { \
+      if ((resp = module->NAME PARAMS) != 0) { \
+        if (response_ok(resp)) \
+          break; \
+        else \
+          return resp; \
+      } \
+    } \
+  } \
 } while(0)
 
 const response* handle_init(struct session* session)
@@ -121,12 +126,11 @@ const response* handle_init(struct session* session)
 const response* handle_reset(struct session* session)
 {
   const response* resp;
-  is_bounce = 0;
   rcpt_count = 0;
   if ((resp = rules_reset()) != 0) return resp;
   backend_handle_reset(session);
   MODULE_CALL(reset, (module, session));
-  return 0;
+  return resp;
 }
 
 const response* handle_sender(struct session* session, str* sender)
@@ -150,8 +154,7 @@ const response* handle_sender(struct session* session, str* sender)
     MODULE_CALL(sender, (module, session, sender));
   if (!response_ok(tmpresp = backend_handle_sender(sender)))
     return tmpresp;
-  if (resp == 0) resp = tmpresp;
-  is_bounce = sender->len == 0;
+  if (resp == 0 || resp->message == 0) resp = tmpresp;
   return resp;
 }
 
@@ -168,13 +171,11 @@ const response* handle_recipient(struct session* session, str* recip)
   }
   else if ((resp = check_fqdn(recip)) != 0)
     return resp;
-  else if (session->authenticated)
-    resp = 0;
   else
     MODULE_CALL(recipient, (module, session, recip));
   if (!response_ok(hresp = backend_handle_recipient(recip)))
     return hresp;
-  if (resp == 0) resp = hresp;
+  if (resp == 0 || resp->message == 0) resp = hresp;
   return resp;
 }
 
