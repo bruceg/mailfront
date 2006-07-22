@@ -1,5 +1,7 @@
 qmtp.a
+mailfront.a
 qmail.a
+mailfront.a
 -lcvm-v2client
 -lbg
 socket.lib

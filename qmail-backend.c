@@ -7,7 +7,6 @@
 #include <msg/msg.h>
 #include <unix/sig.h>
 #include "mailfront.h"
-#include "mailrules.h"
 #include "conf_qmail.h"
 
 static RESPONSE(no_write,451,"4.3.0 Writing data to qmail-queue failed.");
@@ -59,10 +58,10 @@ const response* backend_handle_data_start(void)
   int epipe[2];
   const char* qh;
 
-  qqargs[0] = rules_getenv("QMAILQUEUE");
+  qqargs[0] = session_getenv("QMAILQUEUE");
   if (qqargs[0] == 0) qqargs[0] = "bin/qmail-queue";
 
-  if ((qh = rules_getenv("QMAILHOME")) == 0)
+  if ((qh = session_getenv("QMAILHOME")) == 0)
     qh = conf_qmail;
   if (chdir(qh) == -1) return &resp_no_chdir;
 
@@ -81,7 +80,7 @@ const response* backend_handle_data_start(void)
   }
 
   if (qqpid == 0) {
-    if (!rules_exportenv()) exit(51);
+    if (!session_exportenv()) exit(51);
     close(mpipe[1]);
     close(epipe[1]);
     if (dup2(mpipe[0], 0) == -1) exit(120);
@@ -125,7 +124,7 @@ static void parse_status(int status, response* resp)
   resp->number = (status <= 40 && status >= 11) ? 554 : 451;
   memcpy(var, "QQERRMSG_", 9);
   strcpy(var+9, utoa(status));
-  if ((message = rules_getenv(var)) == 0) {
+  if ((message = session_getenv(var)) == 0) {
     switch (status) {
     case 11: message = "5.1.3 Address too long."; break;
     case 31: message = "5.3.0 Message refused."; break;

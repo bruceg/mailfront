@@ -1,12 +1,2 @@
-add-received.o
-cvm-validate.o
-iobytes.o
-mailrules.o
-netstring.o
-patterns.o
-relayclient.o
-responses.o
-std-handle.o
-timeout.o
 qmtp-mainloop.o
 qmtp-respond.o

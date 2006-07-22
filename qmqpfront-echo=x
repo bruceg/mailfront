@@ -1,6 +1,7 @@
 qmqp.a
 echo-backend.o
 null-validate.o
+mailfront.a
 -lcvm-sasl
 -lcvm-v2client
 -lbg

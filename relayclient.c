@@ -12,7 +12,7 @@ static const response* reset(void)
 
 static const response* do_sender(str* sender)
 {
-  session.relayclient = rules_getenv("RELAYCLIENT");
+  session.relayclient = session_getenv("RELAYCLIENT");
   return 0;
   (void)sender;
 }

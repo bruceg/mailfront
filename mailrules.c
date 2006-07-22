@@ -156,67 +156,15 @@ static int try_load(struct pattern* pattern)
   return 1;
 }
 
-/* environment variable handling ******************************************* */
-static str envars;
-
-const char* rules_getenv(const char* name)
-{
-  unsigned i;
-  const unsigned namelen = strlen(name);
-  const char* s;
-  for (s = 0, i = 0; i < envars.len; i += strlen(envars.s + i) + 1) {
-    if (memcmp(envars.s + i, name, namelen) == 0 &&
-	envars.s[i + namelen] == '=')
-      s = envars.s + i + namelen + 1;
-  }
-  if (s == 0) s = getenv(name);
-  return s;
-}
-
-static unsigned long min_u_s(unsigned long u, const char* s)
-{
-  unsigned long newu;
-  if (s != 0) {
-    if ((newu = strtoul(s, (char**)&s, 10)) != 0 &&
-	*s == 0 &&
-	(u == 0 || newu < u))
-      u = newu;
-  }
-  return u;
-}
-
-/* Returns the smallest non-zero value set */
-unsigned long rules_getenvu(const char* name)
-{
-  unsigned i;
-  const unsigned namelen = strlen(name);
-  unsigned long val;
-  val = min_u_s(0, getenv(name));
-  for (i = 0; i < envars.len; i += strlen(envars.s + i) + 1) {
-    if (memcmp(envars.s + i, name, namelen) == 0 &&
-	envars.s[i + namelen] == '=')
-      val = min_u_s(val, envars.s + i + namelen + 1);
-  }
-  return val;
-}
-
-int rules_exportenv(void)
-{
-  unsigned i;
-  for (i = 0; i < envars.len; i += strlen(envars.s + i) + 1)
-    if (putenv(envars.s + i) != 0) return 0;
-  return 1;
-}
-
 static void apply_environment(const str* s)
 {
   unsigned i;
   unsigned len;
   for (i = 0; i < s->len; i += len + 1) {
     len = strlen(s->s + i);
-    if (envars.len > 0)
-      str_catc(&envars, NUL);
-    str_catb(&envars, s->s + i, len);
+    if (session.env.len > 0)
+      str_catc(&session.env, NUL);
+    str_catb(&session.env, s->s + i, len);
   }
 }
 
@@ -356,8 +304,8 @@ const response* rules_init(void)
 
 const response* rules_reset(void)
 {
-  if (!loaded) return 0;
-  str_truncate(&envars, 0);
+  if (loaded)
+    session_resetenv();
   return 0;
 }
 

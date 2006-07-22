@@ -1,12 +1,3 @@
-add-received.o
-cvm-validate.o
-iobytes.o
-mailrules.o
-patterns.o
-relayclient.o
-responses.o
-std-handle.o
-timeout.o
 smtp-commands.o
 smtp-mainloop.o
 smtp-respond.o

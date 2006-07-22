@@ -61,7 +61,7 @@ static int fixup_received(str* s)
 
 static int add_header_add(str* s)
 {
-  const char* add = rules_getenv("HEADER_ADD");
+  const char* add = session_getenv("HEADER_ADD");
   if (add != 0) {
     if (!str_cats(s, add)) return 0;
     if (!str_catc(s, '\n')) return 0;

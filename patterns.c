@@ -91,10 +91,10 @@ void patterns_init(void)
 {
   const char* tmp;
   unsigned u;
-  if ((tmp = rules_getenv("PATTERNS")) != 0)
+  if ((tmp = session_getenv("PATTERNS")) != 0)
     if (!patterns_read(tmp))
       warn3sys("Could not read patterns file '", tmp, "'");
-  if ((tmp = rules_getenv("PATTERNS_LINEMAX")) != 0)
+  if ((tmp = session_getenv("PATTERNS_LINEMAX")) != 0)
     if ((u = strtoul(tmp, (char**)&tmp, 10)) > 0 && *tmp == 0)
       linemax = u;
   if ((linebuf = malloc(linemax+1)) == 0)

@@ -20,6 +20,7 @@ struct session
   unsigned long maxdatabytes;
   unsigned int maxhops;
   unsigned int maxrcpts;
+  str env;
 };
 
 extern struct session session;
@@ -35,6 +36,13 @@ struct module
   const response* (*data_block)(const char* bytes, unsigned long len);
   const response* (*data_end)();
 };
+
+/* From session.c */
+extern const char* session_getenv(const char* name);
+extern unsigned long session_getenvu(const char* name);
+extern int session_exportenv(void);
+extern int session_setenv(const char* name, const char* value, int overwrite);
+extern void session_resetenv(void);
 
 /* From std-handle.c */
 extern const char UNKNOWN[];

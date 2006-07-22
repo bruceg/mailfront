@@ -1,5 +1,7 @@
 smtp.a
+mailfront.a
 qmail.a
+mailfront.a
 -lcvm-sasl
 -lcvm-v2client
 -lbg

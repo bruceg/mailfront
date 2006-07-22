@@ -96,7 +96,7 @@ const response* handle_init(void)
   /* The value of maxdatabytes gets reset in handle_data_start below.
    * This is here simply to provide a value for SMTP to report in its
    * EHLO response. */
-  session.maxdatabytes = rules_getenvu("DATABYTES");
+  session.maxdatabytes = session_getenvu("DATABYTES");
 
   add_module(&relayclient);
   add_module(&backend_validate);
@@ -129,8 +129,8 @@ const response* handle_sender(str* sender)
    * else if backend_validate_sender returns a response, use it
    */
   resp = rules_validate_sender(sender);
-  session.maxrcpts = rules_getenvu("MAXRCPTS");
-  session.maxdatabytes = rules_getenvu("DATABYTES");
+  session.maxrcpts = session_getenvu("MAXRCPTS");
+  session.maxdatabytes = session_getenvu("DATABYTES");
   if (resp == 0 && sender->len > 0)
     resp = check_fqdn(sender);
   if (!response_ok(resp))
@@ -176,12 +176,12 @@ static const response* data_response;
 const response* handle_data_start(void)
 {
   const response* resp;
-  session.maxdatabytes = rules_getenvu("DATABYTES");
+  session.maxdatabytes = session_getenvu("DATABYTES");
   resp = backend_handle_data_start();
   if (resp == 0)
     MODULE_CALL(data_start, ());
   if (response_ok(resp)) {
-    if ((session.maxhops = rules_getenvu("MAXHOPS")) == 0)
+    if ((session.maxhops = session_getenvu("MAXHOPS")) == 0)
       session.maxhops = 100;
   
     patterns_init();
