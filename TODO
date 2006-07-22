@@ -1,7 +1,5 @@
 - Move rules specific env data into session, rename rules_getenv.
 
-- Drop module parameter.
-
 - Fix SASL "Authentication failed" message to include EMSS code
 
 - Add documentation for QMQP and QMTP back ends.

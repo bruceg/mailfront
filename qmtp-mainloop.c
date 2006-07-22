@@ -10,7 +10,7 @@
 #include "mailfront.h"
 #include "qmtp.h"
 
-static struct session session = {
+struct session session = {
   .protocol = "QMTP",
 };
 
@@ -33,14 +33,14 @@ static void get_body(ibuf* in)
   if (!ibuf_getc(in, &nl)) die1(111, "EOF while reading body NL");
   if (nl != LF) die1(111, "Cannot handle non-LF line terminator");
   if (response_ok(resp))
-    resp = handle_data_start(&session);
+    resp = handle_data_start();
   while (bodylen > 0) {
     unsigned long len = sizeof buf;
     if (len > bodylen) len = bodylen;
     if (!ibuf_read(in, buf, len) && in->count == 0)
       die1(111, "EOF while reading body");
     if (response_ok(resp))
-      handle_data_bytes(&session, buf, in->count);
+      handle_data_bytes(buf, in->count);
     bodylen -= in->count;
   }
   if (!ibuf_getc(in, &nl)) die1(111, "EOF while reading comma");
@@ -55,7 +55,7 @@ static void get_sender(ibuf* in)
   }
   msg3("sender <", line.s, ">");
   if (response_ok(resp))
-    resp = handle_sender(&session, &line);
+    resp = handle_sender(&line);
 }
 
 static void get_recips(ibuf* in)
@@ -80,19 +80,19 @@ static void get_recips(ibuf* in)
     str_copyb(&tmp, line.s+j, len);
     msg3("recipient <", tmp.s, ">");
     if (response_ok(resp))
-      resp = handle_recipient(&session, &tmp);
+      resp = handle_recipient(&tmp);
     i = j + len;
   }
 }
 
 static void get_package(ibuf* in)
 {
-  resp = handle_reset(&session);
+  resp = handle_reset();
   get_body(in);
   get_sender(in);
   get_recips(in);
   if (response_ok(resp))
-    resp = handle_data_end(&session);
+    resp = handle_data_end();
   if (!resp) resp = &resp_accepted;
   if (!respond_resp(resp, 1)) die1(111, "EOF while sending response");
 }
@@ -100,7 +100,7 @@ static void get_package(ibuf* in)
 int qmtp_mainloop(void)
 {
   const response* r;
-  if ((r = handle_init(&session)) != 0) {
+  if ((r = handle_init()) != 0) {
     respond_resp(r, 1);
     return 1;
   }

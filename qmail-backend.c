@@ -31,11 +31,10 @@ static void close_qqpipe(void)
   qqepipe = qqmpipe = -1;
 }
 
-void backend_handle_reset(struct session* session)
+void backend_handle_reset(void)
 {
   close_qqpipe();
   str_truncate(&buffer, 0);
-  (void)session;
 }
 
 const response* backend_handle_sender(str* sender)

@@ -19,8 +19,6 @@ struct sasl_auth saslauth = { .prefix = "334 " };
 
 extern unsigned long maxnotimpl;
 
-extern struct session session;
-
 int smtp_mainloop(void)
 {
   static str str_welcome;
@@ -41,7 +39,7 @@ int smtp_mainloop(void)
   if ((tmp = getenv("MAXNOTIMPL")) != 0)
     maxnotimpl = strtoul(tmp, 0, 10);
 
-  if ((resp = handle_init(&session)) != 0) {
+  if ((resp = handle_init()) != 0) {
     respond_resp(resp, 1);
     return 1;
   }

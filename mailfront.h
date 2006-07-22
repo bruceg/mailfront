@@ -22,33 +22,31 @@ struct session
   unsigned int maxrcpts;
 };
 
+extern struct session session;
+
 struct module
 {
   struct module* next;
-  const response* (*init)(struct module*, struct session*);
-  const response* (*reset)(struct module*, struct session*);
-  const response* (*sender)(struct module*, struct session*,
-			    str*);
-  const response* (*recipient)(struct module*, struct session*,
-			       str*);
-  const response* (*data_start)(struct module*, struct session*);
-  const response* (*data_block)(struct module*, struct session*,
-				const char* bytes, unsigned long len);
-  const response* (*data_end)(struct module*, struct session*);
+  const response* (*init)(void);
+  const response* (*reset)(void);
+  const response* (*sender)(str*);
+  const response* (*recipient)(str*);
+  const response* (*data_start)();
+  const response* (*data_block)(const char* bytes, unsigned long len);
+  const response* (*data_end)();
 };
 
 /* From std-handle.c */
 extern const char UNKNOWN[];
 extern int number_ok(const response* resp);
 extern int response_ok(const response* resp);
-extern const response* handle_init(struct session* session);
-extern const response* handle_reset(struct session* session);
-extern const response* handle_sender(struct session* session, str* sender);
-extern const response* handle_recipient(struct session* session, str* recip);
-extern const response* handle_data_start(struct session* session);
-extern void handle_data_bytes(struct session* session,
-			      const char* bytes, unsigned len);
-extern const response* handle_data_end(struct session* session);
+extern const response* handle_init(void);
+extern const response* handle_reset(void);
+extern const response* handle_sender(str* sender);
+extern const response* handle_recipient(str* recip);
+extern const response* handle_data_start(void);
+extern void handle_data_bytes(const char* bytes, unsigned len);
+extern const response* handle_data_end(void);
 extern void add_module(struct module*);
 
 /* From netstring.c */
@@ -60,7 +58,7 @@ void patterns_init(void);
 const response* patterns_check(const char* block, unsigned len);
 
 /* Defined by a back-end module */
-extern void backend_handle_reset(struct session*);
+extern void backend_handle_reset();
 extern const response* backend_handle_sender(str*);
 extern const response* backend_handle_recipient(str*);
 extern const response* backend_handle_data_start(void);

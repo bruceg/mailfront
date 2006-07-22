@@ -53,11 +53,11 @@ static const response* check_fqdn(const str* s)
   return 0;
 }
 
-void getprotoenv(struct session* session, const char* name, const char** dest)
+static void getprotoenv(const char* name, const char** dest)
 {
   static str fullname;
   const char* env;
-  if (!str_copy2s(&fullname, session->linkproto, name)) die_oom(111);
+  if (!str_copy2s(&fullname, session.linkproto, name)) die_oom(111);
   if ((env = getenv(fullname.s)) != 0
       && env[0] == 0)
     env = 0;
@@ -78,7 +78,7 @@ void getprotoenv(struct session* session, const char* name, const char** dest)
   } \
 } while(0)
 
-const response* handle_init(struct session* session)
+const response* handle_init(void)
 {
   const response* resp;
 
@@ -87,69 +87,68 @@ const response* handle_init(struct session* session)
   set_timeout();
 
   require_auth = getenv("REQUIRE_AUTH");
-  if ((session->linkproto = getenv("PROTO")) == 0)
-    session->linkproto = "TCP";
-  getprotoenv(session, "LOCALIP", &session->local_ip);
-  getprotoenv(session, "REMOTEIP", &session->remote_ip);
-  getprotoenv(session, "LOCALHOST", &session->local_host);
-  getprotoenv(session, "REMOTEHOST", &session->remote_host);
+  if ((session.linkproto = getenv("PROTO")) == 0)
+    session.linkproto = "TCP";
+  getprotoenv("LOCALIP", &session.local_ip);
+  getprotoenv("REMOTEIP", &session.remote_ip);
+  getprotoenv("LOCALHOST", &session.local_host);
+  getprotoenv("REMOTEHOST", &session.remote_host);
   /* The value of maxdatabytes gets reset in handle_data_start below.
    * This is here simply to provide a value for SMTP to report in its
    * EHLO response. */
-  session->maxdatabytes = rules_getenvu("DATABYTES");
+  session.maxdatabytes = rules_getenvu("DATABYTES");
 
   add_module(&relayclient);
   add_module(&backend_validate);
   add_module(&cvm_validate);
   add_module(&add_received);
 
-  MODULE_CALL(init, (module, session));
+  MODULE_CALL(init, ());
 
   return rules_init();
-  (void)session;
 }
 
-const response* handle_reset(struct session* session)
+const response* handle_reset(void)
 {
   const response* resp;
   rcpt_count = 0;
   if ((resp = rules_reset()) != 0) return resp;
-  backend_handle_reset(session);
-  MODULE_CALL(reset, (module, session));
+  backend_handle_reset();
+  MODULE_CALL(reset, ());
   return resp;
 }
 
-const response* handle_sender(struct session* session, str* sender)
+const response* handle_sender(str* sender)
 {
   const response* resp;
   const response* tmpresp;
-  if (require_auth && !(session->authenticated || session->relayclient != 0))
+  if (require_auth && !(session.authenticated || session.relayclient != 0))
     return &resp_mustauth;
   /* Logic:
    * if rules_validate_sender returns a response, use it
    * else if backend_validate_sender returns a response, use it
    */
   resp = rules_validate_sender(sender);
-  session->maxrcpts = rules_getenvu("MAXRCPTS");
-  session->maxdatabytes = rules_getenvu("DATABYTES");
+  session.maxrcpts = rules_getenvu("MAXRCPTS");
+  session.maxdatabytes = rules_getenvu("DATABYTES");
   if (resp == 0 && sender->len > 0)
     resp = check_fqdn(sender);
   if (!response_ok(resp))
     return resp;
   if (resp == 0)
-    MODULE_CALL(sender, (module, session, sender));
+    MODULE_CALL(sender, (sender));
   if (!response_ok(tmpresp = backend_handle_sender(sender)))
     return tmpresp;
   if (resp == 0 || resp->message == 0) resp = tmpresp;
   return resp;
 }
 
-const response* handle_recipient(struct session* session, str* recip)
+const response* handle_recipient(str* recip)
 {
   const response* resp;
   const response* hresp;
   ++rcpt_count;
-  if (session->maxrcpts > 0 && rcpt_count > session->maxrcpts)
+  if (session.maxrcpts > 0 && rcpt_count > session.maxrcpts)
     return &resp_manyrcpt;
   if ((resp = rules_validate_recipient(recip)) != 0) {
     if (!number_ok(resp))
@@ -158,7 +157,7 @@ const response* handle_recipient(struct session* session, str* recip)
   else if ((resp = check_fqdn(recip)) != 0)
     return resp;
   else
-    MODULE_CALL(recipient, (module, session, recip));
+    MODULE_CALL(recipient, (recip));
   if (!response_ok(hresp = backend_handle_recipient(recip)))
     return hresp;
   if (resp == 0 || resp->message == 0) resp = hresp;
@@ -174,16 +173,16 @@ static int in_rec;	      /* True if we might be seeing Received: */
 static int in_dt;	  /* True if we might be seeing Delivered-To: */
 static const response* data_response;
 
-const response* handle_data_start(struct session* session)
+const response* handle_data_start(void)
 {
   const response* resp;
-  session->maxdatabytes = rules_getenvu("DATABYTES");
+  session.maxdatabytes = rules_getenvu("DATABYTES");
   resp = backend_handle_data_start();
   if (resp == 0)
-    MODULE_CALL(data_start, (module, session));
+    MODULE_CALL(data_start, ());
   if (response_ok(resp)) {
-    if ((session->maxhops = rules_getenvu("MAXHOPS")) == 0)
-      session->maxhops = 100;
+    if ((session.maxhops = rules_getenvu("MAXHOPS")) == 0)
+      session.maxhops = 100;
   
     patterns_init();
     data_bytes = 0;
@@ -198,8 +197,7 @@ const response* handle_data_start(struct session* session)
   return resp;
 }
 
-void handle_data_bytes(struct session* session,
-		       const char* bytes, unsigned len)
+void handle_data_bytes(const char* bytes, unsigned len)
 {
   unsigned i;
   const char* p;
@@ -209,12 +207,12 @@ void handle_data_bytes(struct session* session,
   if (data_response) return;
   for (module = module_list; module != 0; module = module->next)
     if (module->data_block != 0)
-      if ((r = module->data_block(module, session, bytes, len)) != 0
+      if ((r = module->data_block(bytes, len)) != 0
 	   && !response_ok(r)) {
 	data_response = r;
 	return;
       }
-  if (session->maxdatabytes && data_bytes > session->maxdatabytes) {
+  if (session.maxdatabytes && data_bytes > session.maxdatabytes) {
     data_response = &resp_too_long;
     return;
   }
@@ -237,7 +235,7 @@ void handle_data_bytes(struct session* session,
 	    in_rec = 0;
 	  else if (linepos >= 8) {
 	    in_dt = in_rec = 0;
-	    if (++count_rec > session->maxhops) {
+	    if (++count_rec > session.maxhops) {
 	      data_response = &resp_hops;
 	      return;
 	    }
@@ -249,7 +247,7 @@ void handle_data_bytes(struct session* session,
 	    in_dt = 0;
 	  else if (linepos >= 12) {
 	    in_dt = in_rec = 0;
-	    if (++count_dt > session->maxhops) {
+	    if (++count_dt > session.maxhops) {
 	      data_response = &resp_hops;
 	      return;
 	    }
@@ -260,15 +258,13 @@ void handle_data_bytes(struct session* session,
     }
   }
   backend_handle_data_bytes(bytes, len);
-  (void)session;
 }
 
-const response* handle_data_end(struct session* session)
+const response* handle_data_end(void)
 {
   const response* resp;
   if (data_response)
     return data_response;
   MODULE_CALL(data_end, (module, session));
   return backend_handle_data_end();
-  (void)session;
 }

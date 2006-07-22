@@ -8,50 +8,43 @@ static response resp = {451,"You are not allowed to use this mail server."};
 const int authenticating = 0;
 const char UNKNOWN[] = "unknown";
 
-const response* handle_init(struct session* unused)
+const response* handle_init(void)
 {
   return 0;
-  (void)unused;
 }
 
-const response* handle_reset(struct session* session)
+const response* handle_reset(void)
 {
-  session->relayclient = "";
+  session.relayclient = "";
   return 0;
 }
 
-const response* handle_sender(struct session* unused1, str* unused2)
-{
-  return &resp;
-  (void)unused1;
-  (void)unused2;
-}
-
-const response* handle_recipient(struct session* unused1, str* unused2)
-{
-  return &resp;
-  (void)unused1;
-  (void)unused2;
-}
-
-const response* handle_data_start(struct session* unused)
+const response* handle_sender(str* unused)
 {
   return &resp;
   (void)unused;
 }
 
-void handle_data_bytes(struct session* unused1,
-		       const char* unused2, unsigned unused3)
-{
-  (void)unused1;
-  (void)unused2;
-  (void)unused3;
-}
-
-const response* handle_data_end(struct session* unused)
+const response* handle_recipient(str* unused)
 {
   return &resp;
   (void)unused;
+}
+
+const response* handle_data_start(void)
+{
+  return &resp;
+}
+
+void handle_data_bytes(const char* unused1, unsigned unused2)
+{
+  (void)unused1;
+  (void)unused2;
+}
+
+const response* handle_data_end(void)
+{
+  return &resp;
 }
 
 extern int mainloop(void);

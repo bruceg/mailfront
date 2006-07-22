@@ -24,8 +24,7 @@ static int lower(str* s)
   return 1;
 }
 
-static const response* validate_init(struct module* module,
-				     struct session* session)
+static const response* validate_init(void)
 {
   const char* qh;
   
@@ -41,13 +40,9 @@ static const response* validate_init(struct module* module,
   if ((mrh_fd = open("control/morercpthosts.cdb", O_RDONLY)) != -1)
     cdb_init(&mrh, mrh_fd);
   return 0;
-  (void)module;
-  (void)session;
 }
 
-static const response* validate_sender(struct module* module,
-				       struct session* session,
-				       str* sender)
+static const response* validate_sender(str* sender)
 {
   int at;
   str_copy(&tmp, sender);
@@ -59,13 +54,9 @@ static const response* validate_sender(struct module* module,
     if (dict_get(&bmf, &tmp)) return &resp_badmailfrom;
   }
   return 0;
-  (void)module;
-  (void)session;
 }
 
-static const response* validate_recipient(struct module* module,
-					  struct session* session,
-					  str* recipient)
+static const response* validate_recipient(str* recipient)
 {
   int at;
 
@@ -88,8 +79,6 @@ static const response* validate_recipient(struct module* module,
     }
   }
   return 0;
-  (void)module;
-  (void)session;
 }
 
 struct module backend_validate = {
