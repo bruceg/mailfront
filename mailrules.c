@@ -34,6 +34,7 @@ struct rule
   str response;
   str relayclient;
   str environment;
+  unsigned long databytes;
   struct rule* next;
 };
 
@@ -211,7 +212,7 @@ static const char* parse_char(const char* ptr, char* out)
 
 static const char* parse_str(const char* ptr, char sep, str* out)
 {
-  char ch;
+  char ch = 0;
   /* str_truncate(out, 0); */
   for (;;) {
     if (*ptr == sep || *ptr == NUL) return ptr;
@@ -243,7 +244,6 @@ static void parse_env(const char* ptr, str* out)
 const response* rules_add(const char* l)
 {
   struct rule* r;
-  unsigned long databytes;
   
   if (*l != 'k' && *l != 'd' && *l != 'z' && *l != 'p' && *l != 'n') return 0;
   r = alloc_rule();
@@ -252,15 +252,11 @@ const response* rules_add(const char* l)
   if ((l = parse_pattern(l, ':', &r->sender)) != 0 && *l == ':')
     if ((l = parse_pattern(l+1, ':', &r->recipient)) != 0 && *l == ':')
       if ((l = parse_str(l+1, ':', &r->response)) != 0 && *l == ':')
-	if ((l = parse_uint(l+1, ':', &databytes)) != 0) {
-	  str_copys(&r->environment, "DATABYTES=");
-	  str_catu(&r->environment, databytes);
-	  str_catc(&r->environment, 0);
+	if ((l = parse_uint(l+1, ':', &r->databytes)) != 0)
 	  if (*l == ':'
 	      && (l = parse_str(l+1, ':', &r->relayclient)) != 0
 	      && *l == ':')
 	    parse_env(l+1, &r->environment);
-	}
 
   if (l == 0) return &resp_syntax;
   append_rule(r);
@@ -367,6 +363,10 @@ static const response* apply_rule(const struct rule* rule)
   const response* resp;
   resp = build_response(rule->code, &rule->response);
   apply_environment(&rule->environment);
+  if (session.maxdatabytes == 0
+      || (rule->databytes > 0
+	  && session.maxdatabytes > rule->databytes))
+    session.maxdatabytes = rule->databytes;
   return resp;
 }
 

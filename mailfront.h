@@ -18,8 +18,8 @@ struct session
   const char* remote_ip;
   int authenticated;
   unsigned long maxdatabytes;
-  unsigned int maxhops;
-  unsigned int maxrcpts;
+  unsigned long maxhops;
+  unsigned long maxrcpts;
   str env;
 };
 

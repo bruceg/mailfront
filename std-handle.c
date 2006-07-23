@@ -115,8 +115,6 @@ const response* handle_sender(str* sender)
    * else if backend_validate_sender returns a response, use it
    */
   resp = rules_validate_sender(sender);
-  session.maxrcpts = session_getenvu("MAXRCPTS");
-  session.maxdatabytes = session_getenvu("DATABYTES");
   if (resp == 0)
     MODULE_CALL(sender, (sender));
   if (!response_ok(tmpresp = backend_handle_sender(sender)))

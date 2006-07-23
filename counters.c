@@ -27,8 +27,29 @@ static const response* reset(void)
   return 0;
 }
 
+static void minenv(unsigned long* u, const char* name)
+{
+  unsigned long value = session_getenvu(name);
+  if (value > 0
+      && (*u == 0
+	  || *u > value))
+    *u = value;
+}
+
+static const response* sender(str* r)
+{
+  /* This MUST be done as a sender match to make sure SMTP "MAIL FROM"
+   * commands with a SIZE parameter can be rejected properly. */
+  minenv(&session.maxdatabytes, "DATABYTES");
+  minenv(&session.maxrcpts, "MAXRCPTS");
+  (void)r;
+  return 0;
+}
+
 static const response* recipient(str* r)
 {
+  minenv(&session.maxdatabytes, "DATABYTES");
+  minenv(&session.maxrcpts, "MAXRCPTS");
   ++rcpt_count;
   if (session.maxrcpts > 0 && rcpt_count > session.maxrcpts)
     return &resp_manyrcpt;
@@ -38,7 +59,7 @@ static const response* recipient(str* r)
 
 static const response* start(void)
 {
-  session.maxdatabytes = session_getenvu("DATABYTES");
+  minenv(&session.maxdatabytes, "DATABYTES");
   if ((session.maxhops = session_getenvu("MAXHOPS")) == 0)
     session.maxhops = 100;
   data_bytes = 0;
@@ -97,6 +118,7 @@ static const response* block(const char* bytes, unsigned long len)
 struct module counters = {
   .init = init,
   .reset = reset,
+  .sender = sender,
   .recipient = recipient,
   .data_start = start,
   .data_block = block,
