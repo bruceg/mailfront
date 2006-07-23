@@ -61,10 +61,6 @@ extern void add_module(struct module*);
 int get_netstring_len(ibuf* in, unsigned long* i);
 int get_netstring(ibuf* in, str* s);
 
-/* From patterns.c */
-void patterns_init(void);
-const response* patterns_check(const char* block, unsigned len);
-
 /* Defined by a back-end module */
 extern void backend_handle_reset();
 extern const response* backend_handle_sender(str*);

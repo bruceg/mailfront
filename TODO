@@ -1,9 +1,5 @@
 - Make modules for:
   - mailrules
-  - databytes
-  - maxhops
-  - maxrcpts
-  - check_fqdn
 
 - Fix SASL "Authentication failed" message to include EMSS code
 

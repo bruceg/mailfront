@@ -7,7 +7,6 @@
 #include <str/str.h>
 
 #include "mailfront.h"
-#include "mailrules.h"
 
 struct pattern
 {
@@ -23,7 +22,7 @@ struct pattern
 #define T_NORMAL (0)
 
 static response resp_patmatch = { 554, 0 };
-static struct pattern* patterns;
+static struct pattern* pattern_list;
 static str responses;
 static unsigned pattern_count;
 static int linemode;
@@ -54,11 +53,11 @@ static int patterns_read(const char* filename)
   }
   responses.len = 0;
   /* Allocate the lines. */
-  if ((patterns = malloc(count * sizeof *patterns)) == 0)
+  if ((pattern_list = malloc(count * sizeof *pattern_list)) == 0)
     die_oom(111);
   if (!ibuf_rewind(&in))
     die1sys(111, "Could not rewind patterns file");
-  memset(patterns, 0, count * sizeof *patterns);
+  memset(pattern_list, 0, count * sizeof *pattern_list);
   for (i = 0; i < count && ibuf_getstr(&in, &line, LF); ) {
     str_rstrip(&line);
     if (line.len > 0) {
@@ -75,9 +74,9 @@ static int patterns_read(const char* filename)
       default:
 	mode = T_NORMAL;
       }
-      patterns[i].mode = mode;
-      wrap_str(str_copyb(&patterns[i].s, line.s+1, line.len-1));
-      patterns[i].message = currmsg;
+      pattern_list[i].mode = mode;
+      wrap_str(str_copyb(&pattern_list[i].s, line.s+1, line.len-1));
+      pattern_list[i].message = currmsg;
       ++i;
     }
   }
@@ -87,7 +86,7 @@ static int patterns_read(const char* filename)
   return 1;
 }
 
-void patterns_init(void)
+static const response* init(void)
 {
   const char* tmp;
   unsigned u;
@@ -98,18 +97,19 @@ void patterns_init(void)
     if ((u = strtoul(tmp, (char**)&tmp, 10)) > 0 && *tmp == 0)
       linemax = u;
   if ((linebuf = malloc(linemax+1)) == 0)
-    return;
+    die_oom(111);
   linemode = T_HEADER;
   linepos = 0;
+  return 0;
 }
 
-static const response* check_line()
+static const response* check_line(void)
 {
   unsigned i;
   struct pattern* p;
   const str fakeline = { linebuf, linepos, 0 };
   linebuf[linepos] = 0;
-  for (p = patterns, i = 0; i < pattern_count; ++i, ++p) {
+  for (p = pattern_list, i = 0; i < pattern_count; ++i, ++p) {
     if ((p->mode == T_NORMAL
 	 || p->mode == linemode)
 	&& str_glob(&fakeline, &p->s)) {
@@ -120,7 +120,7 @@ static const response* check_line()
   return 0;
 }
 
-const response* patterns_check(const char* bytes, unsigned len)
+static const response* check(const char* bytes, unsigned long len)
 {
   const char* p;
   const char* const end = bytes + len;
@@ -146,3 +146,8 @@ const response* patterns_check(const char* bytes, unsigned len)
   }
   return 0;
 }
+
+struct module patterns = {
+  .data_start = init,
+  .data_block = check,
+};
