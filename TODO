@@ -1,5 +1,4 @@
-- Make modules for:
-  - require-auth
+* Load modules dynamically using dlopen based on $MODULES
 
 - Fix SASL "Authentication failed" message to include EMSS code
 

@@ -8,13 +8,12 @@
 #include "mailfront.h"
 #include "smtp.h"
 
-static RESPONSE(mustauth, 530, "5.7.1 You must authenticate first.");
-
 const char UNKNOWN[] = "unknown";
 
 const int authenticating = 0;
 extern void set_timeout(void);
 extern void report_io_bytes(void);
+extern struct module require_auth;
 extern struct module backend_validate;
 extern struct module cvm_validate;
 extern struct module relayclient;
@@ -26,8 +25,6 @@ extern struct module mailrules;
 
 static struct module* module_list = 0;
 static struct module* module_tail = 0;
-
-static const char* require_auth;
 
 void add_module(struct module* module)
 {
@@ -71,17 +68,14 @@ const response* handle_init(void)
 
   set_timeout();
 
-  require_auth = getenv("REQUIRE_AUTH");
   if ((session.linkproto = getenv("PROTO")) == 0)
     session.linkproto = "TCP";
   getprotoenv("LOCALIP", &session.local_ip);
   getprotoenv("REMOTEIP", &session.remote_ip);
   getprotoenv("LOCALHOST", &session.local_host);
   getprotoenv("REMOTEHOST", &session.remote_host);
-  /* The value of maxdatabytes gets reset in handle_data_start below.
-   * This is here simply to provide a value for SMTP to report in its
-   * EHLO response. */
 
+  add_module(&require_auth);
   add_module(&check_fqdn);
   add_module(&counters);
   add_module(&mailrules);
@@ -108,8 +102,6 @@ const response* handle_sender(str* sender)
 {
   const response* resp = 0;
   const response* tmpresp;
-  if (require_auth && !(session.authenticated || session.relayclient != 0))
-    return &resp_mustauth;
   MODULE_CALL(sender, (sender));
   if (!response_ok(tmpresp = backend_handle_sender(sender)))
     return tmpresp;
