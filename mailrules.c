@@ -3,7 +3,6 @@
 #include <unistd.h>
 
 #include "mailfront.h"
-#include "mailrules.h"
 
 #include <cdb/cdb.h>
 #include <dict/dict.h>
@@ -241,7 +240,7 @@ static void parse_env(const char* ptr, str* out)
     }
 }
 
-const response* rules_add(const char* l)
+static const response* add(const char* l)
 {
   struct rule* r;
   
@@ -269,7 +268,7 @@ const response* rules_add(const char* l)
 
 static int loaded = 0;
 
-const response* rules_init(void)
+static const response* init(void)
 {
   const char* path;
   str rule = {0,0,0};
@@ -290,7 +289,7 @@ const response* rules_init(void)
       default: return &resp_syntax;
       }
     }
-    else if ((r = rules_add(rule.s)) != 0)
+    else if ((r = add(rule.s)) != 0)
       return r;
   }
   ibuf_close(&in);
@@ -298,7 +297,7 @@ const response* rules_init(void)
   return 0;
 }
 
-const response* rules_reset(void)
+static const response* reset(void)
 {
   if (loaded)
     session_resetenv();
@@ -385,7 +384,7 @@ static void copy_addr(const str* addr,
 static str saved_sender;
 static str sender_domain;
 
-const response* rules_validate_sender(str* sender)
+static const response* validate_sender(str* sender)
 {
   struct rule* rule;
   const response* r;
@@ -404,7 +403,7 @@ const response* rules_validate_sender(str* sender)
 static str laddr;
 static str rdomain;
 
-const response* rules_validate_recipient(str* recipient)
+static const response* validate_recipient(str* recipient)
 {
   struct rule* rule;
   const response* r;
@@ -421,3 +420,10 @@ const response* rules_validate_recipient(str* recipient)
     }
   return 0;
 }
+
+struct module mailrules = {
+  .init = init,
+  .reset = reset,
+  .sender = validate_sender,
+  .recipient = validate_recipient,
+};

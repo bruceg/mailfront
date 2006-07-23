@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include "mailfront.h"
-#include "mailrules.h"
 
 static RESPONSE(ok, 250, 0);
 

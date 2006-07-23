@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "mailfront.h"
-#include "mailrules.h"
 
 static str received;
 static str fixup_host;

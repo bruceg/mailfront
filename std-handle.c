@@ -6,7 +6,6 @@
 #include <str/str.h>
 
 #include "mailfront.h"
-#include "mailrules.h"
 #include "smtp.h"
 
 static RESPONSE(mustauth, 530, "5.7.1 You must authenticate first.");
@@ -23,6 +22,7 @@ extern struct module add_received;
 extern struct module check_fqdn;
 extern struct module patterns;
 extern struct module counters;
+extern struct module mailrules;
 
 static struct module* module_list = 0;
 static struct module* module_tail = 0;
@@ -84,6 +84,7 @@ const response* handle_init(void)
 
   add_module(&check_fqdn);
   add_module(&counters);
+  add_module(&mailrules);
   add_module(&relayclient);
   add_module(&backend_validate);
   add_module(&cvm_validate);
@@ -92,13 +93,12 @@ const response* handle_init(void)
 
   MODULE_CALL(init, ());
 
-  return rules_init();
+  return 0;
 }
 
 const response* handle_reset(void)
 {
-  const response* resp;
-  if ((resp = rules_reset()) != 0) return resp;
+  const response* resp = 0;
   backend_handle_reset();
   MODULE_CALL(reset, ());
   return resp;
@@ -106,17 +106,11 @@ const response* handle_reset(void)
 
 const response* handle_sender(str* sender)
 {
-  const response* resp;
+  const response* resp = 0;
   const response* tmpresp;
   if (require_auth && !(session.authenticated || session.relayclient != 0))
     return &resp_mustauth;
-  /* Logic:
-   * if rules_validate_sender returns a response, use it
-   * else if backend_validate_sender returns a response, use it
-   */
-  resp = rules_validate_sender(sender);
-  if (resp == 0)
-    MODULE_CALL(sender, (sender));
+  MODULE_CALL(sender, (sender));
   if (!response_ok(tmpresp = backend_handle_sender(sender)))
     return tmpresp;
   if (resp == 0 || resp->message == 0) resp = tmpresp;
@@ -125,14 +119,9 @@ const response* handle_sender(str* sender)
 
 const response* handle_recipient(str* recip)
 {
-  const response* resp;
+  const response* resp = 0;
   const response* hresp;
-  if ((resp = rules_validate_recipient(recip)) != 0) {
-    if (!number_ok(resp))
-      return resp;
-  }
-  else
-    MODULE_CALL(recipient, (recip));
+  MODULE_CALL(recipient, (recip));
   if (!response_ok(hresp = backend_handle_recipient(recip)))
     return hresp;
   if (resp == 0 || resp->message == 0) resp = hresp;

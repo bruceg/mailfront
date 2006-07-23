@@ -1,5 +1,5 @@
 - Make modules for:
-  - mailrules
+  - require-auth
 
 - Fix SASL "Authentication failed" message to include EMSS code
 

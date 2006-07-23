@@ -3,7 +3,6 @@
 #include <systime.h>
 
 #include "mailfront.h"
-#include "mailrules.h"
 #include "smtp.h"
 #include <cvm/sasl.h>
 
