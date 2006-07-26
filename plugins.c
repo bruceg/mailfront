@@ -45,7 +45,7 @@ const response* load_plugins(void)
   const char* end;
   long len;
   const response* resp;
-  if ((path = getenv("PLUGINS_PATH")) == 0)
+  if ((path = getenv("MODULE_PATH")) == 0)
     path = conf_modules;
   if ((list = getenv("PLUGINS")) == 0)
     list = default_plugins;
