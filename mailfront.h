@@ -37,7 +37,17 @@ struct plugin
   const response* (*data_end)(void);
 };
 
+#ifdef PLUGIN
+#define STRUCT_PLUGIN(NAME) struct plugin plugin
+#else
 #define STRUCT_PLUGIN(NAME) struct plugin NAME
+#endif
+
+/* From plugins.c */
+extern struct plugin* plugin_list;
+extern struct plugin* plugin_tail;
+extern void add_plugin(struct plugin*);
+extern const response* load_plugins(void);
 
 /* From session.c */
 extern const char* session_getenv(const char* name);
@@ -57,7 +67,6 @@ extern const response* handle_recipient(str* recip);
 extern const response* handle_data_start(void);
 extern void handle_data_bytes(const char* bytes, unsigned len);
 extern const response* handle_data_end(void);
-extern void add_plugin(struct plugin*);
 
 /* From netstring.c */
 int get_netstring_len(ibuf* in, unsigned long* i);

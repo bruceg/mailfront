@@ -3,3 +3,5 @@ smtp.a
 sasl-stub.o
 mailfront.a
 -lbg
+dl.lib
+-rdynamic

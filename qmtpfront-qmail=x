@@ -5,3 +5,5 @@ mailfront.a
 -lcvm-v2client
 -lbg
 socket.lib
+dl.lib
+-rdynamic

@@ -2,3 +2,5 @@ reject-backend.o
 qmqp.a
 mailfront.a
 -lbg
+dl.lib
+-rdynamic

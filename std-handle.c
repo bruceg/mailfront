@@ -23,18 +23,6 @@ extern struct plugin patterns;
 extern struct plugin counters;
 extern struct plugin mailrules;
 
-static struct plugin* plugin_list = 0;
-static struct plugin* plugin_tail = 0;
-
-void add_plugin(struct plugin* plugin)
-{
-  if (plugin_tail == 0)
-    plugin_list = plugin;
-  else
-    plugin_tail->next = plugin;
-  plugin_tail = plugin;
-}
-
 static void getprotoenv(const char* name, const char** dest)
 {
   static str fullname;
@@ -85,6 +73,9 @@ const response* handle_init(void)
   add_plugin(&add_received);
   add_plugin(&patterns);
 
+  if ((resp = load_plugins()) != 0)
+    return resp;
+  
   MODULE_CALL(init, ());
 
   return 0;
