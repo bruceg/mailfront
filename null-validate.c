@@ -1,5 +1,5 @@
 #include "mailfront.h"
 
-struct module backend_validate = {
+struct plugin backend_validate = {
   .init = 0,
 };

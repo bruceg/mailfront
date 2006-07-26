@@ -115,7 +115,7 @@ static const response* block(const char* bytes, unsigned long len)
   return 0;
 }
 
-struct module counters = {
+struct plugin counters = {
   .init = init,
   .reset = reset,
   .sender = sender,

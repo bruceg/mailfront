@@ -25,16 +25,16 @@ struct session
 
 extern struct session session;
 
-struct module
+struct plugin
 {
-  struct module* next;
+  struct plugin* next;
   const response* (*init)(void);
   const response* (*reset)(void);
   const response* (*sender)(str*);
   const response* (*recipient)(str*);
-  const response* (*data_start)();
+  const response* (*data_start)(void);
   const response* (*data_block)(const char* bytes, unsigned long len);
-  const response* (*data_end)();
+  const response* (*data_end)(void);
 };
 
 /* From session.c */
@@ -55,7 +55,7 @@ extern const response* handle_recipient(str* recip);
 extern const response* handle_data_start(void);
 extern void handle_data_bytes(const char* bytes, unsigned len);
 extern const response* handle_data_end(void);
-extern void add_module(struct module*);
+extern void add_plugin(struct plugin*);
 
 /* From netstring.c */
 int get_netstring_len(ibuf* in, unsigned long* i);

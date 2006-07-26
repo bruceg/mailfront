@@ -27,7 +27,7 @@ static const response* do_recipient(str* recipient)
   return 0;
 }
 
-struct module relayclient = {
+struct plugin relayclient = {
   .reset = reset,
   .sender = do_sender,
   .recipient = do_recipient,

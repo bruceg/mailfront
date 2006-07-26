@@ -13,26 +13,26 @@ const char UNKNOWN[] = "unknown";
 const int authenticating = 0;
 extern void set_timeout(void);
 extern void report_io_bytes(void);
-extern struct module require_auth;
-extern struct module backend_validate;
-extern struct module cvm_validate;
-extern struct module relayclient;
-extern struct module add_received;
-extern struct module check_fqdn;
-extern struct module patterns;
-extern struct module counters;
-extern struct module mailrules;
+extern struct plugin require_auth;
+extern struct plugin backend_validate;
+extern struct plugin cvm_validate;
+extern struct plugin relayclient;
+extern struct plugin add_received;
+extern struct plugin check_fqdn;
+extern struct plugin patterns;
+extern struct plugin counters;
+extern struct plugin mailrules;
 
-static struct module* module_list = 0;
-static struct module* module_tail = 0;
+static struct plugin* plugin_list = 0;
+static struct plugin* plugin_tail = 0;
 
-void add_module(struct module* module)
+void add_plugin(struct plugin* plugin)
 {
-  if (module_tail == 0)
-    module_list = module;
+  if (plugin_tail == 0)
+    plugin_list = plugin;
   else
-    module_tail->next = module;
-  module_tail = module;
+    plugin_tail->next = plugin;
+  plugin_tail = plugin;
 }
 
 static void getprotoenv(const char* name, const char** dest)
@@ -47,10 +47,10 @@ static void getprotoenv(const char* name, const char** dest)
 }
 
 #define MODULE_CALL(NAME,PARAMS) do{ \
-  struct module* module; \
-  for (module = module_list; module != 0; module = module->next) { \
-    if (module->NAME != 0) { \
-      if ((resp = module->NAME PARAMS) != 0) { \
+  struct plugin* plugin; \
+  for (plugin = plugin_list; plugin != 0; plugin = plugin->next) { \
+    if (plugin->NAME != 0) { \
+      if ((resp = plugin->NAME PARAMS) != 0) { \
         if (response_ok(resp)) \
           break; \
         else \
@@ -75,15 +75,15 @@ const response* handle_init(void)
   getprotoenv("LOCALHOST", &session.local_host);
   getprotoenv("REMOTEHOST", &session.remote_host);
 
-  add_module(&require_auth);
-  add_module(&check_fqdn);
-  add_module(&counters);
-  add_module(&mailrules);
-  add_module(&relayclient);
-  add_module(&backend_validate);
-  add_module(&cvm_validate);
-  add_module(&add_received);
-  add_module(&patterns);
+  add_plugin(&require_auth);
+  add_plugin(&check_fqdn);
+  add_plugin(&counters);
+  add_plugin(&mailrules);
+  add_plugin(&relayclient);
+  add_plugin(&backend_validate);
+  add_plugin(&cvm_validate);
+  add_plugin(&add_received);
+  add_plugin(&patterns);
 
   MODULE_CALL(init, ());
 
@@ -137,11 +137,11 @@ const response* handle_data_start(void)
 void handle_data_bytes(const char* bytes, unsigned len)
 {
   const response* r;
-  struct module* module;
+  struct plugin* plugin;
   if (data_response) return;
-  for (module = module_list; module != 0; module = module->next)
-    if (module->data_block != 0)
-      if ((r = module->data_block(bytes, len)) != 0
+  for (plugin = plugin_list; plugin != 0; plugin = plugin->next)
+    if (plugin->data_block != 0)
+      if ((r = plugin->data_block(bytes, len)) != 0
 	   && !response_ok(r)) {
 	data_response = r;
 	return;
@@ -154,6 +154,6 @@ const response* handle_data_end(void)
   const response* resp;
   if (data_response)
     return data_response;
-  MODULE_CALL(data_end, (module, session));
+  MODULE_CALL(data_end, ());
   return backend_handle_data_end();
 }
