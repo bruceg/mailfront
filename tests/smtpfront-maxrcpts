@@ -1,3 +1,5 @@
+PLUGINS=counters
+
 MAXRCPTS=2
 export MAXRCPTS
 

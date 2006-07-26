@@ -23,8 +23,8 @@ EOF
 250 Sender='user@example.net'.^M
 250 Recipient='user@example.com'.^M
 354 End your message with a period on a line by itself.^M
-250 Received 153 bytes.^M
+250 Received 25 bytes.^M
 250 Sender='user@example.net'.^M
 250 Recipient='user@example.com'.^M
 354 End your message with a period on a line by itself.^M
-250 Received 154 bytes.^M
+250 Received 26 bytes.^M

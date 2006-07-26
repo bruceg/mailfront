@@ -1,3 +1,5 @@
+PLUGINS=mailrules
+
 cat >$tmp/rules <<EOF
 ka@example.com:b@example.com:K1:::HEADER_ADD="X-Header: testing!!!"
 EOF
@@ -24,8 +26,8 @@ rm -f $tmp/rules
 250 Sender='a@example.com'.^M
 250 K1^M
 354 End your message with a period on a line by itself.^M
-250 Received 151 bytes.^M
+250 Received 0 bytes.^M
 250 Sender='a@example.com'.^M
 250 Recipient='c@example.com'.^M
 354 End your message with a period on a line by itself.^M
-250 Received 128 bytes.^M
+250 Received 0 bytes.^M

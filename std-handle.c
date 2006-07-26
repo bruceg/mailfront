@@ -13,15 +13,6 @@ const char UNKNOWN[] = "unknown";
 const int authenticating = 0;
 extern void set_timeout(void);
 extern void report_io_bytes(void);
-extern struct plugin require_auth;
-extern struct plugin backend_validate;
-extern struct plugin cvm_validate;
-extern struct plugin relayclient;
-extern struct plugin add_received;
-extern struct plugin check_fqdn;
-extern struct plugin patterns;
-extern struct plugin counters;
-extern struct plugin mailrules;
 
 static void getprotoenv(const char* name, const char** dest)
 {
@@ -62,16 +53,6 @@ const response* handle_init(void)
   getprotoenv("REMOTEIP", &session.remote_ip);
   getprotoenv("LOCALHOST", &session.local_host);
   getprotoenv("REMOTEHOST", &session.remote_host);
-
-  add_plugin(&require_auth);
-  add_plugin(&check_fqdn);
-  add_plugin(&counters);
-  add_plugin(&mailrules);
-  add_plugin(&relayclient);
-  add_plugin(&backend_validate);
-  add_plugin(&cvm_validate);
-  add_plugin(&add_received);
-  add_plugin(&patterns);
 
   if ((resp = load_plugins()) != 0)
     return resp;

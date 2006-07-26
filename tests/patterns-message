@@ -1,3 +1,5 @@
+PLUGINS=patterns
+
 cat >$tmp/patterns <<EOF
 =response 1
 =response 2
@@ -18,6 +20,7 @@ after
 EOF
 
 rm -f $tmp/patterns
+
 <result>
 250 Sender=''.^M
 250 Recipient='nobody@example.com'.^M

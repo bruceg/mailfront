@@ -1,7 +1,8 @@
 -------------------------------------------------------------------------------
 Changes in version 0.99
 
-- Added support for dynamically loaded plugins via $PLUGINS.
+- Added support for dynamically loaded plugins via $PLUGINS, and moved
+  all validation routines (mail rules, relayclient, etc) into plugins.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/

@@ -2,6 +2,7 @@
 #include "smtp.h"
 
 const char program[] = "smtpfront-echo";
+const char default_plugins[] = "";
 
 extern int qmqp_mainloop(void);
 

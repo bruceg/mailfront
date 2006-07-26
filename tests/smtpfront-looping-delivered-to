@@ -1,3 +1,5 @@
+PLUGINS=counters
+
 MAXHOPS=1
 export MAXHOPS
 
@@ -23,7 +25,7 @@ EOF
 250 Sender='somebody@example.com'.^M
 250 Recipient='nobody@example.org'.^M
 354 End your message with a period on a line by itself.^M
-250 Received 146 bytes.^M
+250 Received 18 bytes.^M
 
 250 Sender='somebody@example.com'.^M
 250 Recipient='nobody@example.org'.^M

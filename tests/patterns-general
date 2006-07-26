@@ -1,4 +1,6 @@
 <loop subject "xwordx" "word at the beginning" "last word" "middle word middle" "word" "xord">
+PLUGINS=patterns
+
 cat >$tmp/patterns <<EOF
 /Subject: *word*
 EOF
@@ -49,4 +51,4 @@ rm -f $tmp/patterns
 250 Sender=''.^M
 250 Recipient='nobody@example.com'.^M
 354 End your message with a period on a line by itself.^M
-250 Received 142 bytes.^M
+250 Received 14 bytes.^M

@@ -1,3 +1,5 @@
+PLUGINS=counters
+
 DATABYTES=123
 
 sfecho <<EOF

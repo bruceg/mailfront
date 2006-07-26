@@ -1,3 +1,5 @@
+PLUGINS=patterns
+
 cat >$tmp/patterns <<EOF
 :header2:*field*
 EOF
@@ -37,6 +39,7 @@ also
 EOF
 
 rm -f $tmp/patterns
+
 <result>
 250 Sender=''.^M
 250 Recipient='nobody@example.com'.^M
@@ -46,4 +49,4 @@ rm -f $tmp/patterns
 250 Sender=''.^M
 250 Recipient='nobody@example.com'.^M
 354 End your message with a period on a line by itself.^M
-250 Received 146 bytes.^M
+250 Received 18 bytes.^M

@@ -1,3 +1,5 @@
+PLUGINS=mailrules:counters
+
 cat >$tmp/rules <<EOF
 ka@example.com:*::123
 EOF
@@ -14,6 +16,9 @@ MAIL FROM:<a@example.com> SIZE=123
 MAIL FROM:<a@example.com> SIZE=124
 RCPT TO:<nobody@example.net>
 EOF
+
+rm -f $tmp/rules
+
 <result>
 250-unknown^M
 250-SIZE 0^M

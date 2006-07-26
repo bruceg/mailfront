@@ -1,3 +1,5 @@
+PLUGINS=mailrules
+
 cat >$tmp/rules <<EOF
 k[[$tmp/list]]:*:LIST
 k[[@$tmp/atlist]]:*:ATLIST

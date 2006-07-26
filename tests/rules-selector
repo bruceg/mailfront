@@ -1,3 +1,5 @@
+PLUGINS=mailrules
+
 cat >$tmp/rules <<EOF
 # This selector forces what would normally be a recipient rule to be
 # applied only to the sender.

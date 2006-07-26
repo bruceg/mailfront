@@ -1,3 +1,5 @@
+PLUGINS=mailrules:counters
+
 cat >$tmp/rules <<EOF
 ka@example.com:b@example.com:K1:::MAXHOPS=1
 EOF
@@ -32,4 +34,4 @@ rm -f $tmp/rules
 250 Sender='a@example.com'.^M
 250 Recipient='c@example.com'.^M
 354 End your message with a period on a line by itself.^M
-250 Received 158 bytes.^M
+250 Received 30 bytes.^M

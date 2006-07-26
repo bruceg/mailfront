@@ -3,4 +3,4 @@ printf '6:\ntest\n,13:a@example.com,17:13:b@example.com,,' \
 echo
 
 <result>
-20:KReceived 133 bytes.,
+18:KReceived 5 bytes.,

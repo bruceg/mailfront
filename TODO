@@ -2,9 +2,9 @@
 
 - Fix SASL "Authentication failed" message to include EMSS code
 
-- Add documentation for QMQP and QMTP back ends.
+- Add documentation for QMQP and QMTP front ends.
 
-- Add variable substitution to pattern variable setting (ie x=${y} etc)
+- Add variable substitution to rule variable setting (ie x=${y} etc)
 
 - Add better MIME attachment discrimination to patterns, instead of just
   keying on a blank line.

@@ -1,3 +1,5 @@
+PLUGINS=mailrules:counters
+
 cat >$tmp/rules <<EOF
 k*:a@example.com::1
 k*:b@example.com::9999
@@ -16,6 +18,9 @@ DATA
 testing
 .
 EOF
+
+rm -f $tmp/rules
+
 <result>
 250-unknown^M
 250-SIZE 0^M

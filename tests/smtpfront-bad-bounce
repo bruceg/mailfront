@@ -27,13 +27,13 @@ EOF
 250 Recipient='addr1@example.com'.^M
 250 Recipient='addr2@example.com'.^M
 354 End your message with a period on a line by itself.^M
-250 Received 128 bytes.^M
+250 Received 0 bytes.^M
 250 Sender=''.^M
 250 Recipient='addr1@example.com'.^M
 354 End your message with a period on a line by itself.^M
-250 Received 128 bytes.^M
+250 Received 0 bytes.^M
 250 Sender=''.^M
 250 Recipient='addr1@example.com'.^M
 250 Recipient='addr2@example.com'.^M
 354 End your message with a period on a line by itself.^M
-250 Received 128 bytes.^M
+250 Received 0 bytes.^M

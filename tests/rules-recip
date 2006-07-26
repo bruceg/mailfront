@@ -1,3 +1,5 @@
+PLUGINS=mailrules
+
 cat >$tmp/rules <<EOF
 k*:one@one.example.com:KK
 d*:two@two.example.com:DD

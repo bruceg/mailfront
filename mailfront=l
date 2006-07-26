@@ -1,13 +1,5 @@
 iobytes.o
 netstring.o
-plugin-add-received.o
-plugin-check-fqdn.o
-plugin-counters.o
-plugin-cvm-validate.o
-plugin-mailrules.o
-plugin-patterns.o
-plugin-relayclient.o
-plugin-require-auth.o
 plugins.o
 responses.o
 session.o
