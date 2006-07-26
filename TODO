@@ -1,4 +1,4 @@
-* Load modules dynamically using dlopen based on $MODULES
+* Load front and back ends dynamically.
 
 - Fix SASL "Authentication failed" message to include EMSS code
 

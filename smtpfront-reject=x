@@ -1,4 +1,4 @@
-reject-backend.o
+backend-reject.o
 smtp.a
 sasl-stub.o
 mailfront.a

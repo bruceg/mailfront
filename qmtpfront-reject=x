@@ -1,4 +1,4 @@
-reject-backend.o
+backend-reject.o
 qmtp.a
 mailfront.a
 -lbg

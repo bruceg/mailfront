@@ -1,3 +1,2 @@
-qmail-backend.o
-plugin-qmail-validate.o
+backend-qmail.o
 conf_qmail.o
