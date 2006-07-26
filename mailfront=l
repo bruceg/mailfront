@@ -1,0 +1,14 @@
+add-received.o
+check-fqdn.o
+counters.o
+cvm-validate.o
+iobytes.o
+mailrules.o
+netstring.o
+patterns.o
+relayclient.o
+require-auth.o
+responses.o
+session.o
+std-handle.o
+timeout.o
