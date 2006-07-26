@@ -3,6 +3,10 @@
 #include <str/env.h>
 #include "mailfront.h"
 
+struct session session = {
+  .protocol = 0,
+};
+
 const char* session_getenv(const char* name)
 {
   const char* s;

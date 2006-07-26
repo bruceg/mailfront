@@ -10,10 +10,6 @@
 #include <msg/msg.h>
 #include <str/iter.h>
 
-struct session session = {
-  .protocol = "SMTP",
-};
-
 static str cmd;
 static str arg;
 static str addr;

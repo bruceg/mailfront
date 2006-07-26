@@ -10,10 +10,6 @@
 #include "mailfront.h"
 #include "qmtp.h"
 
-struct session session = {
-  .protocol = "QMTP",
-};
-
 static const response* resp;
 
 static char buf[8192];
@@ -100,6 +96,7 @@ static void get_package(ibuf* in)
 int qmtp_mainloop(void)
 {
   const response* r;
+  session.protocol = "QMTP";
   if ((r = handle_init()) != 0) {
     respond_resp(r, 1);
     return 1;

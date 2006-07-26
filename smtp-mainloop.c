@@ -24,6 +24,8 @@ int smtp_mainloop(void)
   const char* tmp;
   const response* resp;
 
+  session.protocol = "SMTP";
+  
   if ((tmp = getenv("TCPLOCALHOST")) == 0) tmp = UNKNOWN;
   str_copys(&domain_name, tmp);
 
