@@ -52,7 +52,7 @@ static const response* validate_recipient(str* recipient)
   return r;
 }
 
-struct plugin cvm_validate = {
+STRUCT_PLUGIN(cvm_validate) = {
   .init = validate_init,
   .recipient = validate_recipient,
 };

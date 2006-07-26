@@ -37,6 +37,8 @@ struct plugin
   const response* (*data_end)(void);
 };
 
+#define STRUCT_PLUGIN(NAME) struct plugin NAME
+
 /* From session.c */
 extern const char* session_getenv(const char* name);
 extern unsigned long session_getenvu(const char* name);
