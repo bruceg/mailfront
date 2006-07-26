@@ -37,11 +37,7 @@ struct plugin
   const response* (*data_end)(void);
 };
 
-#ifdef PLUGIN
 #define STRUCT_PLUGIN(NAME) struct plugin plugin
-#else
-#define STRUCT_PLUGIN(NAME) struct plugin NAME
-#endif
 
 /* From plugins.c */
 extern struct plugin* plugin_list;
