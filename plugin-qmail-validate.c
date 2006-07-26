@@ -3,7 +3,11 @@
 #include <iobuf/iobuf.h>
 #include <dict/dict.h>
 #include <dict/load.h>
+#ifdef PLUGIN
+#include "conf_qmail.c"
+#else
 #include "conf_qmail.h"
+#endif
 #include <cdb/cdb.h>
 
 static RESPONSE(no_chdir,451,"4.3.0 Could not change to the qmail directory.");
