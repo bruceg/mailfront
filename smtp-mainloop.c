@@ -18,11 +18,11 @@ struct sasl_auth saslauth = { .prefix = "334 " };
 
 extern unsigned long maxnotimpl;
 
-int protocol_mainloop(void)
+static str str_welcome;
+
+int protocol_init(void)
 {
-  static str str_welcome;
   const char* tmp;
-  const response* resp;
 
   session.protocol = "SMTP";
   
@@ -40,11 +40,11 @@ int protocol_mainloop(void)
   if ((tmp = getenv("MAXNOTIMPL")) != 0)
     maxnotimpl = strtoul(tmp, 0, 10);
 
-  if ((resp = handle_init()) != 0) {
-    respond_resp(resp, 1);
-    return 1;
-  }
+  return 0;
+}
 
+int protocol_mainloop(void)
+{
   if (!sasl_auth_init(&saslauth))
     return respond_resp(&resp_authfail, 1);
 

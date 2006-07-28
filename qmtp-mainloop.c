@@ -93,14 +93,15 @@ static void get_package(ibuf* in)
   if (!respond_resp(resp, 1)) die1(111, "EOF while sending response");
 }
 
+int protocol_init(void)
+{
+  session.protocol = "QMTP";
+  return 0;
+}
+
 int protocol_mainloop(void)
 {
-  const response* r;
-  session.protocol = "QMTP";
-  if ((r = handle_init()) != 0) {
-    respond_resp(r, 1);
-    return 1;
-  }
   alarm(3600);
-  for (;;) get_package(&inbuf);
+  for (;;)
+    get_package(&inbuf);
 }

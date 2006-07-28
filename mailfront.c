@@ -133,5 +133,12 @@ const response* handle_data_end(void)
 
 int main(void)
 {
+  const response* resp;
+  if (protocol_init())
+    return 1;
+  if ((resp = handle_init()) != 0) {
+    respond_resp(resp, 1);
+    return 1;
+  }
   return protocol_mainloop();
 }

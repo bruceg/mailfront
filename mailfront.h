@@ -78,6 +78,7 @@ extern void backend_handle_data_bytes(const char*, unsigned long);
 extern const response* backend_handle_data_end(void);
 
 /* Defined by a protocol module */
+extern int protocol_init(void);
 extern int protocol_mainloop(void);
 
 #endif /* MAIL_FRONT__MAILFRONT__H__ */
