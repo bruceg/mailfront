@@ -1,7 +1,7 @@
 iobytes.o
+mailfront.o
 netstring.o
 plugins.o
 responses.o
 session.o
-std-handle.o
 timeout.o
