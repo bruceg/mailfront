@@ -10,6 +10,8 @@ static response resp_load = { 451, 0 };
 struct plugin* plugin_list = 0;
 struct plugin* plugin_tail = 0;
 
+struct plugin* backend = 0;
+
 void add_plugin(struct plugin* plugin)
 {
   if (plugin_tail == 0)
@@ -19,34 +21,41 @@ void add_plugin(struct plugin* plugin)
   plugin_tail = plugin;
 }
 
-static const response* load_plugin(const char* path, const char* name)
+static void* load_object(const char* path,
+			 const char* prefix,
+			 const char* name,
+			 const char* symbol)
 {
   static str tmpstr;
   void* handle;
-  struct plugin* plugin;
-  str_copyf(&tmpstr, "s{/plugin-}s{.so}", path, name);
+  void* ptr;
+  str_copyf(&tmpstr, "s{/}s{-}s{.so}", path, prefix, name);
   if ((handle = dlopen(tmpstr.s, RTLD_NOW | RTLD_LOCAL)) == 0
-      || (plugin = dlsym(handle, "plugin")) == 0) {
-    str_copyf(&tmpstr, "{4.3.0 Error loading plugin }s{: }s",
-	      name, dlerror());
+      || (ptr = dlsym(handle, symbol)) == 0) {
+    str_copyf(&tmpstr, "{4.3.0 Error loading }s{ }s{: }s",
+	      prefix, name, dlerror());
     resp_load.message = tmpstr.s;
-    return &resp_load;
+    return 0;
   }
+  return ptr;
+}
+
+static const response* load_plugin(const char* path, const char* name)
+{
+  struct plugin* plugin;
+  if ((plugin = load_object(path, "plugin", name, "plugin")) == 0)
+    return &resp_load;
   add_plugin(plugin);
-  /* Don't even try to dlclose the plugin, since we need to keep the code. */
   return 0;
 }
 
-const response* load_plugins(void)
+static const response* load_plugins(const char* path)
 {
   const char* list;
-  const char* path;
   const char* start;
   const char* end;
   long len;
   const response* resp;
-  if ((path = getenv("MODULE_PATH")) == 0)
-    path = conf_modules;
   if ((list = getenv("PLUGINS")) == 0)
     list = "";
   for (start = list; *start != 0; start = end) {
@@ -65,4 +74,14 @@ const response* load_plugins(void)
       ++end;
   }
   return 0;
+}
+
+const response* load_modules(const char* backend_name)
+{
+  const char* path;
+  if ((path = getenv("MODULE_PATH")) == 0)
+    path = conf_modules;
+  if ((backend = load_object(path, "backend", backend_name, "backend")) == 0)
+    return &resp_load;
+  return load_plugins(path);
 }

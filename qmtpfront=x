@@ -1,6 +1,5 @@
 mailfront.a
-smtp.a
-qmail.a
+qmtp.a
 mailfront.a
 -lcvm-sasl
 -lcvm-v2client

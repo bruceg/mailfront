@@ -43,7 +43,7 @@ struct plugin
 extern struct plugin* plugin_list;
 extern struct plugin* plugin_tail;
 extern void add_plugin(struct plugin*);
-extern const response* load_plugins(void);
+extern const response* load_modules(const char* backend_name);
 
 /* From session.c */
 extern const char* session_getenv(const char* name);
@@ -67,15 +67,6 @@ extern const response* handle_data_end(void);
 /* From netstring.c */
 int get_netstring_len(ibuf* in, unsigned long* i);
 int get_netstring(ibuf* in, str* s);
-
-/* Defined by a back-end module */
-extern void backend_init(int argc, char* argv[]);
-extern void backend_handle_reset();
-extern const response* backend_handle_sender(str*);
-extern const response* backend_handle_recipient(str*);
-extern const response* backend_handle_data_start(void);
-extern void backend_handle_data_bytes(const char*, unsigned long);
-extern const response* backend_handle_data_end(void);
 
 /* Defined by a protocol module */
 extern int protocol_init(void);

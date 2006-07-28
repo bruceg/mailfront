@@ -7,6 +7,8 @@ static str received;
 static str fixup_host;
 static str fixup_ip;
 
+extern struct plugin* backend;
+
 static const char* date_string(void)
 {
   static char datebuf[64];
@@ -104,7 +106,8 @@ static const response* data_start(void)
       !add_header_add(&received) ||
       !build_received(&received))
     return &resp_internal;
-  backend_handle_data_bytes(received.s, received.len);
+  if (backend->data_block != 0)
+    return backend->data_block(received.s, received.len);
   return 0;
 }
 

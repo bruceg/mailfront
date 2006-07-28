@@ -2,15 +2,19 @@
 c:::755::imapfront-auth
 c:::755::pop3front-auth
 c:::755::pop3front-maildir
-c:::755::qmqpfront-echo
-c:::755::qmqpfront-qmail
-c:::755::qmtpfront-echo
-c:::755::qmtpfront-qmail
-c:::755::smtpfront-echo
-c:::755::smtpfront-qmail
-c:::755::smtpfront-reject
+c:::755::qmqpfront
+s:::755::qmqpfront-echo:qmqpfront
+s:::755::qmqpfront-qmail:qmqpfront
+c:::755::qmtpfront
+s:::755::qmtpfront-echo:qmqpfront
+s:::755::qmtpfront-qmail:qmqpfront
+c:::755::smtpfront
+s:::755::smtpfront-echo:qmqpfront
+s:::755::smtpfront-qmail:qmqpfront
 
 >modules
+c:::755::backend-echo.so
+c:::755::backend-qmail.so
 c:::644::plugin-add-received.so
 c:::644::plugin-check-fqdn.so
 c:::644::plugin-counters.so

@@ -7,7 +7,7 @@
 #include <msg/msg.h>
 #include <unix/sig.h>
 #include "mailfront.h"
-#include "conf_qmail.h"
+#include "conf_qmail.c"
 
 static RESPONSE(no_write,451,"4.3.0 Writing data to qmail-queue failed.");
 static RESPONSE(no_pipe,451,"4.3.0 Could not open pipe to qmail-queue.");
@@ -30,13 +30,14 @@ static void close_qqpipe(void)
   qqepipe = qqmpipe = -1;
 }
 
-void backend_handle_reset(void)
+static const response* reset(void)
 {
   close_qqpipe();
   str_truncate(&buffer, 0);
+  return 0;
 }
 
-const response* backend_handle_sender(str* sender)
+static const response* do_sender(str* sender)
 {
   if (!str_catc(&buffer, 'F') ||
       !str_cat(&buffer, sender) ||
@@ -44,7 +45,7 @@ const response* backend_handle_sender(str* sender)
   return 0;
 }
 
-const response* backend_handle_recipient(str* recipient)
+static const response* do_recipient(str* recipient)
 {
   if (!str_catc(&buffer, 'T') ||
       !str_cat(&buffer, recipient) ||
@@ -52,7 +53,7 @@ const response* backend_handle_recipient(str* recipient)
   return 0;
 }
 
-const response* backend_handle_data_start(void)
+static const response* data_start(void)
 {
   int mpipe[2];
   int epipe[2];
@@ -111,10 +112,12 @@ static int retry_write(int fd, const char* bytes, unsigned long len)
   return 1;
 }
 
-void backend_handle_data_bytes(const char* bytes, unsigned long len)
+static const response* data_block(const char* bytes, unsigned long len)
 {
-  retry_write(qqmpipe, bytes, len);
+  if (!retry_write(qqmpipe, bytes, len))
+    return &resp_no_write;
   databytes += len;
+  return 0;
 }
 
 static void parse_status(int status, response* resp)
@@ -155,7 +158,7 @@ static void parse_status(int status, response* resp)
   resp->message = message;
 }
 
-const response* backend_handle_data_end(void)
+static const response* data_end(void)
 {
   static response resp;
 
@@ -180,3 +183,12 @@ const response* backend_handle_data_end(void)
   }
   return &resp;
 }
+
+struct plugin backend = {
+  .reset = reset,
+  .sender = do_sender,
+  .recipient = do_recipient,
+  .data_start = data_start,
+  .data_block = data_block,
+  .data_end = data_end,
+};

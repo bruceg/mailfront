@@ -14,6 +14,7 @@ const int msg_show_pid = 1;
 const int authenticating = 0;
 extern void set_timeout(void);
 extern void report_io_bytes(void);
+extern struct plugin* backend;
 
 static void getprotoenv(const char* name, const char** dest)
 {
@@ -55,9 +56,6 @@ const response* handle_init(void)
   getprotoenv("LOCALHOST", &session.local_host);
   getprotoenv("REMOTEHOST", &session.remote_host);
 
-  if ((resp = load_plugins()) != 0)
-    return resp;
-  
   MODULE_CALL(init, ());
 
   return 0;
@@ -66,7 +64,8 @@ const response* handle_init(void)
 const response* handle_reset(void)
 {
   const response* resp = 0;
-  backend_handle_reset();
+  if (backend->reset != 0)
+    backend->reset();
   MODULE_CALL(reset, ());
   return resp;
 }
@@ -74,10 +73,11 @@ const response* handle_reset(void)
 const response* handle_sender(str* sender)
 {
   const response* resp = 0;
-  const response* tmpresp;
+  const response* tmpresp = 0;
   MODULE_CALL(sender, (sender));
-  if (!response_ok(tmpresp = backend_handle_sender(sender)))
-    return tmpresp;
+  if (backend->sender != 0)
+    if (!response_ok(tmpresp = backend->sender(sender)))
+      return tmpresp;
   if (resp == 0 || resp->message == 0) resp = tmpresp;
   return resp;
 }
@@ -85,10 +85,11 @@ const response* handle_sender(str* sender)
 const response* handle_recipient(str* recip)
 {
   const response* resp = 0;
-  const response* hresp;
+  const response* hresp = 0;
   MODULE_CALL(recipient, (recip));
-  if (!response_ok(hresp = backend_handle_recipient(recip)))
-    return hresp;
+  if (backend->recipient != 0)
+    if (!response_ok(hresp = backend->recipient(recip)))
+      return hresp;
   if (resp == 0 || resp->message == 0) resp = hresp;
   return resp;
 }
@@ -97,8 +98,9 @@ static const response* data_response;
 
 const response* handle_data_start(void)
 {
-  const response* resp;
-  resp = backend_handle_data_start();
+  const response* resp = 0;
+  if (backend->data_start != 0)
+    resp = backend->data_start();
   if (resp == 0)
     MODULE_CALL(data_start, ());
   if (response_ok(resp)) {
@@ -119,7 +121,8 @@ void handle_data_bytes(const char* bytes, unsigned len)
 	data_response = r;
 	return;
       }
-  backend_handle_data_bytes(bytes, len);
+  if (backend->data_block != 0)
+    backend->data_block(bytes, len);
 }
 
 const response* handle_data_end(void)
@@ -128,17 +131,31 @@ const response* handle_data_end(void)
   if (data_response)
     return data_response;
   MODULE_CALL(data_end, ());
-  return backend_handle_data_end();
+  return (backend->data_end != 0)
+    ? backend->data_end()
+    : 0;
 }
 
-int main(void)
+int main(int argc, char* argv[])
 {
   const response* resp;
+  const char* backend_name;
+  
   if (protocol_init())
     return 1;
-  if ((resp = handle_init()) != 0) {
+
+  if (argc > 1)
+    backend_name = argv[1];
+  else if ((backend_name = strchr(argv[0], '-')) != 0)
+    ++backend_name;
+  else
+    die1(111, "Could not determine backend name");
+
+  if ((resp = load_modules(backend_name)) != 0
+      || (resp = handle_init()) != 0) {
     respond_resp(resp, 1);
     return 1;
   }
+
   return protocol_mainloop();
 }

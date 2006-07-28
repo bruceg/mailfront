@@ -1,7 +1,5 @@
-backend-echo.o
 mailfront.a
-qmqp.a
-mailfront.a
+smtp.a
 -lcvm-sasl
 -lcvm-v2client
 -lbg

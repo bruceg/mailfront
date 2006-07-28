@@ -1,7 +1,7 @@
 PLUGINS=add-received
 
 sfecho2() {
-$src/smtpfront-echo 2>&1 >/dev/null <<EOF | \
+$src/smtpfront echo 2>&1 >/dev/null <<EOF | \
 	sed -n -e 's/^.* Received: //p'
 MAIL FROM:<>
 RCPT TO:<test@example.com>
@@ -28,7 +28,7 @@ TESTLOCALIP=   TESTLOCALHOST=lh TESTREMOTEIP=ri TESTREMOTEHOST=rh sfecho2
 TESTLOCALIP=li TESTLOCALHOST=lh TESTREMOTEIP=ri TESTREMOTEHOST=rh sfecho2
 
 sfecho3() {
-$src/smtpfront-echo 2>&1 >/dev/null <<EOF | \
+$src/smtpfront echo 2>&1 >/dev/null <<EOF | \
 	sed -n -e 's/^.* Received: //p'
 EHLO hh
 MAIL FROM:<>
