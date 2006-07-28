@@ -1,0 +1,18 @@
+ln -s $src/mailfront $tmp/smtpfront
+ln -s $src/mailfront $tmp/smtpfront-echo
+
+$tmp/smtpfront echo 2>/dev/null <<EOF
+MAIL FROM:<test@example.com>
+EOF
+
+$tmp/smtpfront-echo 2>/dev/null <<EOF
+MAIL FROM:<test@example.com>
+EOF
+
+rm -f $tmp/smtpfront $tmp/smtpfront
+
+<result>
+220 unknown mailfront ESMTP^M
+250 Sender='test@example.com'.^M
+220 unknown mailfront ESMTP^M
+250 Sender='test@example.com'.^M

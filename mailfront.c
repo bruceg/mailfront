@@ -144,22 +144,30 @@ int main(int argc, char* argv[])
   const response* resp;
   const char* backend_name;
   const char* p;
+  int i;
+  str argv0 = {0,0,0};
   str protocol_name = {0,0,0};
 
-  if (argc > 1)
-    str_copys(&protocol_name, argv[1]);
-  else if ((p = strstr(argv[0], "front")) != 0)
-    str_copyb(&protocol_name, argv[0], p - argv[0]);
-  else
-    die1(111, "Could not determine protocol name");
+  str_copys(&argv0, argv[0]);
+  if ((i = str_findlast(&argv0, '/')) > 0)
+    str_lcut(&argv0, i + 1);
   
   if (argc > 2)
     backend_name = argv[2];
-  else if ((backend_name = strchr(argv[0], '-')) != 0)
+  else if (argc > 1)
+    backend_name = argv[1];
+  else if ((backend_name = strchr(argv0.s, '-')) != 0)
     ++backend_name;
   else
     die1(111, "Could not determine backend name");
 
+  if (argc > 2)
+    str_copys(&protocol_name, argv[1]);
+  else if ((p = strstr(argv0.s, "front")) != 0)
+    str_copyb(&protocol_name, argv0.s, p - argv0.s);
+  else
+    die1(111, "Could not determine protocol name");
+  
   if ((resp = load_modules(protocol_name.s, backend_name)) != 0
       || (resp = handle_init()) != 0) {
     if (protocol != 0) {
@@ -169,6 +177,8 @@ int main(int argc, char* argv[])
     else
       die1(1, resp->message);
   }
+  str_free(&argv0);
+  str_free(&protocol_name);
 
   session.protocol = protocol->name;
   if (protocol->init != 0)
