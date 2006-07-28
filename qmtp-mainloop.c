@@ -93,7 +93,7 @@ static void get_package(ibuf* in)
   if (!respond_resp(resp, 1)) die1(111, "EOF while sending response");
 }
 
-int qmtp_mainloop(void)
+int protocol_mainloop(void)
 {
   const response* r;
   session.protocol = "QMTP";

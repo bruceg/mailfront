@@ -78,4 +78,7 @@ extern const response* backend_handle_data_end(void);
 
 extern const char default_plugins[];
 
+/* Defined by a protocol module */
+extern int protocol_mainloop(void);
+
 #endif /* MAIL_FRONT__MAILFRONT__H__ */

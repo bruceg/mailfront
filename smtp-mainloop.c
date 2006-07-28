@@ -18,7 +18,7 @@ struct sasl_auth saslauth = { .prefix = "334 " };
 
 extern unsigned long maxnotimpl;
 
-int smtp_mainloop(void)
+int protocol_mainloop(void)
 {
   static str str_welcome;
   const char* tmp;
