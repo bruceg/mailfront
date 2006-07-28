@@ -10,9 +10,6 @@ static response resp_load = { 451, 0 };
 struct plugin* plugin_list = 0;
 struct plugin* plugin_tail = 0;
 
-struct plugin* backend = 0;
-struct protocol* protocol = 0;
-
 void add_plugin(struct plugin* plugin)
 {
   if (plugin_tail == 0)
@@ -82,9 +79,9 @@ const response* load_modules(const char* protocol_name,
   const char* path;
   if ((path = getenv("MODULE_PATH")) == 0)
     path = conf_modules;
-  if ((protocol = load_object(path, "protocol", protocol_name)) == 0)
+  if ((session.protocol = load_object(path, "protocol", protocol_name)) == 0)
     return &resp_load;
-  if ((backend = load_object(path, "backend", backend_name)) == 0)
+  if ((session.backend = load_object(path, "backend", backend_name)) == 0)
     return &resp_load;
   return load_plugins(path);
 }

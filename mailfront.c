@@ -16,8 +16,6 @@ const char program[] = "mailfront";
 const int authenticating = 0;
 extern void set_timeout(void);
 extern void report_io_bytes(void);
-extern struct plugin* backend;
-extern struct protocol* protocol;
 
 static void getprotoenv(const char* name, const char** dest)
 {
@@ -67,8 +65,8 @@ const response* handle_init(void)
 const response* handle_reset(void)
 {
   const response* resp = 0;
-  if (backend->reset != 0)
-    backend->reset();
+  if (session.backend->reset != 0)
+    session.backend->reset();
   MODULE_CALL(reset, ());
   return resp;
 }
@@ -78,8 +76,8 @@ const response* handle_sender(str* sender)
   const response* resp = 0;
   const response* tmpresp = 0;
   MODULE_CALL(sender, (sender));
-  if (backend->sender != 0)
-    if (!response_ok(tmpresp = backend->sender(sender)))
+  if (session.backend->sender != 0)
+    if (!response_ok(tmpresp = session.backend->sender(sender)))
       return tmpresp;
   if (resp == 0 || resp->message == 0) resp = tmpresp;
   return resp;
@@ -90,8 +88,8 @@ const response* handle_recipient(str* recip)
   const response* resp = 0;
   const response* hresp = 0;
   MODULE_CALL(recipient, (recip));
-  if (backend->recipient != 0)
-    if (!response_ok(hresp = backend->recipient(recip)))
+  if (session.backend->recipient != 0)
+    if (!response_ok(hresp = session.backend->recipient(recip)))
       return hresp;
   if (resp == 0 || resp->message == 0) resp = hresp;
   return resp;
@@ -102,8 +100,8 @@ static const response* data_response;
 const response* handle_data_start(void)
 {
   const response* resp = 0;
-  if (backend->data_start != 0)
-    resp = backend->data_start();
+  if (session.backend->data_start != 0)
+    resp = session.backend->data_start();
   if (resp == 0)
     MODULE_CALL(data_start, ());
   if (response_ok(resp)) {
@@ -124,8 +122,8 @@ void handle_data_bytes(const char* bytes, unsigned len)
 	data_response = r;
 	return;
       }
-  if (backend->data_block != 0)
-    backend->data_block(bytes, len);
+  if (session.backend->data_block != 0)
+    session.backend->data_block(bytes, len);
 }
 
 const response* handle_data_end(void)
@@ -134,56 +132,55 @@ const response* handle_data_end(void)
   if (data_response)
     return data_response;
   MODULE_CALL(data_end, ());
-  return (backend->data_end != 0)
-    ? backend->data_end()
+  return (session.backend->data_end != 0)
+    ? session.backend->data_end()
     : 0;
 }
 
 int main(int argc, char* argv[])
 {
   const response* resp;
-  const char* backend_name;
+  const char* backend;
   const char* p;
   int i;
   str argv0 = {0,0,0};
-  str protocol_name = {0,0,0};
+  str protocol = {0,0,0};
 
   str_copys(&argv0, argv[0]);
   if ((i = str_findlast(&argv0, '/')) > 0)
     str_lcut(&argv0, i + 1);
   
   if (argc > 2)
-    backend_name = argv[2];
+    backend = argv[2];
   else if (argc > 1)
-    backend_name = argv[1];
-  else if ((backend_name = strchr(argv0.s, '-')) != 0)
-    ++backend_name;
+    backend = argv[1];
+  else if ((backend = strchr(argv0.s, '-')) != 0)
+    ++backend;
   else
     die1(111, "Could not determine backend name");
 
   if (argc > 2)
-    str_copys(&protocol_name, argv[1]);
+    str_copys(&protocol, argv[1]);
   else if ((p = strstr(argv0.s, "front")) != 0)
-    str_copyb(&protocol_name, argv0.s, p - argv0.s);
+    str_copyb(&protocol, argv0.s, p - argv0.s);
   else
     die1(111, "Could not determine protocol name");
   
-  if ((resp = load_modules(protocol_name.s, backend_name)) != 0
+  if ((resp = load_modules(protocol.s, backend)) != 0
       || (resp = handle_init()) != 0) {
-    if (protocol != 0) {
-      protocol->respond(resp);
+    if (session.protocol != 0) {
+      session.protocol->respond(resp);
       return 1;
     }
     else
       die1(1, resp->message);
   }
   str_free(&argv0);
-  str_free(&protocol_name);
+  str_free(&protocol);
 
-  session.protocol = protocol->name;
-  if (protocol->init != 0)
-    if (protocol->init())
+  if (session.protocol->init != 0)
+    if (session.protocol->init())
       return 1;
 
-  return protocol->mainloop();
+  return session.protocol->mainloop();
 }

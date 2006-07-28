@@ -7,8 +7,6 @@ static str received;
 static str fixup_host;
 static str fixup_ip;
 
-extern struct plugin* backend;
-
 static const char* date_string(void)
 {
   static char datebuf[64];
@@ -78,7 +76,7 @@ static int build_received(str* s)
     return 0;
   if (!str_cats(s, "\n  by ")) return 0;
   if (!str_catfromby(s, session.local_host, 0, session.local_ip)) return 0;
-  if (!str_cat4s(s, "\n  with ", session.protocol,
+  if (!str_cat4s(s, "\n  with ", session.protocol->name,
 		 " via ", session.linkproto))
     return 0;
   if (!str_cat3s(s, "; ", date_string(), "\n")) return 0;
@@ -106,8 +104,8 @@ static const response* data_start(void)
       !add_header_add(&received) ||
       !build_received(&received))
     return &resp_internal;
-  if (backend->data_block != 0)
-    return backend->data_block(received.s, received.len);
+  if (session.backend->data_block != 0)
+    return session.backend->data_block(received.s, received.len);
   return 0;
 }
 

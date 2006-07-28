@@ -131,7 +131,7 @@ static int HELO(void)
 static int EHLO(void)
 {
   static str auth_resp;
-  session.protocol = "ESMTP";
+  session.protocol->name = "ESMTP";
   str_copy(&helo_domain, &arg);
   session.helo_domain = helo_domain.s;
   if (!respond(250, 0, domain_name.s)) return 0;
@@ -361,8 +361,6 @@ static int init(void)
 {
   const char* tmp;
 
-  session.protocol = "SMTP";
-  
   if ((tmp = getenv("TCPLOCALHOST")) == 0) tmp = UNKNOWN;
   str_copys(&domain_name, tmp);
 

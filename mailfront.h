@@ -6,25 +6,6 @@
 #include <str/str.h>
 #include "constants.h"
 
-struct session
-{
-  const char* protocol;
-  const char* linkproto;
-  const char* helo_domain;
-  const char* relayclient;
-  const char* local_host;
-  const char* local_ip;
-  const char* remote_host;
-  const char* remote_ip;
-  int authenticated;
-  unsigned long maxdatabytes;
-  unsigned long maxhops;
-  unsigned long maxrcpts;
-  str env;
-};
-
-extern struct session session;
-
 struct plugin
 {
   struct plugin* next;
@@ -46,6 +27,29 @@ struct protocol
   int (*init)(void);
   int (*mainloop)(void);
 };
+
+struct session
+{
+  struct protocol* protocol;
+  struct plugin* backend;
+
+  const char* linkproto;
+  const char* helo_domain;
+  const char* relayclient;
+  const char* local_host;
+  const char* local_ip;
+  const char* remote_host;
+  const char* remote_ip;
+
+  int authenticated;
+  unsigned long maxdatabytes;
+  unsigned long maxhops;
+  unsigned long maxrcpts;
+
+  str env;
+};
+
+extern struct session session;
 
 /* From plugins.c */
 extern struct plugin* plugin_list;
