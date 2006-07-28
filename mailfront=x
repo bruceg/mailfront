@@ -1,7 +1,9 @@
 iobytes.o
-mailfront.o
-netstring.o
 plugins.o
 responses.o
 session.o
 timeout.o
+-lbg
+socket.lib
+dl.lib
+-rdynamic

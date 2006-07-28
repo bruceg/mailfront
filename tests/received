@@ -10,7 +10,7 @@ TESTLOCALIP="$localip"
 TESTREMOTEHOST="$remotehost"
 TESTREMOTEIP="$remoteip"
 
-$src/smtpfront echo 2>&1 >/dev/null <<EOF | \
+$src/mailfront smtp echo 2>&1 >/dev/null <<EOF | \
 	sed -n -e 's/^.* Received: //p'
 $helo
 MAIL FROM:<>

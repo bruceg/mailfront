@@ -1,0 +1,4 @@
+qmtp-respond.c
+netstring.c
+-lbg
+-lbg-sysdeps

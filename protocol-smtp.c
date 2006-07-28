@@ -10,6 +10,16 @@
 #include <msg/msg.h>
 #include <str/iter.h>
 
+static RESPONSE(authfail, 421, "4.3.0 Failed to initialize AUTH");
+
+static str line = {0,0,0};
+static str domain_name = {0,0,0};
+
+static struct sasl_auth saslauth = { .prefix = "334 " };
+
+static unsigned long maxnotimpl = 0;
+
+static str str_welcome;
 static str cmd;
 static str arg;
 static str addr;
@@ -35,8 +45,6 @@ static RESPONSE(authenticated, 235, "2.7.0 Authentication succeeded.");
 
 static int saw_mail = 0;
 static int saw_rcpt = 0;
-
-unsigned long maxnotimpl = 0;
 
 static int parse_addr_arg(void)
 {
@@ -103,14 +111,14 @@ static const char* find_param(const char* name)
 
 static int QUIT(void)
 {
-  respond_resp(&resp_goodbye, 1);
+  respond_resp(&resp_goodbye);
   exit(0);
   return 0;
 }
 
 static int HELP(void)
 {
-  return respond_resp(&resp_help, 1);
+  return respond_resp(&resp_help);
 }
 
 static int HELO(void)
@@ -131,20 +139,20 @@ static int EHLO(void)
   switch (sasl_auth_caps(&auth_resp)) {
   case 0: break;
   case 1: if (!respond(250, 0, auth_resp.s)) return 0; break;
-  default: return respond_resp(&resp_internal, 1);
+  default: return respond_resp(&resp_internal);
   }
   str_copys(&auth_resp, "SIZE ");
   str_catu(&auth_resp, session.maxdatabytes);
   if (!respond(250, 0, auth_resp.s)) return 0;
 
-  return respond_resp(&resp_ehlo, 1);
+  return respond_resp(&resp_ehlo);
 }
 
 static void do_reset(void)
 {
   const response* resp;
   if ((resp = handle_reset()) != 0) {
-    respond_resp(resp, 1);
+    respond_resp(resp);
     exit(0);
   }
   saw_rcpt = 0;
@@ -170,28 +178,28 @@ static int MAIL(void)
 	(size = strtoul(param, (char**)&param, 10)) > 0 &&
 	*param == 0 &&
 	size > session.maxdatabytes)
-      return respond_resp(&resp_toobig, 1);
+      return respond_resp(&resp_toobig);
     saw_mail = 1;
   }
-  return respond_resp(resp, 1);
+  return respond_resp(resp);
 }
 
 static int RCPT(void)
 {
   const response* resp;
   msg2("RCPT ", arg.s);
-  if (!saw_mail) return respond_resp(&resp_no_mail, 1);
+  if (!saw_mail) return respond_resp(&resp_no_mail);
   parse_addr_arg();
   if ((resp = handle_recipient(&addr)) == 0)
     resp = &resp_rcpt_ok;
   if (number_ok(resp)) saw_rcpt = 1;
-  return respond_resp(resp, 1);
+  return respond_resp(resp);
 }
 
 static int RSET(void)
 {
   do_reset();
-  return respond_resp(&resp_ok, 1);
+  return respond_resp(&resp_ok);
 }
 
 static char data_buf[4096];
@@ -252,11 +260,11 @@ static int DATA(void)
 {
   const response* resp;
   
-  if (!saw_mail) return respond_resp(&resp_no_mail, 1);
-  if (!saw_rcpt) return respond_resp(&resp_no_rcpt, 1);
+  if (!saw_mail) return respond_resp(&resp_no_mail);
+  if (!saw_rcpt) return respond_resp(&resp_no_rcpt);
   if ((resp = handle_data_start()) != 0)
-    return respond_resp(resp, 1);
-  if (!respond_resp(&resp_data_ok, 1)) return 0;
+    return respond_resp(resp);
+  if (!respond_resp(&resp_data_ok)) return 0;
 
   if (!copy_body()) {
     do_reset();
@@ -264,24 +272,24 @@ static int DATA(void)
   }
   if ((resp = handle_data_end()) == 0)
     resp = &resp_accepted;
-  return respond_resp(resp, 1);
+  return respond_resp(resp);
 }
 
 static int NOOP(void)
 {
-  return respond_resp(&resp_ok, 1);
+  return respond_resp(&resp_ok);
 }
 
 static int VRFY(void)
 {
-  return respond_resp(&resp_vrfy, 1);
+  return respond_resp(&resp_vrfy);
 }
 
 static int AUTH(void)
 {
   int i;
-  if (session.authenticated) return respond_resp(&resp_auth_already, 1);
-  if (arg.len == 0) return respond_resp(&resp_needsparam, 1);
+  if (session.authenticated) return respond_resp(&resp_auth_already);
+  if (arg.len == 0) return respond_resp(&resp_needsparam);
   if ((i = sasl_auth1(&saslauth, &arg)) != 0) {
     const char* msg = sasl_auth_msg(&i);
     return respond(i, 1, msg);
@@ -289,7 +297,7 @@ static int AUTH(void)
   else {
     session.authenticated = 1;
     str_truncate(&helo_domain, 0);
-    respond_resp(&resp_authenticated, 1);
+    respond_resp(&resp_authenticated);
   }
   return 1;
 }
@@ -343,8 +351,55 @@ int smtp_dispatch(void)
     }
   msg3(cmd.s, " ", arg.s);
   if (maxnotimpl > 0 && ++notimpl > maxnotimpl) {
-    respond_resp(&resp_toomanyunimp, 1);
+    respond_resp(&resp_toomanyunimp);
     return 0;
   }
-  return respond_resp(&resp_unimp, 1);
+  return respond_resp(&resp_unimp);
 }
+
+static int init(void)
+{
+  const char* tmp;
+
+  session.protocol = "SMTP";
+  
+  if ((tmp = getenv("TCPLOCALHOST")) == 0) tmp = UNKNOWN;
+  str_copys(&domain_name, tmp);
+
+  if ((tmp = getenv("SMTPGREETING")) != 0)
+    str_copys(&str_welcome, tmp);
+  else {
+    str_copy(&str_welcome, &domain_name);
+    str_cats(&str_welcome, " mailfront");
+  }
+  str_cats(&str_welcome, " ESMTP");
+
+  if ((tmp = getenv("MAXNOTIMPL")) != 0)
+    maxnotimpl = strtoul(tmp, 0, 10);
+
+  return 0;
+}
+
+static int mainloop(void)
+{
+  if (!sasl_auth_init(&saslauth))
+    return respond_resp(&resp_authfail);
+
+  if (!respond(220, 1, str_welcome.s)) return 1;
+  while (ibuf_getstr_crlf(&inbuf, &line))
+    if (!smtp_dispatch()) {
+      if (ibuf_eof(&inbuf))
+	msg1("Connection dropped");
+      if (ibuf_timedout(&inbuf))
+	msg1("Timed out");
+      return 1;
+    }
+  return 0;
+}
+
+struct protocol protocol = {
+  .name = "SMTP",
+  .respond = respond_resp,
+  .init = init,
+  .mainloop = mainloop,
+};

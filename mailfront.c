@@ -11,10 +11,13 @@
 const char UNKNOWN[] = "unknown";
 
 const int msg_show_pid = 1;
+const char program[] = "mailfront";
+
 const int authenticating = 0;
 extern void set_timeout(void);
 extern void report_io_bytes(void);
 extern struct plugin* backend;
+extern struct protocol* protocol;
 
 static void getprotoenv(const char* name, const char** dest)
 {
@@ -140,22 +143,37 @@ int main(int argc, char* argv[])
 {
   const response* resp;
   const char* backend_name;
-  
-  if (protocol_init())
-    return 1;
+  const char* p;
+  str protocol_name = {0,0,0};
 
   if (argc > 1)
-    backend_name = argv[1];
+    str_copys(&protocol_name, argv[1]);
+  else if ((p = strstr(argv[0], "front")) != 0)
+    str_copyb(&protocol_name, argv[0], p - argv[0]);
+  else
+    die1(111, "Could not determine protocol name");
+  
+  if (argc > 2)
+    backend_name = argv[2];
   else if ((backend_name = strchr(argv[0], '-')) != 0)
     ++backend_name;
   else
     die1(111, "Could not determine backend name");
 
-  if ((resp = load_modules(backend_name)) != 0
+  if ((resp = load_modules(protocol_name.s, backend_name)) != 0
       || (resp = handle_init()) != 0) {
-    respond_resp(resp, 1);
-    return 1;
+    if (protocol != 0) {
+      protocol->respond(resp);
+      return 1;
+    }
+    else
+      die1(1, resp->message);
   }
 
-  return protocol_mainloop();
+  session.protocol = protocol->name;
+  if (protocol->init != 0)
+    if (protocol->init())
+      return 1;
+
+  return protocol->mainloop();
 }

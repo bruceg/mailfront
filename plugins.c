@@ -11,6 +11,7 @@ struct plugin* plugin_list = 0;
 struct plugin* plugin_tail = 0;
 
 struct plugin* backend = 0;
+struct protocol* protocol = 0;
 
 void add_plugin(struct plugin* plugin)
 {
@@ -22,18 +23,17 @@ void add_plugin(struct plugin* plugin)
 }
 
 static void* load_object(const char* path,
-			 const char* prefix,
-			 const char* name,
-			 const char* symbol)
+			 const char* type,
+			 const char* name)
 {
   static str tmpstr;
   void* handle;
   void* ptr;
-  str_copyf(&tmpstr, "s{/}s{-}s{.so}", path, prefix, name);
+  str_copyf(&tmpstr, "s{/}s{-}s{.so}", path, type, name);
   if ((handle = dlopen(tmpstr.s, RTLD_NOW | RTLD_LOCAL)) == 0
-      || (ptr = dlsym(handle, symbol)) == 0) {
+      || (ptr = dlsym(handle, type)) == 0) {
     str_copyf(&tmpstr, "{4.3.0 Error loading }s{ }s{: }s",
-	      prefix, name, dlerror());
+	      type, name, dlerror());
     resp_load.message = tmpstr.s;
     return 0;
   }
@@ -43,7 +43,7 @@ static void* load_object(const char* path,
 static const response* load_plugin(const char* path, const char* name)
 {
   struct plugin* plugin;
-  if ((plugin = load_object(path, "plugin", name, "plugin")) == 0)
+  if ((plugin = load_object(path, "plugin", name)) == 0)
     return &resp_load;
   add_plugin(plugin);
   return 0;
@@ -76,12 +76,15 @@ static const response* load_plugins(const char* path)
   return 0;
 }
 
-const response* load_modules(const char* backend_name)
+const response* load_modules(const char* protocol_name,
+			     const char* backend_name)
 {
   const char* path;
   if ((path = getenv("MODULE_PATH")) == 0)
     path = conf_modules;
-  if ((backend = load_object(path, "backend", backend_name, "backend")) == 0)
+  if ((protocol = load_object(path, "protocol", protocol_name)) == 0)
+    return &resp_load;
+  if ((backend = load_object(path, "backend", backend_name)) == 0)
     return &resp_load;
   return load_plugins(path);
 }

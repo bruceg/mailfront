@@ -1,3 +1,3 @@
-env SMTPGREETING='hostname hello' $src/smtpfront echo 2>/dev/null </dev/null
+env SMTPGREETING='hostname hello' $src/mailfront smtp echo 2>/dev/null </dev/null
 <result>
 220 hostname hello ESMTP^M

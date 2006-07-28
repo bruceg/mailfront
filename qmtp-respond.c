@@ -48,7 +48,7 @@ int respond(unsigned number, int final, const char* msg)
     respond_end();
 }
 
-int respond_resp(const response* resp, int final)
+int respond_resp(const response* resp)
 {
-  return respond(resp->number, final, resp->message);
+  return respond(resp->number, 1, resp->message);
 }

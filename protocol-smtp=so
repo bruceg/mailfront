@@ -1,0 +1,5 @@
+smtp-respond.c
+-lcvm-sasl
+-lcvm-v2client
+-lbg
+-lbg-sysdeps

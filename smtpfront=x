@@ -1,8 +1,0 @@
-mailfront.a
-smtp.a
--lcvm-sasl
--lcvm-v2client
--lbg
-socket.lib
-dl.lib
--rdynamic

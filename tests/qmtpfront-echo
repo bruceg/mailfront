@@ -1,5 +1,5 @@
 printf '6:\ntest\n,13:a@example.com,17:13:b@example.com,,' \
-| $src/qmtpfront echo 2>/dev/null
+| $src/mailfront qmtp echo 2>/dev/null
 echo
 
 <result>

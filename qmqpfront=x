@@ -1,9 +1,0 @@
-mailfront.a
-qmqp.a
-mailfront.a
--lcvm-sasl
--lcvm-v2client
--lbg
-socket.lib
-dl.lib
--rdynamic

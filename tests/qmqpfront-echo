@@ -1,5 +1,5 @@
 printf '42:5:test\n,13:a@example.com,13:b@example.com,,' \
-| $src/qmqpfront echo 2>/dev/null
+| $src/mailfront qmqp echo 2>/dev/null
 echo
 
 <result>

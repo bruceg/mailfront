@@ -39,11 +39,20 @@ struct plugin
 
 #define STRUCT_PLUGIN(NAME) struct plugin plugin
 
+struct protocol
+{
+  const char* name;
+  int (*respond)(const response*);
+  int (*init)(void);
+  int (*mainloop)(void);
+};
+
 /* From plugins.c */
 extern struct plugin* plugin_list;
 extern struct plugin* plugin_tail;
 extern void add_plugin(struct plugin*);
-extern const response* load_modules(const char* backend_name);
+extern const response* load_modules(const char* protocol_name,
+				    const char* backend_name);
 
 /* From session.c */
 extern const char* session_getenv(const char* name);

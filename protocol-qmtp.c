@@ -90,18 +90,18 @@ static void get_package(ibuf* in)
   if (response_ok(resp))
     resp = handle_data_end();
   if (!resp) resp = &resp_accepted;
-  if (!respond_resp(resp, 1)) die1(111, "EOF while sending response");
+  if (!respond_resp(resp)) die1(111, "EOF while sending response");
 }
 
-int protocol_init(void)
-{
-  session.protocol = "QMTP";
-  return 0;
-}
-
-int protocol_mainloop(void)
+static int mainloop(void)
 {
   alarm(3600);
   for (;;)
     get_package(&inbuf);
 }
+
+struct protocol protocol = {
+  .name = "QMTP",
+  .respond = respond_resp,
+  .mainloop = mainloop,
+};
