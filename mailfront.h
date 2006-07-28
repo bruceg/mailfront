@@ -76,8 +76,6 @@ extern const response* backend_handle_data_start(void);
 extern void backend_handle_data_bytes(const char*, unsigned long);
 extern const response* backend_handle_data_end(void);
 
-extern const char default_plugins[];
-
 /* Defined by a protocol module */
 extern int protocol_mainloop(void);
 

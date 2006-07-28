@@ -1,10 +1,12 @@
-sfqmail <<EOF
+PLUGINS=relayclient:qmail-validate
+
+sfecho <<EOF
 AUTH LOGIN
 EOF
 
 export CVM_SASL_LOGIN=$tmp/cvm
 
-sfqmail <<EOF
+sfecho <<EOF
 MAIL FROM: <user@example.com>
 RCPT TO: <user@example.com>
 AUTH LOGIN
@@ -18,12 +20,12 @@ MAIL FROM: <user@example.com>
 RCPT TO: <user@example.com>
 EOF
 
-sfqmail << EOF
+sfecho << EOF
 AUTH LOGIN dGVzdHVzZXI=
 dGVzdHBhc3M=
 EOF
 
-sfqmail <<EOF
+sfecho <<EOF
 AUTH LOGIN
 dGVzdHVzZXI=
 *
@@ -34,7 +36,7 @@ EOF
 unset CVM_SASL_PLAIN
 <result>
 504 Unrecognized authentication mechanism.^M
-250 2.1.0 Sender accepted.^M
+250 Sender='user@example.com'.^M
 553 5.1.1 Sorry, that domain isn't in my list of allowed rcpthosts.^M
 334 VXNlcm5hbWU6^M
 334 UGFzc3dvcmQ6^M
@@ -43,12 +45,12 @@ unset CVM_SASL_PLAIN
 334 UGFzc3dvcmQ6^M
 235 2.7.0 Authentication succeeded.^M
 503 5.5.1 You are already authenticated.^M
-250 2.1.0 Sender accepted.^M
-250 2.1.5 Recipient accepted.^M
+250 Sender='user@example.com'.^M
+250 Recipient='user@example.com'.^M
 334 UGFzc3dvcmQ6^M
 235 2.7.0 Authentication succeeded.^M
 334 VXNlcm5hbWU6^M
 334 UGFzc3dvcmQ6^M
 501 Authentication failed.^M
-250 2.1.0 Sender accepted.^M
+250 Sender='user@example.com'.^M
 553 5.1.1 Sorry, that domain isn't in my list of allowed rcpthosts.^M

@@ -48,7 +48,7 @@ const response* load_plugins(void)
   if ((path = getenv("MODULE_PATH")) == 0)
     path = conf_modules;
   if ((list = getenv("PLUGINS")) == 0)
-    list = default_plugins;
+    list = "";
   for (start = list; *start != 0; start = end) {
     end = start;
     while (*end != 0 && *end != ':')
