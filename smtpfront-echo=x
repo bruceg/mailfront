@@ -1,6 +1,6 @@
-smtp.a
 backend-echo.o
 mailfront.a
+smtp.a
 -lcvm-sasl
 -lcvm-v2client
 -lbg

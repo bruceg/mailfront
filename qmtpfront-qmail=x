@@ -1,5 +1,5 @@
-qmtp.a
 mailfront.a
+qmtp.a
 qmail.a
 mailfront.a
 -lcvm-v2client

@@ -5,8 +5,6 @@
 #include <iobuf/iobuf.h>
 #include <msg/msg.h>
 
-const int msg_show_pid = 1;
-
 static str respstr;
 static unsigned saved_number;
 static int was_final;

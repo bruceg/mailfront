@@ -69,6 +69,7 @@ int get_netstring_len(ibuf* in, unsigned long* i);
 int get_netstring(ibuf* in, str* s);
 
 /* Defined by a back-end module */
+extern void backend_init(int argc, char* argv[]);
 extern void backend_handle_reset();
 extern const response* backend_handle_sender(str*);
 extern const response* backend_handle_recipient(str*);

@@ -10,6 +10,7 @@
 
 const char UNKNOWN[] = "unknown";
 
+const int msg_show_pid = 1;
 const int authenticating = 0;
 extern void set_timeout(void);
 extern void report_io_bytes(void);
@@ -128,4 +129,9 @@ const response* handle_data_end(void)
     return data_response;
   MODULE_CALL(data_end, ());
   return backend_handle_data_end();
+}
+
+int main(void)
+{
+  return protocol_mainloop();
 }
