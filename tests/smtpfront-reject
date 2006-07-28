@@ -1,5 +1,7 @@
 <loop msg rej -rej>
-env SMTPREJECT="$msg" $src/smtpfront-reject 2>/dev/null <<EOF
+PLUGINS=reject
+
+env SMTPREJECT="$msg" $src/smtpfront-echo 2>/dev/null <<EOF
 HELO nobody
 EHLO somebody
 MAIL FROM:<somewhere>
