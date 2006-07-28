@@ -1,7 +1,6 @@
 PLUGINS=require-auth:relayclient:qmail-validate
 
 export CVM_SASL_PLAIN=$tmp/cvm
-export REQUIRE_AUTH=1
 
 sfecho <<EOF
 MAIL FROM: <user@example.net>

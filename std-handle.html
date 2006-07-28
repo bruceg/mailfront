@@ -30,9 +30,6 @@ qualified domain name.
 rejected by mail rules are allowed, and its contents are appended to
 each recipient address.  Back-end validation is omitted.
 
-<li>If <tt>$REQUIRE_AUTH</tt> is set, all mail is rejected unless either
-<tt>$RELAYCLIENT</tt> is set or the sender authenticates.
-
 <li>Rejects messages that exceed <tt>$DATABYTES</tt> bytes in length.
 
 <li>Counts the number of "<tt>Received:</tt>" and
@@ -62,6 +59,10 @@ message data.
 <tt>$PLUGINS</tt> to a colon separated list of plugin names, and
 optionally set <tt>$MODULE_PATH</tt> to the directory in which those
 plugins are contained.
+
+<li>If <tt>$PLUGINS</tt> includes <tt>require-auth</tt>, all mail is
+rejected unless either <tt>$RELAYCLIENT</tt> is set or the sender
+authenticates.
 
 </ul></p>
 
