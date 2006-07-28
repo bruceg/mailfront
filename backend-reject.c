@@ -47,8 +47,6 @@ const response* handle_data_end(void)
   return &resp;
 }
 
-extern int mainloop(void);
-
 int main(int argc, char* argv[])
 {
   const char* sr;
@@ -58,7 +56,7 @@ int main(int argc, char* argv[])
       resp.number = 553;
     }
     resp.message = sr;
-    return mainloop();
+    return protocol_mainloop();
   }
   else {
     execvp(argv[1], argv+1);
