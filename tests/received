@@ -1,90 +1,85 @@
+<loop remotehost "" "">
+<loop remoteip "" "ri">
+<loop localhost "" lh>
+<loop localip "" "li">
+<loop helo "" "EHLO hh">
+
 PLUGINS=add-received
+TESTLOCALHOST="$localhost"
+TESTLOCALIP="$localip"
+TESTREMOTEHOST="$remotehost"
+TESTREMOTEIP="$remoteip"
 
-sfecho2() {
 $src/smtpfront echo 2>&1 >/dev/null <<EOF | \
 	sed -n -e 's/^.* Received: //p'
+$helo
 MAIL FROM:<>
 RCPT TO:<test@example.com>
 DATA
 .
 EOF
-}
 
-TESTLOCALIP=   TESTLOCALHOST=   TESTREMOTEIP=   TESTREMOTEHOST=   sfecho2
-TESTLOCALIP=li TESTLOCALHOST=   TESTREMOTEIP=   TESTREMOTEHOST=   sfecho2
-TESTLOCALIP=   TESTLOCALHOST=lh TESTREMOTEIP=   TESTREMOTEHOST=   sfecho2
-TESTLOCALIP=li TESTLOCALHOST=lh TESTREMOTEIP=   TESTREMOTEHOST=   sfecho2
-TESTLOCALIP=   TESTLOCALHOST=   TESTREMOTEIP=ri TESTREMOTEHOST=   sfecho2
-TESTLOCALIP=li TESTLOCALHOST=   TESTREMOTEIP=ri TESTREMOTEHOST=   sfecho2
-TESTLOCALIP=   TESTLOCALHOST=lh TESTREMOTEIP=ri TESTREMOTEHOST=   sfecho2
-TESTLOCALIP=li TESTLOCALHOST=lh TESTREMOTEIP=ri TESTREMOTEHOST=   sfecho2
-TESTLOCALIP=   TESTLOCALHOST=   TESTREMOTEIP=   TESTREMOTEHOST=rh sfecho2
-TESTLOCALIP=li TESTLOCALHOST=   TESTREMOTEIP=   TESTREMOTEHOST=rh sfecho2
-TESTLOCALIP=   TESTLOCALHOST=lh TESTREMOTEIP=   TESTREMOTEHOST=rh sfecho2
-TESTLOCALIP=li TESTLOCALHOST=lh TESTREMOTEIP=   TESTREMOTEHOST=rh sfecho2
-TESTLOCALIP=   TESTLOCALHOST=   TESTREMOTEIP=ri TESTREMOTEHOST=rh sfecho2
-TESTLOCALIP=li TESTLOCALHOST=   TESTREMOTEIP=ri TESTREMOTEHOST=rh sfecho2
-TESTLOCALIP=   TESTLOCALHOST=lh TESTREMOTEIP=ri TESTREMOTEHOST=rh sfecho2
-TESTLOCALIP=li TESTLOCALHOST=lh TESTREMOTEIP=ri TESTREMOTEHOST=rh sfecho2
-
-sfecho3() {
-$src/smtpfront echo 2>&1 >/dev/null <<EOF | \
-	sed -n -e 's/^.* Received: //p'
-EHLO hh
-MAIL FROM:<>
-RCPT TO:<test@example.com>
-DATA
-.
-EOF
-}
-
-TESTLOCALIP=   TESTLOCALHOST=   TESTREMOTEIP=   TESTREMOTEHOST=   sfecho3
-TESTLOCALIP=li TESTLOCALHOST=   TESTREMOTEIP=   TESTREMOTEHOST=   sfecho3
-TESTLOCALIP=   TESTLOCALHOST=lh TESTREMOTEIP=   TESTREMOTEHOST=   sfecho3
-TESTLOCALIP=li TESTLOCALHOST=lh TESTREMOTEIP=   TESTREMOTEHOST=   sfecho3
-TESTLOCALIP=   TESTLOCALHOST=   TESTREMOTEIP=ri TESTREMOTEHOST=   sfecho3
-TESTLOCALIP=li TESTLOCALHOST=   TESTREMOTEIP=ri TESTREMOTEHOST=   sfecho3
-TESTLOCALIP=   TESTLOCALHOST=lh TESTREMOTEIP=ri TESTREMOTEHOST=   sfecho3
-TESTLOCALIP=li TESTLOCALHOST=lh TESTREMOTEIP=ri TESTREMOTEHOST=   sfecho3
-TESTLOCALIP=   TESTLOCALHOST=   TESTREMOTEIP=   TESTREMOTEHOST=rh sfecho3
-TESTLOCALIP=li TESTLOCALHOST=   TESTREMOTEIP=   TESTREMOTEHOST=rh sfecho3
-TESTLOCALIP=   TESTLOCALHOST=lh TESTREMOTEIP=   TESTREMOTEHOST=rh sfecho3
-TESTLOCALIP=li TESTLOCALHOST=lh TESTREMOTEIP=   TESTREMOTEHOST=rh sfecho3
-TESTLOCALIP=   TESTLOCALHOST=   TESTREMOTEIP=ri TESTREMOTEHOST=rh sfecho3
-TESTLOCALIP=li TESTLOCALHOST=   TESTREMOTEIP=ri TESTREMOTEHOST=rh sfecho3
-TESTLOCALIP=   TESTLOCALHOST=lh TESTREMOTEIP=ri TESTREMOTEHOST=rh sfecho3
-TESTLOCALIP=li TESTLOCALHOST=lh TESTREMOTEIP=ri TESTREMOTEHOST=rh sfecho3
-
-<result>
+<result "" "" "" "" "">
 from unknown  by unknown
-from unknown  by li ([li])
-from unknown  by lh
-from unknown  by lh ([li])
-from ri ([ri])  by unknown
-from ri ([ri])  by li ([li])
-from ri ([ri])  by lh
-from ri ([ri])  by lh ([li])
-from rh (rh)  by unknown
-from rh (rh)  by li ([li])
-from rh (rh)  by lh
-from rh (rh)  by lh ([li])
-from rh (rh [ri])  by unknown
-from rh (rh [ri])  by li ([li])
-from rh (rh [ri])  by lh
-from rh (rh [ri])  by lh ([li])
+<result "" "" "" "" "EHLO hh">
 from hh  by unknown
+<result "" "" "" "li" "">
+from unknown  by li ([li])
+<result "" "" "" "li" "EHLO hh">
 from hh  by li ([li])
+<result "" "" "lh" "" "">
+from unknown  by lh
+<result "" "" "lh" "" "EHLO hh">
 from hh  by lh
+<result "" "" "lh" "li" "">
+from unknown  by lh ([li])
+<result "" "" "lh" "li" "EHLO hh">
 from hh  by lh ([li])
+<result "" "ri" "" "" "">
+from ri ([ri])  by unknown
+<result "" "ri" "" "" "EHLO hh">
 from hh ([ri])  by unknown
+<result "" "ri" "" "li" "">
+from ri ([ri])  by li ([li])
+<result "" "ri" "" "li" "EHLO hh">
 from hh ([ri])  by li ([li])
+<result "" "ri" "lh" "" "">
+from ri ([ri])  by lh
+<result "" "ri" "lh" "" "EHLO hh">
 from hh ([ri])  by lh
+<result "" "ri" "lh" "li" "">
+from ri ([ri])  by lh ([li])
+<result "" "ri" "lh" "li" "EHLO hh">
 from hh ([ri])  by lh ([li])
+<result "rh" "" "" "" "">
+from rh (rh)  by unknown
+<result "rh" "" "" "" "EHLO hh">
 from hh (rh)  by unknown
+<result "rh" "" "" "li" "">
+from rh (rh)  by li ([li])
+<result "rh" "" "" "li" "EHLO hh">
 from hh (rh)  by li ([li])
+<result "rh" "" "lh" "" "">
+from rh (rh)  by lh
+<result "rh" "" "lh" "" "EHLO hh">
 from hh (rh)  by lh
+<result "rh" "" "lh" "li" "">
+from rh (rh)  by lh ([li])
+<result "rh" "" "lh" "li" "EHLO hh">
 from hh (rh)  by lh ([li])
+<result "rh" "ri" "" "" "">
+from rh (rh [ri])  by unknown
+<result "rh" "ri" "" "" "EHLO hh">
 from hh (rh [ri])  by unknown
+<result "rh" "ri" "" "li" "">
+from rh (rh [ri])  by li ([li])
+<result "rh" "ri" "" "li" "EHLO hh">
 from hh (rh [ri])  by li ([li])
+<result "rh" "ri" "lh" "" "">
+from rh (rh [ri])  by lh
+<result "rh" "ri" "lh" "" "EHLO hh">
 from hh (rh [ri])  by lh
+<result "rh" "ri" "lh" "li" "">
+from rh (rh [ri])  by lh ([li])
+<result "rh" "ri" "lh" "li" "EHLO hh">
 from hh (rh [ri])  by lh ([li])
