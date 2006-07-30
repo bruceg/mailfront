@@ -1,0 +1,42 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">mailfront</a></h2>
+
+<h1>Plugin: counters</h1>
+
+<hr />
+
+<p>This plugin maintains and enforces several counters.</p>
+
+<h2>Configuration</h2>
+
+<dl>
+
+<dt><tt>$MAXRCPTS</tt></dt> <dd>The maximum recipient limit</dd>
+
+<dt><tt>$MAXHOPS</tt></dt> <dd>The maximum hop limit, defaults to
+100</dd>
+
+<dt><tt>$DATABYTES</tt></dt> <dd>The maximum message size limit</dd>
+
+</dl>
+
+<h2>Sender Action</h2>
+
+<p>None</p>
+
+<h2>Recipient Action</h2>
+
+<p>If at least the maximum recipient limit has been reached for the
+current message, this recipient is rejected.  Otherwise no action.</p>
+
+<h2>Data Action</h2>
+
+<p>If the message is larger than the maximum message size, it is
+rejected.  If more than the maximum hop limit of either "<tt>Received:</tt>"
+or "<tt>Delivered-To:</tt>" headers are present in the message, it is
+rejected.  Otherwise no action.</p>
+
+</body>
+</html>

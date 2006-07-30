@@ -1,26 +1,11 @@
-* Switch to default-deny semantics for senders and recipients, and add a
-* "accept" plugin.
+- Document all the plugins
 
-- Change command line configuration
-  - if argv0 is "mailfront*" use command line for protocol
-  - if argv0 has no "-" use command line
-  - then look at rest of command line for plugins
-  - only then look at $PLUGINS
-  - Can plugins contain "-name" items to remove plugins?
-    Maybe a 1.1 feature.
-
-- Document the new protocol / plugins / backend setup.
-  - Document the qmail and echo backends
-  - Document all the plugins
+- Allow $PLUGINS to contain "-name" items to remove plugins?
 
 - Fix SASL "Authentication failed" message to include EMSS code
 
-- Add variable substitution to rule variable setting (ie x=${y} etc)
-
 - Add better MIME attachment discrimination to patterns, instead of just
   keying on a blank line.
-
-- Allow selecting based on authentication state in rules.
 
 - Write install document.
 
@@ -41,6 +26,12 @@
   - Test application of environment variables in mail rules
   - Test rcpthosts/morercpthosts.cdb normal/wildcard behavior in
     smtpfront-qmail.
+
+Plugin: mailrules
+
+  - Add variable substitution to rule variable setting (ie x=${y} etc)
+
+  - Allow selecting based on authentication state.
 
 - SMTP protocol:
 

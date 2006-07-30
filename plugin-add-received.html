@@ -1,0 +1,39 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">mailfront</a></h2>
+
+<h1>Plugin: add-received</h1>
+
+<hr />
+
+<p>This plugin adds headers to the start of the message as detailed
+below.</p>
+
+<h2>Configuration</h2>
+
+<dl>
+
+<dt><tt></tt></dt> <dd></dd>
+
+</dl>
+
+<h2>Sender Action</h2>
+
+<p>None</p>
+
+<h2>Recipient Action</h2>
+
+<p>None</p>
+
+<h2>Data Action</h2>
+
+<p>If <tt>$FIXUP_RECEIVED_HOST</tt> and <tt>$FIXUP_RECEIVED_IP</tt> are
+set and do not exactly match the current local host and IP, a
+<tt>Received:</tt> header is added to show a transition from one to the
+other.  Then a standard <tt>Received:</tt> header is added.  Finally, if
+<tt>$HEADER_ADD</tt> is set, its contents are added to the message
+headers.</p>
+
+</body>
+</html>
