@@ -1,8 +1,19 @@
-* Load front and back ends dynamically.
+* Switch to default-deny semantics for senders and recipients, and add a
+* "accept" plugin.
+
+- Change command line configuration
+  - if argv0 is "mailfront*" use command line for protocol
+  - if argv0 has no "-" use command line
+  - then look at rest of command line for plugins
+  - only then look at $PLUGINS
+  - Can plugins contain "-name" items to remove plugins?
+    Maybe a 1.1 feature.
+
+- Document the new protocol / plugins / backend setup.
+  - Document the qmail and echo backends
+  - Document all the plugins
 
 - Fix SASL "Authentication failed" message to include EMSS code
-
-- Add documentation for QMQP and QMTP front ends.
 
 - Add variable substitution to rule variable setting (ie x=${y} etc)
 
@@ -31,7 +42,7 @@
   - Test rcpthosts/morercpthosts.cdb normal/wildcard behavior in
     smtpfront-qmail.
 
-- smtpfront:
+- SMTP protocol:
 
   - Build a shared routine for breaking out the domain name.
 

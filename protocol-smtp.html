@@ -1,0 +1,49 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">MailFront</a></h2>
+
+<h1>SMTP Protocol</h1>
+
+<hr />
+
+<p>The SMTP protocol module has the following features:</p>
+
+<ul>
+
+<li>Handles <a href="http://www.faqs.org/rfcs/rfc2554.html">RFC 2554</a>
+SMTP authentication.  Note that the <a
+href="plugin-require-auth.html">require-auth plugin</a> and/or the <a
+href="plugin-relayclient.html">relayclient plugin</a> will need to be
+loaded to make use of this authentication.
+
+<li>Automatically handles either bare NL or <a
+href="http://www.faqs.org/rfcs/rfc821.html">RFC 821</a> / <a
+href="http://www.faqs.org/rfcs/rfc2821.html">RFC 2821</a> compliant
+CR/NL end-of-line conventions.
+
+<li>Times out connections after <tt>$TIMEOUT</tt> seconds of inactivity
+(defaults to 1200 seconds or 20 minutes), or <tt>$SESSION_TIMEOUT</tt>
+seconds after the connection was established (defaults to 86400 seconds
+or 24 hours).
+
+<li>All error responses are logged.
+
+<li>Handles (ignores) <a
+href="http://www.faqs.org/rfcs/rfc1869.html">RFC 1869</a> extended
+parameters on the <tt>RCPT TO:</tt> and <tt>MAIL FROM:</tt> commands.
+
+<li>Initial greeting message is configureable by
+<tt>$SMTPGREETING</tt>.
+
+<li>Supports <a href="http://www.faqs.org/rfcs/rfc1870.html">RFC
+1870</a> SMTP Service Extension for Message Size Declaration.
+
+<li>If <tt>$MAXNOTIMPL</tt> is set, clients are disconnected if they
+send more than the specified number of commands that result in a
+"<tt>500 Not implemented.</tt>" error.
+
+</ul>
+
+</body>
+</html>

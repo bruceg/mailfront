@@ -3,28 +3,91 @@
 
 <h1>MailFront</h1>
 
-<p><a href="smtpfront.html">SMTP Front Ends</a>
-<br><a href="pop3front.html">POP3 Front End</a>
+<p><a href="pop3front.html">POP3 Front End</a>
 <br><a href="imapfront.html">IMAP Front End</a>
 </p>
 
-<hr>
+<hr />
 
 <h2>Overview</h2>
 
-<p>This package contains customizeable network front-ends for mail
-servers.  Right now the only protocols that are handled are SMTP and
-POP3, but this package is likely to be extended to deal with QMQP and
-QMTP, and potentially even IMAP.</p>
+<p>The mailfront program acts as a driver container, loading up a
+protocol module, a backend module, and a list of plugins at run time.
+All protocols are completely interchangeable, as are the backends.</p>
 
-<h2>Status</h2>
+<h2>Configuration</h2>
 
-<p>This package is ready to use, but you will have to make some
-modifications to existing configurations to do so.
-<tt>smtpfront-qmail</tt> is a nearly complete drop-in replacement for
-<tt>qmail-smtpd</tt>, and <tt>pop3front-auth</tt> and
-<tt>pop3front-maildir</tt> are replacements for <tt>qmail-popup</tt>
-and <tt>qmail-pop3d</tt>.
+<p>The protocol and backend modules are specified on the program command
+line in one of two ways.  If there are two command line arguments, the
+first one is used as the protocol name and the second as the backend
+name.  Otherwise, mailfront looks at the program name as follows: the
+string following the first "<tt>-</tt>" is used as the backend name, and
+the string preceding the first "<tt>front</tt>" is used as the protocol
+name.  In this way, if the mailfront program is symlinked to
+"<tt>smtpfront-qmail</tt>", it will automatically load the SMTP protocol
+and the qmail backend (if no command-line arguments are given).</p>
+
+<h2>Protocols</h2>
+
+<p>The protocol module is responsible for all interaction at the network
+I/O level with the client.  It links into the system by calling down to
+the handler wrappers provided by mailfront, which in turn dispatches
+calls to the plugins and finally the backend.</p>
+
+<p>The following protocols are available:</p>
+
+<ul>
+
+<li><a href="protocol-qmqp.html">QMQP Protocol</a></li>
+
+<li><a href="protocol-qmtp.html">QMTP Protocol</a></li>
+
+<li><a href="protocol-smtp.html">SMTP Protocol</a></li>
+
+</ul>
+
+<h2>Plugins</h2>
+
+<p>Plugins hook into the mail system at 3 main points:</p>
+
+<ol> <li>when the sender address is received,</li> <li>when a recipient
+address is received,</li> <li>when data is received.</li> </ol>
+
+<p>At each of these points, mailfront goes through the list of loaded
+plugins. For each plugin that has a handler for such an event, mailfront
+calls that handler.  If the handler returns no action (<tt>NULL</tt>),
+control passes to the next handler, otherwise no further handlers are
+called.  If the returned code was an error, it is passed back to the
+protocol, which will present it to the client.  Plugins may modify the
+sender or recipient address, but not the data (yet).</p>
+
+<p>The following plugins are included in the main package:</p>
+
+<ul>
+
+<li><a href="plugin-qmail-validate.html">Qmail Validate Plugin</a></li>
+
+<li><a href="plugin-relayclient.html">Relayclient Plugin</a></li>
+
+</ul>
+
+<h2>Backends</h2>
+
+<p>The backend is the final stage in incoming mail handling, and is
+responsible for passing the message on to the mail system.  It is
+invoked only if no plugin returned an error result.  Other than the
+above two differences, the backend is structured identically to the
+plugins described above.</p>
+
+<p>The following backends are available:</p>
+
+<ul>
+
+<li><a href="backend-echo.html">Echo Backend</a></li>
+
+<li><a href="backend-qmail.html">qmail Backend</a></li>
+
+</ul>
 
 </body>
 </html>

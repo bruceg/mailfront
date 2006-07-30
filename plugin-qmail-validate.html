@@ -1,0 +1,32 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">MailFront</a></h2>
+
+<h1>qmail Validation</h1>
+
+<hr />
+
+<p>The qmail home directory is compiled into the program, and defaults
+to <tt>/var/qmail</tt>, but may be overridden by
+<tt>$QMAILHOME</tt>. The control files are located in the
+<tt>control</tt> subdirectory of the qmail home directory.</p>
+
+<h2>Sender Action</h2>
+
+<p>If the sender address is listed in the <tt>badmailfrom</tt> control
+file, the sender is rejected. Otherwise no action.</p>
+
+<h2>Recipient Action</h2>
+
+<p>If the recipient is listed in the <tt>badrcptto</tt> control file, it
+is rejected.  If the domain of the recipient address is <i>not</i>
+listed in either the <tt>rcpthosts</tt> or <tt>morercpthosts.cdb</tt>
+control files, the recipient is rejected.  Otherwise no action.</p>
+
+<h2>Data Action</h2>
+
+<p>None</p>
+
+</body>
+</html>

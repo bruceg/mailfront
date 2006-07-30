@@ -1,0 +1,28 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">mailfront</a></h2>
+
+<h1>Relayclient Plugin</h1>
+
+<p>The relayclient plugin is used to explicitly accept recipients if the
+sender is considered authenticated, either by having
+<tt>$RELAYCLIENT</tt> set or by using SMTP authentication.</p>
+
+<h2>Sender Action</h2>
+
+<p>None</p>
+
+<h2>Recipient Action</h2>
+
+<p>If <tt>$RELAYCLIENT</tt> is set, its value is appended to the
+recipient and the recipient is accepted.  If the sender has completed
+SMTP authentication, the recipient is left unchanged and is accepted.
+Otherwise no action.</p>
+
+<h2>Data Action</h2>
+
+<p>None</p>
+
+</body>
+</html>
