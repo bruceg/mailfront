@@ -17,15 +17,16 @@ All protocols are completely interchangeable, as are the backends.</p>
 
 <h2>Configuration</h2>
 
-<p>The protocol and backend modules are specified on the program command
-line in one of two ways.  If there are two command line arguments, the
-first one is used as the protocol name and the second as the backend
-name.  Otherwise, mailfront looks at the program name as follows: the
-string following the first "<tt>-</tt>" is used as the backend name, and
-the string preceding the first "<tt>front</tt>" is used as the protocol
-name.  In this way, if the mailfront program is symlinked to
-"<tt>smtpfront-qmail</tt>", it will automatically load the SMTP protocol
-and the qmail backend (if no command-line arguments are given).</p>
+<p>The protocol and backend modules are specified as the first two
+command line arguments.  The remainder of the command line arguments
+specify lists of plugins.</p>
+
+<p>If <tt>$PLUGINS</tt> is set, it contains a list of plugins, separated
+by colons, that will be loaded after the plugins specified on the
+command line.  If <tt>$MODULE_PATH</tt> is set, it specifies the
+directory in which modules will be loaded.  Otherwise, the built in
+module path will be used, which is configured by editing the file
+<tt>conf-modules</tt> before building.</p>
 
 <h2>Protocols</h2>
 

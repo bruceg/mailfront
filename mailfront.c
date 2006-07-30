@@ -140,33 +140,11 @@ const response* handle_data_end(void)
 int main(int argc, char* argv[])
 {
   const response* resp;
-  const char* backend;
-  const char* p;
-  int i;
-  str argv0 = {0,0,0};
-  str protocol = {0,0,0};
 
-  str_copys(&argv0, argv[0]);
-  if ((i = str_findlast(&argv0, '/')) > 0)
-    str_lcut(&argv0, i + 1);
-  
-  if (argc > 2)
-    backend = argv[2];
-  else if (argc > 1)
-    backend = argv[1];
-  else if ((backend = strchr(argv0.s, '-')) != 0)
-    ++backend;
-  else
-    die1(111, "Could not determine backend name");
+  if (argc < 3)
+    die1(111, "Protocol or backend name are missing from the command line");
 
-  if (argc > 2)
-    str_copys(&protocol, argv[1]);
-  else if ((p = strstr(argv0.s, "front")) != 0)
-    str_copyb(&protocol, argv0.s, p - argv0.s);
-  else
-    die1(111, "Could not determine protocol name");
-  
-  if ((resp = load_modules(protocol.s, backend)) != 0
+  if ((resp = load_modules(argv[1], argv[2], (const char**)(argv+3))) != 0
       || (resp = handle_init()) != 0) {
     if (session.protocol != 0) {
       session.protocol->respond(resp);
@@ -175,8 +153,6 @@ int main(int argc, char* argv[])
     else
       die1(1, resp->message);
   }
-  str_free(&argv0);
-  str_free(&protocol);
 
   if (session.protocol->init != 0)
     if (session.protocol->init())

@@ -46,9 +46,8 @@ static const response* load_plugin(const char* path, const char* name)
   return 0;
 }
 
-static const response* load_plugins(const char* path)
+static const response* load_plugins(const char* path, const char* list)
 {
-  const char* list;
   const char* start;
   const char* end;
   long len;
@@ -74,14 +73,22 @@ static const response* load_plugins(const char* path)
 }
 
 const response* load_modules(const char* protocol_name,
-			     const char* backend_name)
+			     const char* backend_name,
+			     const char** plugins)
 {
   const char* path;
+  const char* env;
+  const response* r;
   if ((path = getenv("MODULE_PATH")) == 0)
     path = conf_modules;
   if ((session.protocol = load_object(path, "protocol", protocol_name)) == 0)
     return &resp_load;
   if ((session.backend = load_object(path, "backend", backend_name)) == 0)
     return &resp_load;
-  return load_plugins(path);
+  while (*plugins != 0)
+    if ((r = load_plugins(path, *plugins++)) != 0)
+      return r;
+  if ((env = getenv("PLUGINS")) != 0)
+    return load_plugins(path, env);
+  return 0;
 }
