@@ -3,12 +3,12 @@ c:::755::imapfront-auth
 c:::755::mailfront
 c:::755::pop3front-auth
 c:::755::pop3front-maildir
-s:::755::qmqpfront-echo:mailfront
-s:::755::qmqpfront-qmail:mailfront
-s:::755::qmtpfront-echo:mailfront
-s:::755::qmtpfront-qmail:mailfront
-s:::755::smtpfront-echo:mailfront
-s:::755::smtpfront-qmail:mailfront
+c:::755::qmqpfront-echo
+c:::755::qmqpfront-qmail
+c:::755::qmtpfront-echo
+c:::755::qmtpfront-qmail
+c:::755::smtpfront-echo
+c:::755::smtpfront-qmail
 
 >modules
 c:::755::backend-echo.so
