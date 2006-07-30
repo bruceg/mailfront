@@ -1,0 +1,42 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">mailfront</a></h2>
+
+<h1>Plugin: accept</h1>
+
+<hr />
+
+<p>This plugin optionally rejects all senders with a configurable
+message.</p>
+
+<h2>Configuration</h2>
+
+<dl>
+
+<dt><tt>$SMTPREJECT</tt></dt> <dd>The reject message to issue to clients
+(defaults to the value of <tt>$REJECT</tt>)</dd>
+
+<dt><tt>$REJECT</tt></dt> <dd>The reject message to issue to
+clients</dd>
+
+</dl>
+
+<h2>Sender Action</h2>
+
+<p>If either <tt>$SMTPREJECT</tt> or <tt>$REJECT</tt> are set, all
+addresses are rejected with the given message.  If the text of the
+message starts with a "<tt>-</tt>", it is skipped and the rejection uses
+a permanent failure code (ie bounce); otherwise a temporary failure code
+is used.  If neither are set, no action.</p>
+
+<h2>Recipient Action</h2>
+
+<p>None</p>
+
+<h2>Data Action</h2>
+
+<p>None</p>
+
+</body>
+</html>

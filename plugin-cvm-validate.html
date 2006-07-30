@@ -1,0 +1,42 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">mailfront</a></h2>
+
+<h1>Plugin: cvm-validate</h1>
+
+<hr />
+
+<p>This plugin uses a <a
+href="http://untroubled.org/cvm/cvm.html">CVM</a> to validate recipient
+addresses.</p>
+
+<h2>Configuration</h2>
+
+<dl>
+
+<dt><tt>$CVM_LOOKUP</tt></dt> <dd>The name of the CVM to invoke</dd>
+
+<dt><tt>$CVM_LOOKUP_SECRET</tt></dt> <dd>The secret to pass to the CVM
+(defaults to the value of <tt>$LOOKUP_SECRET</tt>)</dd>
+
+<dt><tt>$LOOKUP_SECRET</tt></dt> <dd>The secret to pass to the CVM</dd>
+
+</dl>
+
+<h2>Sender Action</h2>
+
+<p>None</p>
+
+<h2>Recipient Action</h2>
+
+<p>Calls the given CVM, passing the recipient address as the account and
+domain name along with the lookup secret. If the CVM rejects the
+recipient, the plugin rejects the recipient.  Otherwise no action.</p>
+
+<h2>Data Action</h2>
+
+<p>None</p>
+
+</body>
+</html>

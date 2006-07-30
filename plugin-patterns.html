@@ -8,41 +8,65 @@
 
 <hr />
 
+<p>This module provides an ability for rejecting messages based on
+simple patterns in their content.<p>
+
 <h2>Configuration</h2>
 
 <dl>
 
-<dt><tt></tt></dt> <dd></dd>
+<dt><tt>$PATTERNS</tt></dt> <dd>If set, the named file is loaded and
+parsed (see below), and pattern matching is enabled.</dd>
+
+<dt><tt>$PATTERNS_LINEMAX</tt></dt> <dd>Line buffer size (defaults to
+256)</dd>
+
+<dt><tt>$PATTERNS_RESP</tt></dt> <dd>Response message to give when a
+pattern is matched (defaults to "<tt>This message contains
+prohibited content</tt>")</dd>
 
 </dl>
 
-<p>The pattern matching feature of mailfront provides an ability for
-rejecting messages based on simple patterns in their content.  If
-<tt>$PATTERNS</tt> is set, the named file is loaded and and parsed (see
-below), and pattern matching is enabled.  No more than
-<tt>$PATTERNS_LINEMAX</tt> bytes (defaults to 256) are added to the line
-buffer before the pattern matching is done.  If any pattern matches, the
-message data is rejected with a message taken from
-<tt>$PATTERNS_RESP</tt> (defaults to "<tt>This message contains
-prohibited content</tt>").<p>
+<h2>Sender Action</h2>
+
+<p>None</p>
+
+<h2>Recipient Action</h2>
+
+<p>None</p>
+
+<h2>Data Action</h2>
+
+<p>Each line of the data sent from the client is loaded into a line
+buffer (with a maximum size as above) and then scanned against the
+patterns listed in the configuration file.  If any pattern matches, the
+message is rejected.</p>
+
+<h2>Patterns File Format</h2>
 
 <p>The patterns file contains a list of standard glob-style patterns.
 Each line of the file starts with a control character, which is
-<i>not</i> part of the pattern itself: <dl>
+<i>not</i> part of the pattern itself:</p>
 
-<dt><tt>#</tt> <dd>Comment line, ignored.
+<dl>
 
-<dt><tt>=</tt> <dd>Sets the response text given when a message is
+<dt><tt>#</tt></dt> <dd>Comment line, ignored.</dd>
+
+<dt><tt>=</tt></dt> <dd>Sets the response text given when a message is
 rejected.  All following patterns use this response until the next
-response line.
+response line.  Including this in the patterns file overrides the value
+of <tt>$PATTERNS_RESP</tt>.</dd>
 
-<dt><tt>:</tt> <dd>The pattern will be applied only in the header.
+<dt><tt>:</tt></dt> <dd>The pattern will be applied only in the
+header.</dd>
 
-<dt><tt>\</tt> <dd>The pattern will be applied only after a blank line.
+<dt><tt>\</tt></dt> <dd>The pattern will be applied only after a blank
+line.</dd>
 
-<dt>Anything else <dd>A normal pattern, applied to any non-blank line.
+<dt>Anything else</dt> <dd>A normal pattern, applied to any non-blank
+line.</dd>
 
-</dl></p>
+</dl>
 
 <p>The following patterns list is a much simplified version of Russell
 Nelson's <a
