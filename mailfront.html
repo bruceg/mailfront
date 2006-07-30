@@ -28,6 +28,13 @@ directory in which modules will be loaded.  Otherwise, the built in
 module path will be used, which is configured by editing the file
 <tt>conf-modules</tt> before building.</p>
 
+<p>A configuration that would match previous installations of mailfront
+using the qmail backend would be to set
+<tt>PLUGINS=check-fqdn:counters:mailrules:relayclient:qmail-validate:cvm-validate:add-received:patterns:accept-sender</tt>
+Also, if <tt>$REQUIRE_AUTH</tt> was set previously, the
+<tt>require-auth</tt> plugin would go at the front of the above
+list.</p>
+
 <h2>Protocols</h2>
 
 <p>The protocol module is responsible for all interaction at the network
@@ -70,6 +77,12 @@ Plugins may modify the sender or recipient address, but not the data
 <p>The following plugins are included in the main package:</p>
 
 <ul>
+
+<li><a href="plugin-accept.html">Accept Plugin</a></li>
+
+<li><a href="plugin-accept-recipient.html">Accept Recipient Plugin</a></li>
+
+<li><a href="plugin-accept-sender.html">Accept Sender Plugin</a></li>
 
 <li><a href="plugin-qmail-validate.html">Qmail Validate Plugin</a></li>
 
