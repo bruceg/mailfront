@@ -1,8 +1,14 @@
 -------------------------------------------------------------------------------
-Changes in version 0.99
+Changes in version 1.0
 
-- Added support for dynamically loaded plugins via $PLUGINS, and moved
-  all validation routines (mail rules, relayclient, etc) into plugins.
+Mailfront has been rewritten to be totally modular.  The core mailfront
+program loads the protocol, backend, and all plugin behaviors at run
+time from shared objects.
+
+NOTE: Due to the above changes, you WILL need to update your
+configuration.  Without changes, the programs will run but will not do
+any validation, and as such will be an open relay.  In particular, you
+will need to set $PLUGINS to something appropriate.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
