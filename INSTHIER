@@ -1,16 +1,14 @@
 >bin
 c:::755::imapfront-auth
+c:::755::mailfront
 c:::755::pop3front-auth
 c:::755::pop3front-maildir
-c:::755::qmqpfront
-s:::755::qmqpfront-echo:qmqpfront
-s:::755::qmqpfront-qmail:qmqpfront
-c:::755::qmtpfront
-s:::755::qmtpfront-echo:qmqpfront
-s:::755::qmtpfront-qmail:qmqpfront
-c:::755::smtpfront
-s:::755::smtpfront-echo:qmqpfront
-s:::755::smtpfront-qmail:qmqpfront
+s:::755::qmqpfront-echo:mailfront
+s:::755::qmqpfront-qmail:mailfront
+s:::755::qmtpfront-echo:mailfront
+s:::755::qmtpfront-qmail:mailfront
+s:::755::smtpfront-echo:mailfront
+s:::755::smtpfront-qmail:mailfront
 
 >modules
 c:::755::backend-echo.so
