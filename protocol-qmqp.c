@@ -57,8 +57,6 @@ static void get_sender(ibuf* in)
   msg3("sender <", line.s, ">");
   if (response_ok(resp))
     resp = handle_sender(&line);
-  if (session.relayclient == 0)
-    session.relayclient = "";
 }
 
 static void get_recips(ibuf* in)

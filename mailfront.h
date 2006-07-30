@@ -35,7 +35,6 @@ struct session
 
   const char* linkproto;
   const char* helo_domain;
-  const char* relayclient;
   const char* local_host;
   const char* local_ip;
   const char* remote_host;
