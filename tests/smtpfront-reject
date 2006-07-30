@@ -1,5 +1,5 @@
 <loop msg rej -rej>
-PLUGINS=reject
+PLUGINS=reject:accept
 
 env SMTPREJECT="$msg" $src/mailfront smtp echo 2>/dev/null <<EOF
 HELO nobody

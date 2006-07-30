@@ -1,4 +1,4 @@
-sfecho() { $src/mailfront smtp echo 2>/dev/null | tail -n +2; }
+sfecho() { $src/mailfront smtp echo "$@" 2>/dev/null | tail -n +2; }
 pfauth() { $src/pop3front-auth "$@" echo Yes. 2>/dev/null | tail -n +2; }
 ifauth() { $src/imapfront-auth sh -c 'echo Yes: $IMAPLOGINTAG' 2>/dev/null | tail -n +2; }
 pfmaildir() { $src/pop3front-maildir "$@" 2>/dev/null | tail -n +2; }
@@ -25,6 +25,7 @@ TESTLOCALHOST=local.host
 TESTREMOTEHOST=remote.host
 CVM_PWFILE_PATH=$tmp/pwfile
 MODULE_PATH=$src
+PLUGINS=accept
 
 export PROTO TESTLOCALIP TESTREMOTEIP TESTLOCALHOST TESTREMOTEHOST
 export CVM_PWFILE_PATH MAILRULES DATABYTES MAXHOPS PATTERNS MAXNOTIMPL

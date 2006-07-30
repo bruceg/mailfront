@@ -1,4 +1,4 @@
-PLUGINS=mailrules
+PLUGINS=mailrules:accept
 
 cat >$tmp/rules <<EOF
 # This selector forces what would normally be a recipient rule to be

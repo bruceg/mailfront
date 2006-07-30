@@ -1,4 +1,4 @@
-PLUGINS=mailrules
+PLUGINS=mailrules:accept
 
 cat >$tmp/rules <<EOF
 ka@example.com:b@example.com:K1:::HEADER_ADD="X-Header: testing!!!"

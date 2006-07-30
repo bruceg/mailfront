@@ -1,4 +1,4 @@
-PLUGINS=relayclient:qmail-validate
+PLUGINS=relayclient:qmail-validate:accept-sender
 
 sfecho <<EOF
 AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
@@ -36,7 +36,7 @@ unset CVM_SASL_PLAIN
 <result>
 504 Unrecognized authentication mechanism.^M
 250 Sender='user@example.com'.^M
-553 5.1.1 Sorry, that domain isn't in my list of allowed rcpthosts.^M
+550 5.1.0 Mail system is not configured to accept that recipient^M
 501 Authentication failed.^M
 235 2.7.0 Authentication succeeded.^M
 503 5.5.1 You are already authenticated.^M
@@ -47,5 +47,5 @@ unset CVM_SASL_PLAIN
 334 ^M
 501 Authentication failed.^M
 250 Sender='user@example.com'.^M
-553 5.1.1 Sorry, that domain isn't in my list of allowed rcpthosts.^M
+550 5.1.0 Mail system is not configured to accept that recipient^M
 235 2.7.0 Authentication succeeded.^M

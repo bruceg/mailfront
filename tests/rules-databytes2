@@ -1,4 +1,4 @@
-PLUGINS=mailrules:counters
+PLUGINS=mailrules:counters:accept
 
 cat >$tmp/rules <<EOF
 k*:a@example.com::1

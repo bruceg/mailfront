@@ -1,4 +1,4 @@
-PLUGINS=mailrules:relayclient
+PLUGINS=mailrules:relayclient:accept
 
 cat >$tmp/rules <<EOF
 n*:*:Do not see this:::RELAYCLIENT=@rc

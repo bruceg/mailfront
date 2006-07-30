@@ -4,7 +4,7 @@
 <loop localip "" "li">
 <loop helo "" "EHLO hh">
 
-PLUGINS=add-received
+PLUGINS=add-received:accept
 TESTLOCALHOST="$localhost"
 TESTLOCALIP="$localip"
 TESTREMOTEHOST="$remotehost"

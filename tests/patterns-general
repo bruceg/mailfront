@@ -1,5 +1,5 @@
 <loop subject "xwordx" "word at the beginning" "last word" "middle word middle" "word" "xord">
-PLUGINS=patterns
+PLUGINS=patterns:accept
 
 cat >$tmp/patterns <<EOF
 /Subject: *word*

@@ -6,9 +6,14 @@ program loads the protocol, backend, and all plugin behaviors at run
 time from shared objects.
 
 NOTE: Due to the above changes, you WILL need to update your
-configuration.  Without changes, the programs will run but will not do
-any validation, and as such will be an open relay.  In particular, you
-will need to set $PLUGINS to something appropriate.
+configuration.  Without changes, the programs will run but will fail all
+validation, and as such will reject all mail.  In particular, you will
+need to set $PLUGINS or the command line to something appropriate.  The
+"reject" backend has also been replaced by a "reject" plugin.
+
+Also, the previous commands, such as smtpfront-qmail, are now shell
+script wrappers for the main "mailfront" command, and as such are
+depricated in favor of using "mailfront" directly.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/

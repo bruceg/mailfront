@@ -1,4 +1,4 @@
-PLUGINS=counters
+PLUGINS=counters:accept
 
 DATABYTES=123
 

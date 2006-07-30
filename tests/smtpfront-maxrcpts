@@ -1,4 +1,4 @@
-PLUGINS=counters
+PLUGINS=counters:accept
 
 MAXRCPTS=2
 export MAXRCPTS

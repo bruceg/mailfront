@@ -1,4 +1,4 @@
-PLUGINS=mailrules
+PLUGINS=mailrules:accept
 
 cat >$tmp/rules <<EOF
 kone@one.example.com:*:KK

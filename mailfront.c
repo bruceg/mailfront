@@ -8,6 +8,9 @@
 #include "mailfront.h"
 #include "smtp.h"
 
+static RESPONSE(no_sender,550,"5.1.0 Mail system is not configured to accept that sender");
+static RESPONSE(no_rcpt,550,"5.1.0 Mail system is not configured to accept that recipient");
+
 const char UNKNOWN[] = "unknown";
 
 const int msg_show_pid = 1;
@@ -76,6 +79,8 @@ const response* handle_sender(str* sender)
   const response* resp = 0;
   const response* tmpresp = 0;
   MODULE_CALL(sender, (sender));
+  if (resp == 0)
+    return &resp_no_sender;
   if (session.backend->sender != 0)
     if (!response_ok(tmpresp = session.backend->sender(sender)))
       return tmpresp;
@@ -88,6 +93,8 @@ const response* handle_recipient(str* recip)
   const response* resp = 0;
   const response* hresp = 0;
   MODULE_CALL(recipient, (recip));
+  if (resp == 0)
+    return &resp_no_rcpt;
   if (session.backend->recipient != 0)
     if (!response_ok(hresp = session.backend->recipient(recip)))
       return hresp;

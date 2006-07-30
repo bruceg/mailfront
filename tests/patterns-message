@@ -1,4 +1,4 @@
-PLUGINS=patterns
+PLUGINS=patterns:accept
 
 cat >$tmp/patterns <<EOF
 =response 1

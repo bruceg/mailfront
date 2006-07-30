@@ -6,9 +6,9 @@
 #include "conf_qmail.c"
 #include <cdb/cdb.h>
 
+static RESPONSE(accept,250,0);
 static RESPONSE(no_chdir,451,"4.3.0 Could not change to the qmail directory.");
 static RESPONSE(badmailfrom,553,"5.1.0 Sorry, your envelope sender is in my badmailfrom list.");
-static RESPONSE(rh,553,"5.1.1 Sorry, that domain isn't in my list of allowed rcpthosts.");
 static RESPONSE(bmt,553,"5.1.1 Sorry, that address is in my badrcptto list.");
 
 static dict bmf;
@@ -62,19 +62,24 @@ static const response* validate_recipient(str* recipient)
 
   str_copy(&tmp, recipient);
   str_lower(&tmp);
-  if (dict_get(&brt, &tmp) != 0) return &resp_bmt;
+  if (dict_get(&brt, &tmp) != 0)
+    return &resp_bmt;
   if ((at = str_findlast(recipient, '@')) > 0) {
     str_copyb(&tmp, recipient->s + at, recipient->len - at);
     str_lower(&tmp);
-    if (dict_get(&brt, &tmp)) return &resp_bmt;
+    if (dict_get(&brt, &tmp))
+      return &resp_bmt;
     ++at;
     str_copyb(&tmp, recipient->s + at, recipient->len - at);
     str_lower(&tmp);
     for (;;) {
-      if (dict_get(&rh, &tmp)) break;
+      if (dict_get(&rh, &tmp))
+	return &resp_accept;
       /* NOTE: qmail-newmrh automatically lowercases the keys in this CDB */
-      if (mrh_fd != -1 && cdb_find(&mrh, tmp.s, tmp.len) == 1) break;
-      if ((at = str_findnext(&tmp, '.', 1)) <= 0) return &resp_rh;
+      if (mrh_fd != -1 && cdb_find(&mrh, tmp.s, tmp.len) == 1)
+	return &resp_accept;
+      if ((at = str_findnext(&tmp, '.', 1)) <= 0)
+	break;
       str_lcut(&tmp, at);
     }
   }
