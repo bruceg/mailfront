@@ -31,15 +31,15 @@ static void getprotoenv(const char* name, const char** dest)
   *dest = env;
 }
 
-#define MODULE_CALL(NAME,PARAMS) do{ \
+#define MODULE_CALL(NAME,PARAMS,SHORT) do{ \
   struct plugin* plugin; \
   for (plugin = plugin_list; plugin != 0; plugin = plugin->next) { \
     if (plugin->NAME != 0) { \
       if ((resp = plugin->NAME PARAMS) != 0) { \
-        if (response_ok(resp)) \
-          break; \
-        else \
+        if (!response_ok(resp)) \
           return resp; \
+        else if (SHORT) \
+          break; \
       } \
     } \
   } \
@@ -60,7 +60,7 @@ const response* handle_init(void)
   getprotoenv("LOCALHOST", &session.local_host);
   getprotoenv("REMOTEHOST", &session.remote_host);
 
-  MODULE_CALL(init, ());
+  MODULE_CALL(init, (), 0);
 
   return 0;
 }
@@ -70,7 +70,7 @@ const response* handle_reset(void)
   const response* resp = 0;
   if (session.backend->reset != 0)
     session.backend->reset();
-  MODULE_CALL(reset, ());
+  MODULE_CALL(reset, (), 0);
   return resp;
 }
 
@@ -78,7 +78,7 @@ const response* handle_sender(str* sender)
 {
   const response* resp = 0;
   const response* tmpresp = 0;
-  MODULE_CALL(sender, (sender));
+  MODULE_CALL(sender, (sender), 1);
   if (resp == 0)
     return &resp_no_sender;
   if (session.backend->sender != 0)
@@ -92,7 +92,7 @@ const response* handle_recipient(str* recip)
 {
   const response* resp = 0;
   const response* hresp = 0;
-  MODULE_CALL(recipient, (recip));
+  MODULE_CALL(recipient, (recip), 1);
   if (resp == 0)
     return &resp_no_rcpt;
   if (session.backend->recipient != 0)
@@ -110,7 +110,7 @@ const response* handle_data_start(void)
   if (session.backend->data_start != 0)
     resp = session.backend->data_start();
   if (resp == 0)
-    MODULE_CALL(data_start, ());
+    MODULE_CALL(data_start, (), 0);
   if (response_ok(resp)) {
     data_response = 0;
   }
@@ -138,7 +138,7 @@ const response* handle_data_end(void)
   const response* resp;
   if (data_response)
     return data_response;
-  MODULE_CALL(data_end, ());
+  MODULE_CALL(data_end, (), 0);
   return (session.backend->data_end != 0)
     ? session.backend->data_end()
     : 0;
