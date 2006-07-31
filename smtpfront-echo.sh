@@ -1,1 +1,1 @@
-exec "$(dirname $0)"/mailfront smtp echo
+exec "$(dirname $0)"/mailfront smtp echo "$@"

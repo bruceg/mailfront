@@ -1,1 +1,1 @@
-exec "$(dirname $0)"/mailfront qmqp qmail
+exec "$(dirname $0)"/mailfront qmqp qmail "$@"
