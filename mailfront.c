@@ -62,6 +62,8 @@ const response* handle_init(void)
 
   MODULE_CALL(init, (), 0);
 
+  if (session.backend->init != 0)
+    return session.backend->init();
   return 0;
 }
 
