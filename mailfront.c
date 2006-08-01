@@ -33,9 +33,11 @@ static void getprotoenv(const char* name, const char** dest)
 
 #define MODULE_CALL(NAME,PARAMS,SHORT) do{ \
   struct plugin* plugin; \
+  const response* tmp; \
   for (plugin = plugin_list; plugin != 0; plugin = plugin->next) { \
     if (plugin->NAME != 0) { \
-      if ((resp = plugin->NAME PARAMS) != 0) { \
+      if ((tmp = plugin->NAME PARAMS) != 0) { \
+        resp = tmp; \
         if (!response_ok(resp)) \
           return resp; \
         else if (SHORT) \
@@ -111,11 +113,11 @@ const response* handle_data_start(void)
   const response* resp = 0;
   if (session.backend->data_start != 0)
     resp = session.backend->data_start();
-  if (resp == 0)
+  if (response_ok(resp))
     MODULE_CALL(data_start, (), 0);
-  if (response_ok(resp)) {
-    data_response = 0;
-  }
+  data_response = response_ok(resp)
+    ? 0
+    : resp;
   return resp;
 }
 
@@ -123,7 +125,8 @@ void handle_data_bytes(const char* bytes, unsigned len)
 {
   const response* r;
   struct plugin* plugin;
-  if (data_response) return;
+  if (!response_ok(data_response))
+    return;
   for (plugin = plugin_list; plugin != 0; plugin = plugin->next)
     if (plugin->data_block != 0)
       if ((r = plugin->data_block(bytes, len)) != 0
@@ -137,13 +140,13 @@ void handle_data_bytes(const char* bytes, unsigned len)
 
 const response* handle_data_end(void)
 {
-  const response* resp;
-  if (data_response)
+  const response* resp = 0;
+  if (!response_ok(data_response))
     return data_response;
   MODULE_CALL(data_end, (), 0);
   return (session.backend->data_end != 0)
     ? session.backend->data_end()
-    : 0;
+    : resp;
 }
 
 int main(int argc, char* argv[])
