@@ -16,7 +16,7 @@ static const response* either(str* s)
   return 0;
 }
 
-STRUCT_PLUGIN(check_fqdn) = {
+struct plugin plugin = {
   .sender = either,
   .recipient = either,
 };

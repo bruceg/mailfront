@@ -421,7 +421,7 @@ static const response* validate_recipient(str* recipient)
   return 0;
 }
 
-STRUCT_PLUGIN(mailrules) = {
+struct plugin plugin = {
   .init = init,
   .reset = reset,
   .sender = validate_sender,

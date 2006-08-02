@@ -11,6 +11,6 @@ static const response* sender(str* s)
   (void)s;
 }
 
-STRUCT_PLUGIN(require_auth) = {
+struct plugin plugin = {
   .sender = sender,
 };

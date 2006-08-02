@@ -147,7 +147,7 @@ static const response* check(const char* bytes, unsigned long len)
   return 0;
 }
 
-STRUCT_PLUGIN(patterns) = {
+struct plugin plugin = {
   .data_start = init,
   .data_block = check,
 };

@@ -15,6 +15,6 @@ static const response* do_recipient(str* recipient)
   return 0;
 }
 
-STRUCT_PLUGIN(relayclient) = {
+struct plugin plugin = {
   .recipient = do_recipient,
 };

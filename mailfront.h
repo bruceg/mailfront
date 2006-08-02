@@ -18,8 +18,6 @@ struct plugin
   const response* (*data_end)(void);
 };
 
-#define STRUCT_PLUGIN(NAME) struct plugin plugin
-
 struct protocol
 {
   const char* name;

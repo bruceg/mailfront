@@ -8,7 +8,7 @@ static const response* address(str* s)
   (void)s;
 }
 
-STRUCT_PLUGIN(accept) = {
+struct plugin plugin = {
   .sender = address,
   .recipient = address,
 };

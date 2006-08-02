@@ -115,7 +115,7 @@ static const response* block(const char* bytes, unsigned long len)
   return 0;
 }
 
-STRUCT_PLUGIN(counters) = {
+struct plugin plugin = {
   .init = init,
   .reset = reset,
   .sender = sender,

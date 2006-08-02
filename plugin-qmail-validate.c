@@ -86,7 +86,7 @@ static const response* validate_recipient(str* recipient)
   return 0;
 }
 
-STRUCT_PLUGIN(backend_validate) = {
+struct plugin plugin = {
   .init = validate_init,
   .sender = validate_sender,
   .recipient = validate_recipient,

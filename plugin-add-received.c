@@ -109,7 +109,7 @@ static const response* data_start(void)
   return 0;
 }
 
-STRUCT_PLUGIN(add_received) = {
+struct plugin plugin = {
   .init = init,
   .data_start = data_start,
 };
