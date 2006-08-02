@@ -19,7 +19,7 @@ static int respond_end(void)
   if (respstr.s[0] >= '4')
     msg1(respstr.s);
   return obuf_putstr(&outbuf, &respstr) &&
-    obuf_putsflush(&outbuf, CRLF);
+    obuf_puts(&outbuf, CRLF);
 }
 
 static int respond_str(const char* s)
@@ -45,7 +45,8 @@ int respond(unsigned number, int final, const char* msg)
   }
   return respond_start(number, final) &&
     respond_str(msg) &&
-    respond_end();
+    respond_end() &&
+    obuf_flush(&outbuf);
 }
 
 int respond_resp(const response* resp)
