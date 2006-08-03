@@ -29,9 +29,11 @@ module path will be used, which is configured by editing the file
 <tt>conf-modules</tt> before building.</p>
 
 <p>A configuration that would match previous installations of mailfront
-using the qmail backend would be to set
-<tt>PLUGINS=check-fqdn:counters:mailrules:relayclient:qmail-validate:cvm-validate:add-received:patterns:accept-sender</tt>
-Also, if <tt>$REQUIRE_AUTH</tt> was set previously, the
+using the qmail backend would be to set:</p>
+
+<pre>PLUGINS=check-fqdn:counters:mailrules:relayclient:qmail-validate:cvm-validate:add-received:patterns:accept-sender</pre>
+
+<p>Also, if <tt>$REQUIRE_AUTH</tt> was set previously, the
 <tt>require-auth</tt> plugin would go at the front of the above
 list.</p>
 
