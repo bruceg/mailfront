@@ -24,7 +24,6 @@ static str cmd;
 static str arg;
 static str addr;
 static str params;
-static str helo_domain;
 
 static RESPONSE(ehlo,250,"8BITMIME\nENHANCEDSTATUSCODES\nPIPELINING");
 static RESPONSE(no_mail, 503, "5.5.1 You must send MAIL FROM: first");
@@ -123,8 +122,9 @@ static int HELP(void)
 
 static int HELO(void)
 {
-  str_copy(&helo_domain, &arg);
-  session.helo_domain = helo_domain.s;
+  const response* resp;
+  if ((resp = handle_helo(&arg)) != 0)
+    return respond_resp(resp);
   return respond(250, 1, domain_name.s);
 }
 
@@ -132,8 +132,9 @@ static int EHLO(void)
 {
   static str auth_resp;
   session.protocol->name = "ESMTP";
-  str_copy(&helo_domain, &arg);
-  session.helo_domain = helo_domain.s;
+  const response* resp;
+  if ((resp = handle_helo(&arg)) != 0)
+    return respond_resp(resp);
   if (!respond(250, 0, domain_name.s)) return 0;
 
   switch (sasl_auth_caps(&auth_resp)) {
@@ -296,7 +297,7 @@ static int AUTH(void)
   }
   else {
     session.authenticated = 1;
-    str_truncate(&helo_domain, 0);
+    session.helo_domain = 0;
     respond_resp(&resp_authenticated);
   }
   return 1;

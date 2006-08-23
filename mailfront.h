@@ -10,6 +10,7 @@ struct plugin
 {
   struct plugin* next;
   const response* (*init)(void);
+  const response* (*helo)(str*);
   const response* (*reset)(void);
   const response* (*sender)(str*);
   const response* (*recipient)(str*);
@@ -67,6 +68,7 @@ extern void session_resetenv(void);
 extern const char UNKNOWN[];
 extern int number_ok(const response* resp);
 extern int response_ok(const response* resp);
+extern const response* handle_helo(str* host);
 extern const response* handle_init(void);
 extern const response* handle_reset(void);
 extern const response* handle_sender(str* sender);

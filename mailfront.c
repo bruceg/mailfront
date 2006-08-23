@@ -69,6 +69,16 @@ const response* handle_init(void)
   return 0;
 }
 
+const response* handle_helo(str* host)
+{
+  static str helo_domain;
+  const response* resp;
+  MODULE_CALL(helo, (host), 0);
+  str_copy(&helo_domain, host);
+  session.helo_domain = helo_domain.s;
+  return 0;
+}
+
 const response* handle_reset(void)
 {
   const response* resp = 0;
