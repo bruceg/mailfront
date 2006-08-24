@@ -20,17 +20,6 @@ const int authenticating = 0;
 extern void set_timeout(void);
 extern void report_io_bytes(void);
 
-static void getprotoenv(const char* name, const char** dest)
-{
-  static str fullname;
-  const char* env;
-  if (!str_copy2s(&fullname, session.linkproto, name)) die_oom(111);
-  if ((env = getenv(fullname.s)) != 0
-      && env[0] == 0)
-    env = 0;
-  *dest = env;
-}
-
 #define MODULE_CALL(NAME,PARAMS,SHORT) do{ \
   struct plugin* plugin; \
   const response* tmp; \
@@ -54,13 +43,6 @@ const response* handle_init(void)
   atexit(report_io_bytes);
 
   set_timeout();
-
-  if ((session.linkproto = getenv("PROTO")) == 0)
-    session.linkproto = "TCP";
-  getprotoenv("LOCALIP", &session.local_ip);
-  getprotoenv("REMOTEIP", &session.remote_ip);
-  getprotoenv("LOCALHOST", &session.local_host);
-  getprotoenv("REMOTEHOST", &session.remote_host);
 
   MODULE_CALL(init, (), 0);
 

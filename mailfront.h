@@ -32,12 +32,7 @@ struct session
   struct protocol* protocol;
   struct plugin* backend;
 
-  const char* linkproto;
   const char* helo_domain;
-  const char* local_host;
-  const char* local_ip;
-  const char* remote_host;
-  const char* remote_ip;
 
   int authenticated;
   unsigned long maxdatabytes;

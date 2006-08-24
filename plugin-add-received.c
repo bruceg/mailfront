@@ -1,11 +1,29 @@
 #include <systime.h>
 #include <stdlib.h>
 #include <string.h>
+#include <msg/msg.h>
 #include "mailfront.h"
 
 static str received;
 static str fixup_host;
 static str fixup_ip;
+
+static const char* linkproto;
+static const char* local_host;
+static const char* local_ip;
+static const char* remote_host;
+static const char* remote_ip;
+
+static void getprotoenv(const char* name, const char** dest)
+{
+  static str fullname;
+  const char* env;
+  if (!str_copy2s(&fullname, linkproto, name)) die_oom(111);
+  if ((env = getenv(fullname.s)) != 0
+      && env[0] == 0)
+    env = 0;
+  *dest = env;
+}
 
 static const char* date_string(void)
 {
@@ -41,14 +59,14 @@ static int str_catfromby(str* s, const char* helo_domain,
 
 static int fixup_received(str* s)
 {
-  if (session.local_host &&
-      session.local_ip &&
+  if (local_host &&
+      local_ip &&
       fixup_host.len > 0 &&
       fixup_ip.len > 0 &&
-      (strcasecmp(session.local_host, fixup_host.s) != 0 ||
-       strcasecmp(session.local_ip, fixup_ip.s) != 0)) {
-    if (!str_cat3s(s, "Received: from ", session.local_host, " (")) return 0;
-    if (!str_cat4s(s, session.local_host, " [", session.local_ip, "])\n"
+      (strcasecmp(local_host, fixup_host.s) != 0 ||
+       strcasecmp(local_ip, fixup_ip.s) != 0)) {
+    if (!str_cat3s(s, "Received: from ", local_host, " (")) return 0;
+    if (!str_cat4s(s, local_host, " [", local_ip, "])\n"
 		   "  by ")) return 0;
     if (!str_cat(s, &fixup_host)) return 0;
     if (!str_cats(s, " ([")) return 0;
@@ -72,12 +90,12 @@ static int build_received(str* s)
 {
   if (!str_cats(s, "Received: from ")) return 0;
   if (!str_catfromby(s, session.helo_domain,
-		     session.remote_host, session.remote_ip))
+		     remote_host, remote_ip))
     return 0;
   if (!str_cats(s, "\n  by ")) return 0;
-  if (!str_catfromby(s, session.local_host, 0, session.local_ip)) return 0;
+  if (!str_catfromby(s, local_host, 0, local_ip)) return 0;
   if (!str_cat4s(s, "\n  with ", session.protocol->name,
-		 " via ", session.linkproto))
+		 " via ", linkproto))
     return 0;
   if (!str_cat3s(s, "; ", date_string(), "\n")) return 0;
   return 1;
@@ -86,6 +104,14 @@ static int build_received(str* s)
 static const response* init(void)
 {
   const char* tmp;
+
+  if ((linkproto = getenv("PROTO")) == 0)
+    linkproto = "TCP";
+  getprotoenv("LOCALIP", &local_ip);
+  getprotoenv("REMOTEIP", &remote_ip);
+  getprotoenv("LOCALHOST", &local_host);
+  getprotoenv("REMOTEHOST", &remote_host);
+
   if ((tmp = getenv("FIXUP_RECEIVED_HOST")) != 0) {
     if (!str_copys(&fixup_host, tmp)) return &resp_oom;
     str_strip(&fixup_host);
@@ -94,18 +120,21 @@ static const response* init(void)
     if (!str_copys(&fixup_ip, tmp)) return &resp_oom;
     str_strip(&fixup_ip);
   }
+
   return 0;
 }
 
 static const response* data_start(void)
 {
-  received.len = 0;
-  if (!fixup_received(&received) ||
-      !add_header_add(&received) ||
-      !build_received(&received))
-    return &resp_internal;
-  if (session.backend->data_block != 0)
+  if (session.backend->data_block != 0) {
+    received.len = 0;
+    if (!fixup_received(&received) ||
+	!add_header_add(&received) ||
+	!build_received(&received))
+      return &resp_internal;
+
     return session.backend->data_block(received.s, received.len);
+  }
   return 0;
 }
 
