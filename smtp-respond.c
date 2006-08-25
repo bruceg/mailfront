@@ -35,7 +35,7 @@ static int respond_b(unsigned number, int final,
     respond_end();
 }
 
-int respond(unsigned number, int final, const char* msg)
+int smtp_respond_part(unsigned number, int final, const char* msg)
 {
   const char* nl;
   while ((nl = strchr(msg, '\n')) != 0) {
@@ -49,7 +49,7 @@ int respond(unsigned number, int final, const char* msg)
     obuf_flush(&outbuf);
 }
 
-int respond_resp(const response* resp)
+int smtp_respond(const response* resp)
 {
-  return respond(resp->number, 1, resp->message);
+  return smtp_respond_part(resp->number, 1, resp->message);
 }

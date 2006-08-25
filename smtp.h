@@ -3,7 +3,7 @@
 
 #include "responses.h"
 
-extern int respond(unsigned number, int final, const char* msg);
-extern int respond_resp(const response* resp);
+extern int smtp_respond_part(unsigned number, int final, const char* msg);
+extern int smtp_respond(const response* resp);
 
 #endif

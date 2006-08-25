@@ -110,22 +110,22 @@ static const char* find_param(const char* name)
 
 static int QUIT(void)
 {
-  respond_resp(&resp_goodbye);
+  smtp_respond(&resp_goodbye);
   exit(0);
   return 0;
 }
 
 static int HELP(void)
 {
-  return respond_resp(&resp_help);
+  return smtp_respond(&resp_help);
 }
 
 static int HELO(void)
 {
   const response* resp;
   if ((resp = handle_helo(&arg)) != 0)
-    return respond_resp(resp);
-  return respond(250, 1, domain_name.s);
+    return smtp_respond(resp);
+  return smtp_respond_part(250, 1, domain_name.s);
 }
 
 static int EHLO(void)
@@ -134,26 +134,26 @@ static int EHLO(void)
   session.protocol->name = "ESMTP";
   const response* resp;
   if ((resp = handle_helo(&arg)) != 0)
-    return respond_resp(resp);
-  if (!respond(250, 0, domain_name.s)) return 0;
+    return smtp_respond(resp);
+  if (!smtp_respond_part(250, 0, domain_name.s)) return 0;
 
   switch (sasl_auth_caps(&auth_resp)) {
   case 0: break;
-  case 1: if (!respond(250, 0, auth_resp.s)) return 0; break;
-  default: return respond_resp(&resp_internal);
+  case 1: if (!smtp_respond_part(250, 0, auth_resp.s)) return 0; break;
+  default: return smtp_respond(&resp_internal);
   }
   str_copys(&auth_resp, "SIZE ");
   str_catu(&auth_resp, session.maxdatabytes);
-  if (!respond(250, 0, auth_resp.s)) return 0;
+  if (!smtp_respond_part(250, 0, auth_resp.s)) return 0;
 
-  return respond_resp(&resp_ehlo);
+  return smtp_respond(&resp_ehlo);
 }
 
 static void do_reset(void)
 {
   const response* resp;
   if ((resp = handle_reset()) != 0) {
-    respond_resp(resp);
+    smtp_respond(resp);
     exit(0);
   }
   saw_rcpt = 0;
@@ -179,28 +179,28 @@ static int MAIL(void)
 	(size = strtoul(param, (char**)&param, 10)) > 0 &&
 	*param == 0 &&
 	size > session.maxdatabytes)
-      return respond_resp(&resp_toobig);
+      return smtp_respond(&resp_toobig);
     saw_mail = 1;
   }
-  return respond_resp(resp);
+  return smtp_respond(resp);
 }
 
 static int RCPT(void)
 {
   const response* resp;
   msg2("RCPT ", arg.s);
-  if (!saw_mail) return respond_resp(&resp_no_mail);
+  if (!saw_mail) return smtp_respond(&resp_no_mail);
   parse_addr_arg();
   if ((resp = handle_recipient(&addr)) == 0)
     resp = &resp_rcpt_ok;
   if (number_ok(resp)) saw_rcpt = 1;
-  return respond_resp(resp);
+  return smtp_respond(resp);
 }
 
 static int RSET(void)
 {
   do_reset();
-  return respond_resp(&resp_ok);
+  return smtp_respond(&resp_ok);
 }
 
 static char data_buf[4096];
@@ -261,11 +261,11 @@ static int DATA(void)
 {
   const response* resp;
   
-  if (!saw_mail) return respond_resp(&resp_no_mail);
-  if (!saw_rcpt) return respond_resp(&resp_no_rcpt);
+  if (!saw_mail) return smtp_respond(&resp_no_mail);
+  if (!saw_rcpt) return smtp_respond(&resp_no_rcpt);
   if ((resp = handle_data_start()) != 0)
-    return respond_resp(resp);
-  if (!respond_resp(&resp_data_ok)) return 0;
+    return smtp_respond(resp);
+  if (!smtp_respond(&resp_data_ok)) return 0;
 
   if (!copy_body()) {
     do_reset();
@@ -273,32 +273,32 @@ static int DATA(void)
   }
   if ((resp = handle_data_end()) == 0)
     resp = &resp_accepted;
-  return respond_resp(resp);
+  return smtp_respond(resp);
 }
 
 static int NOOP(void)
 {
-  return respond_resp(&resp_ok);
+  return smtp_respond(&resp_ok);
 }
 
 static int VRFY(void)
 {
-  return respond_resp(&resp_vrfy);
+  return smtp_respond(&resp_vrfy);
 }
 
 static int AUTH(void)
 {
   int i;
-  if (session.authenticated) return respond_resp(&resp_auth_already);
-  if (arg.len == 0) return respond_resp(&resp_needsparam);
+  if (session.authenticated) return smtp_respond(&resp_auth_already);
+  if (arg.len == 0) return smtp_respond(&resp_needsparam);
   if ((i = sasl_auth1(&saslauth, &arg)) != 0) {
     const char* msg = sasl_auth_msg(&i);
-    return respond(i, 1, msg);
+    return smtp_respond_part(i, 1, msg);
   }
   else {
     session.authenticated = 1;
     session.helo_domain = 0;
-    respond_resp(&resp_authenticated);
+    smtp_respond(&resp_authenticated);
   }
   return 1;
 }
@@ -352,10 +352,10 @@ int smtp_dispatch(void)
     }
   msg3(cmd.s, " ", arg.s);
   if (maxnotimpl > 0 && ++notimpl > maxnotimpl) {
-    respond_resp(&resp_toomanyunimp);
+    smtp_respond(&resp_toomanyunimp);
     return 0;
   }
-  return respond_resp(&resp_unimp);
+  return smtp_respond(&resp_unimp);
 }
 
 static int init(void)
@@ -382,9 +382,9 @@ static int init(void)
 static int mainloop(void)
 {
   if (!sasl_auth_init(&saslauth))
-    return respond_resp(&resp_authfail);
+    return smtp_respond(&resp_authfail);
 
-  if (!respond(220, 1, str_welcome.s)) return 1;
+  if (!smtp_respond_part(220, 1, str_welcome.s)) return 1;
   while (ibuf_getstr_crlf(&inbuf, &line))
     if (!smtp_dispatch()) {
       if (ibuf_eof(&inbuf))
@@ -398,7 +398,7 @@ static int mainloop(void)
 
 struct protocol protocol = {
   .name = "SMTP",
-  .respond = respond_resp,
+  .respond = smtp_respond,
   .init = init,
   .mainloop = mainloop,
 };
