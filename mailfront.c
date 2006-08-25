@@ -6,7 +6,6 @@
 #include <str/str.h>
 
 #include "mailfront.h"
-#include "smtp.h"
 
 static RESPONSE(no_sender,550,"5.1.0 Mail system is not configured to accept that sender");
 static RESPONSE(no_rcpt,550,"5.1.0 Mail system is not configured to accept that recipient");
@@ -139,6 +138,13 @@ const response* handle_data_end(void)
   return (session.backend->data_end != 0)
     ? session.backend->data_end()
     : resp;
+}
+
+int respond(const response* resp)
+{
+  if (!number_ok(resp))
+    msg1(resp->message);
+  return session.protocol->respond(resp);
 }
 
 int main(int argc, char* argv[])

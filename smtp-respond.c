@@ -16,8 +16,6 @@ static int respond_start(unsigned number, int final)
 
 static int respond_end(void)
 {
-  if (respstr.s[0] >= '4')
-    msg1(respstr.s);
   return obuf_putstr(&outbuf, &respstr) &&
     obuf_puts(&outbuf, CRLF);
 }

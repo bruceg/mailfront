@@ -90,7 +90,7 @@ static void get_package(ibuf* in)
   if (response_ok(resp))
     resp = handle_data_end();
   if (!resp) resp = &resp_accepted;
-  if (!qmtp_respond(resp)) die1(111, "EOF while sending response");
+  if (!respond(resp)) die1(111, "EOF while sending response");
 }
 
 static int mainloop(void)

@@ -60,10 +60,8 @@ extern int session_exportenv(void);
 extern int session_setenv(const char* name, const char* value, int overwrite);
 extern void session_resetenv(void);
 
-/* From std-handle.c */
+/* From mailfront.c */
 extern const char UNKNOWN[];
-extern int number_ok(const response* resp);
-extern int response_ok(const response* resp);
 extern const response* handle_helo(str* host);
 extern const response* handle_init(void);
 extern const response* handle_reset(void);
@@ -72,6 +70,7 @@ extern const response* handle_recipient(str* recip);
 extern const response* handle_data_start(void);
 extern void handle_data_bytes(const char* bytes, unsigned len);
 extern const response* handle_data_end(void);
+extern int respond(const response*);
 
 /* From netstring.c */
 int get_netstring_len(ibuf* in, unsigned long* i);
