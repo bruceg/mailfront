@@ -11,8 +11,8 @@
 
 <h2>Overview</h2>
 
-<p>The mailfront program acts as a driver container, loading up a
-protocol module, a backend module, and a list of plugins at run time.
+<p>The <tt>mailfront</tt> program acts as a driver container, loading up
+a protocol module, a backend module, and a list of plugins at run time.
 All protocols are completely interchangeable, as are the backends.</p>
 
 <h2>Configuration</h2>
@@ -27,6 +27,26 @@ command line.  If <tt>$MODULE_PATH</tt> is set, it specifies the
 directory in which modules will be loaded.  Otherwise, the built in
 module path will be used, which is configured by editing the file
 <tt>conf-modules</tt> before building.</p>
+
+<p>Each plugin name may be one of following three forms:</p>
+
+<dl>
+
+<dt><tt>-name</tt></dt> <dd>The previously loaded plugin called
+"<tt>name</tt>" is removed from list.  The special name "<tt>*</tt>"
+means to empty the entire list.</dd>
+
+<dt><tt>+name</tt></dt> <dd>The named plugin is loaded and placed at the
+front of the list.</dd>
+
+<dt><tt>name</tt></dt> <dd>The named plugin is loaded and placed at the
+back of the list.</dd>
+
+</dl>
+
+<p>Note that in both cases where a plugin is loaded, it is first removed
+from the list if it was previously loaded.  It is not possible for the
+same module to be loaded multiple times.</p>
 
 <p>A configuration that would match previous installations of mailfront
 using the qmail backend would be to set:</p>
@@ -58,10 +78,11 @@ calls to the plugins and finally the backend.</p>
 
 <h2>Plugins</h2>
 
-<p>Plugins hook into the mail system at 3 main points:</p>
+<p>Plugins hook into the mail system at 4 main points:</p>
 
-<ol> <li>when the sender address is received,</li> <li>when a recipient
-address is received,</li> <li>when data is received.</li> </ol>
+<ol> <li>when the system is started or reset,</li> <li>when the sender
+address is received,</li> <li>when a recipient address is received,
+and</li> <li>when data is received.</li> </ol>
 
 <p>At each of these events, mailfront goes through the list of loaded
 plugins. For each plugin that has a handler for such an event, mailfront

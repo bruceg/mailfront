@@ -1,0 +1,12 @@
+env \
+PLUGINS=accept:+reject \
+REJECT=reject \
+$src/mailfront smtp echo 2>/dev/null <<EOF
+MAIL FROM:<somewhere>
+RCPT TO:<elsewhere>
+EOF
+
+<result>
+220 unknown mailfront ESMTP^M
+451 reject^M
+503 5.5.1 You must send MAIL FROM: first^M
