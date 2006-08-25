@@ -85,7 +85,7 @@ static void get_package(ibuf* in)
   if (response_ok(resp))
     resp = handle_data_end();
   if (!resp) resp = &resp_accepted;
-  if (!respond_resp(resp)) die1(111, "EOF while sending response");
+  if (!qmtp_respond(resp)) die1(111, "EOF while sending response");
 }
 
 static int mainloop(void)
@@ -97,6 +97,6 @@ static int mainloop(void)
 
 struct protocol protocol = {
   .name = "QMQP",
-  .respond = respond_resp,
+  .respond = qmtp_respond,
   .mainloop = mainloop,
 };
