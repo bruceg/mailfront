@@ -13,6 +13,7 @@ static const char* module_path = 0;
 
 static void append_plugin(struct plugin* plugin)
 {
+  plugin->next = 0;
   if (plugin_tail == 0)
     plugin_list = plugin;
   else
@@ -81,11 +82,12 @@ static const response* load_plugin(const char* name)
   }
   else
     add = append_plugin;
-  if ((plugin = remove_plugin(name)) == 0)
+  if ((plugin = remove_plugin(name)) == 0) {
     if ((plugin = load_object("plugin", name)) == 0)
       return &resp_load;
-  if ((plugin->name = strdup(name)) == 0)
-    return &resp_oom;
+    if ((plugin->name = strdup(name)) == 0)
+      return &resp_oom;
+  }
   add(plugin);
   return 0;
 }
@@ -96,8 +98,6 @@ static const response* load_plugins(const char* list)
   const char* end;
   long len;
   const response* resp;
-  if ((list = getenv("PLUGINS")) == 0)
-    list = "";
   for (start = list; *start != 0; start = end) {
     end = start;
     while (*end != 0 && *end != ':')
