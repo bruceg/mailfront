@@ -43,6 +43,7 @@ const response* handle_init(void)
   atexit(report_io_bytes);
 
   set_timeout();
+  session_init();
 
   MODULE_CALL(init, (), 0);
 

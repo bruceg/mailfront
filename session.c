@@ -7,6 +7,11 @@ struct session session = {
   .protocol = 0,
 };
 
+void session_init(void)
+{
+  memset(&session, 0, sizeof session);
+}
+
 const char* session_getenv(const char* name)
 {
   const char* s;

@@ -53,6 +53,7 @@ extern const response* load_modules(const char* protocol_name,
 				    const char** plugins);
 
 /* From session.c */
+extern void session_init(void);
 extern const char* session_getenv(const char* name);
 extern unsigned long session_getenvu(const char* name);
 extern int session_exportenv(void);
