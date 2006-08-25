@@ -43,7 +43,6 @@ const response* handle_init(void)
   atexit(report_io_bytes);
 
   set_timeout();
-  session_init();
 
   MODULE_CALL(init, (), 0);
 
@@ -149,6 +148,7 @@ int main(int argc, char* argv[])
   if (argc < 3)
     die1(111, "Protocol or backend name are missing from the command line");
 
+  session_init();
   if ((resp = load_modules(argv[1], argv[2], (const char**)(argv+3))) != 0
       || (resp = handle_init()) != 0) {
     if (session.protocol != 0) {
