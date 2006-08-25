@@ -3,6 +3,6 @@
 
 #include "responses.h"
 
-extern int qmtp_respond(const response* resp);
+extern int qmtp_respond_line(unsigned, int, const char*, unsigned long);
 
 #endif

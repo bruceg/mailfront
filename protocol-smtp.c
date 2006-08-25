@@ -3,7 +3,6 @@
 #include <systime.h>
 
 #include "mailfront.h"
-#include "smtp.h"
 #include <cvm/sasl.h>
 
 #include <iobuf/iobuf.h>
@@ -408,9 +407,18 @@ static int mainloop(void)
   return 0;
 }
 
+static int smtp_respond_line(unsigned num, int final,
+			     const char* msg, unsigned long len)
+{
+  return obuf_putu(&outbuf, num)
+    && obuf_putc(&outbuf, final ? ' ' : '-')
+    && obuf_write(&outbuf, msg, len)
+    && obuf_puts(&outbuf, CRLF);
+}
+
 struct protocol protocol = {
   .name = "SMTP",
-  .respond = smtp_respond,
+  .respond_line = smtp_respond_line,
   .init = init,
   .mainloop = mainloop,
 };

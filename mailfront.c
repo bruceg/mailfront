@@ -140,11 +140,28 @@ const response* handle_data_end(void)
     : resp;
 }
 
+int respond_line(unsigned number, int final,
+		 const char* msg, unsigned long len)
+{
+  static str line;
+  if (number >= 400) {
+    line.len = 0;
+    str_catu(&line, number);
+    str_catc(&line, ' ');
+    str_catb(&line, msg, len);
+    msg1(line.s);
+  }
+  return session.protocol->respond_line(number, final, msg, len);
+}
+
 int respond(const response* resp)
 {
-  if (!number_ok(resp))
-    msg1(resp->message);
-  return session.protocol->respond(resp);
+  const char* msg;
+  const char* nl;
+  for (msg = resp->message; (nl = strchr(msg, '\n')) != 0; msg = nl + 1)
+    respond_line(resp->number, 0, msg, nl-msg);
+  return respond_line(resp->number, 1, msg, strlen(msg))
+    && obuf_flush(&outbuf);
 }
 
 int main(int argc, char* argv[])
@@ -158,7 +175,7 @@ int main(int argc, char* argv[])
   if ((resp = load_modules(argv[1], argv[2], (const char**)(argv+3))) != 0
       || (resp = handle_init()) != 0) {
     if (session.protocol != 0) {
-      session.protocol->respond(resp);
+      respond(resp);
       return 1;
     }
     else

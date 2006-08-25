@@ -22,7 +22,8 @@ struct plugin
 struct protocol
 {
   const char* name;
-  int (*respond)(const response*);
+  int (*respond_line)(unsigned number, int final,
+		      const char* msg, unsigned long len);
   int (*init)(void);
   int (*mainloop)(void);
 };
@@ -71,6 +72,8 @@ extern const response* handle_data_start(void);
 extern void handle_data_bytes(const char* bytes, unsigned len);
 extern const response* handle_data_end(void);
 extern int respond(const response*);
+extern int respond_line(unsigned number, int final,
+			const char* msg, unsigned long len);
 
 /* From netstring.c */
 int get_netstring_len(ibuf* in, unsigned long* i);

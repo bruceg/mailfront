@@ -102,6 +102,6 @@ static int mainloop(void)
 
 struct protocol protocol = {
   .name = "QMTP",
-  .respond = qmtp_respond,
+  .respond_line = qmtp_respond_line,
   .mainloop = mainloop,
 };
