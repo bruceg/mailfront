@@ -9,6 +9,7 @@
 struct plugin
 {
   struct plugin* next;
+  const char* name;
   const response* (*init)(void);
   const response* (*helo)(str*);
   const response* (*reset)(void);

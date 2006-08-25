@@ -42,6 +42,8 @@ static const response* load_plugin(const char* path, const char* name)
   struct plugin* plugin;
   if ((plugin = load_object(path, "plugin", name)) == 0)
     return &resp_load;
+  if ((plugin->name = strdup(name)) == 0)
+    return &resp_oom;
   add_plugin(plugin);
   return 0;
 }
