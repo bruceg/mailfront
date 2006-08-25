@@ -22,10 +22,10 @@ static int respond_end(void)
     obuf_puts(&outbuf, CRLF);
 }
 
-static int respond_b(unsigned number, int final,
+static int respond_b(unsigned number,
 		     const char* msg, long len)
 {
-  return respond_start(number, final) &&
+  return respond_start(number, 0) &&
     str_catb(&respstr, msg, len) &&
     respond_end();
 }
@@ -35,7 +35,7 @@ int smtp_respond(const response* resp)
   const char* msg;
   const char* nl;
   for (msg = resp->message; (nl = strchr(msg, '\n')) != 0; msg = nl + 1)
-    if (!respond_b(resp->number, 0, msg, nl-msg))
+    if (!respond_b(resp->number, msg, nl-msg))
       return 0;
   return respond_start(resp->number, 1)
     && str_cats(&respstr, msg)
