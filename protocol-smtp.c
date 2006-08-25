@@ -25,7 +25,6 @@ static str arg;
 static str addr;
 static str params;
 
-static RESPONSE(ehlo,250,"8BITMIME\nENHANCEDSTATUSCODES\nPIPELINING");
 static RESPONSE(no_mail, 503, "5.5.1 You must send MAIL FROM: first");
 static RESPONSE(vrfy, 252, "2.5.2 Send some mail, I'll try my best.");
 static RESPONSE(help, 214, "2.0.0 Help not available.");
@@ -41,6 +40,7 @@ static RESPONSE(toobig, 552, "5.2.3 The message would exceed the maximum message
 static RESPONSE(toomanyunimp, 503, "5.5.0 Too many unimplemented commands.\n5.5.0 Closing connection.");
 static RESPONSE(goodbye, 221, "2.0.0 Good bye.");
 static RESPONSE(authenticated, 235, "2.7.0 Authentication succeeded.");
+static response resp_tmp;
 
 static int saw_mail = 0;
 static int saw_rcpt = 0;
@@ -125,7 +125,9 @@ static int HELO(void)
   const response* resp;
   if ((resp = handle_helo(&arg)) != 0)
     return smtp_respond(resp);
-  return smtp_respond_part(250, 1, domain_name.s);
+  resp_tmp.number = 250;
+  resp_tmp.message = domain_name.s;
+  return smtp_respond(&resp_tmp);
 }
 
 static int EHLO(void)
@@ -135,18 +137,24 @@ static int EHLO(void)
   const response* resp;
   if ((resp = handle_helo(&arg)) != 0)
     return smtp_respond(resp);
-  if (!smtp_respond_part(250, 0, domain_name.s)) return 0;
 
+  if (!str_copy(&line, &domain_name)) return 0;
+  if (!str_catc(&line, '\n')) return 0;
   switch (sasl_auth_caps(&auth_resp)) {
   case 0: break;
-  case 1: if (!smtp_respond_part(250, 0, auth_resp.s)) return 0; break;
+  case 1:
+    if (!str_cat(&line, &auth_resp)) return 0;
+    if (!str_catc(&line, '\n')) return 0;
+    break;
   default: return smtp_respond(&resp_internal);
   }
-  str_copys(&auth_resp, "SIZE ");
-  str_catu(&auth_resp, session.maxdatabytes);
-  if (!smtp_respond_part(250, 0, auth_resp.s)) return 0;
-
-  return smtp_respond(&resp_ehlo);
+  if (!str_cats(&line, "SIZE ")) return 0;
+  if (!str_catu(&line, session.maxdatabytes)) return 0;
+  if (!str_cats(&line, "\n8BITMIME\nENHANCEDSTATUSCODES\nPIPELINING"))
+    return 0;
+  resp_tmp.number = 250;
+  resp_tmp.message = line.s;
+  return smtp_respond(&resp_tmp);
 }
 
 static void do_reset(void)
@@ -293,7 +301,9 @@ static int AUTH(void)
   if (arg.len == 0) return smtp_respond(&resp_needsparam);
   if ((i = sasl_auth1(&saslauth, &arg)) != 0) {
     const char* msg = sasl_auth_msg(&i);
-    return smtp_respond_part(i, 1, msg);
+    resp_tmp.number = i;
+    resp_tmp.message = msg;
+    return smtp_respond(&resp_tmp);
   }
   else {
     session.authenticated = 1;
@@ -384,7 +394,9 @@ static int mainloop(void)
   if (!sasl_auth_init(&saslauth))
     return smtp_respond(&resp_authfail);
 
-  if (!smtp_respond_part(220, 1, str_welcome.s)) return 1;
+  resp_tmp.number = 220;
+  resp_tmp.message = str_welcome.s;
+  if (!smtp_respond(&resp_tmp)) return 1;
   while (ibuf_getstr_crlf(&inbuf, &line))
     if (!smtp_dispatch()) {
       if (ibuf_eof(&inbuf))
