@@ -151,7 +151,11 @@ int respond_line(unsigned number, int final,
     str_catb(&line, msg, len);
     msg1(line.s);
   }
-  return session.protocol->respond_line(number, final, msg, len);
+  if (!session.protocol->respond_line(number, final, msg, len)) return 0;
+  if (final)
+    if (!obuf_flush(&outbuf))
+      return 0;
+  return 1;
 }
 
 int respond(const response* resp)
@@ -160,8 +164,7 @@ int respond(const response* resp)
   const char* nl;
   for (msg = resp->message; (nl = strchr(msg, '\n')) != 0; msg = nl + 1)
     respond_line(resp->number, 0, msg, nl-msg);
-  return respond_line(resp->number, 1, msg, strlen(msg))
-    && obuf_flush(&outbuf);
+  return respond_line(resp->number, 1, msg, strlen(msg));
 }
 
 int main(int argc, char* argv[])
