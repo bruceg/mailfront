@@ -5,15 +5,19 @@ Mailfront has been rewritten to be totally modular.  The core mailfront
 program loads the protocol, backend, and all plugin behaviors at run
 time from shared objects.
 
-NOTE: Due to the above changes, you WILL need to update your
-configuration.  Without changes, the programs will run but will fail all
-validation, and as such will reject all mail.  In particular, you will
-need to set $PLUGINS or the command line to something appropriate.  The
-"reject" backend has also been replaced by a "reject" plugin.
+The previous commands, such as smtpfront-qmail, are now shell script
+wrappers for the main "mailfront" command, and as such are depricated in
+favor of using "mailfront" directly.  The *front-qmail wrappers preload
+all the plugins that were previously compiled into the corresponding
+programs:
 
-Also, the previous commands, such as smtpfront-qmail, are now shell
-script wrappers for the main "mailfront" command, and as such are
-depricated in favor of using "mailfront" directly.
+	check-fqdn counters mailrules relayclient qmail-validate
+	cvm-validate add-received patterns accept-sender
+
+NOTE: The *front-reject backends have been dropped in favor of a plugin.
+In addition, the $REQUIRE_AUTH feature has been moved to another plugin.
+If you used this backend or feature you will need to adjust your
+configuration accordingly.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/

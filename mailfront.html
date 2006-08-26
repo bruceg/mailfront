@@ -49,13 +49,14 @@ from the list if it was previously loaded.  It is not possible for the
 same module to be loaded multiple times.</p>
 
 <p>A configuration that would match previous installations of mailfront
-using the qmail backend would be to set:</p>
+using the qmail backend would use the following list of plugins:</p>
 
-<pre>PLUGINS=check-fqdn:counters:mailrules:relayclient:qmail-validate:cvm-validate:add-received:patterns:accept-sender</pre>
+<pre>check-fqdn:counters:mailrules:relayclient:qmail-validate:cvm-validate:add-received:patterns:accept-sender</pre>
 
-<p>Also, if <tt>$REQUIRE_AUTH</tt> was set previously, the
-<tt>require-auth</tt> plugin would go at the front of the above
-list.</p>
+<p>The included <tt>*front-qmail</tt> shell script wrappers for the
+<tt>mailfront</tt> program are preconfigured to load the above list of
+plugins before any of their command line arguments or
+<tt>$PLUGINS</tt>.</p>
 
 <h2>Protocols</h2>
 
