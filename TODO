@@ -1,29 +1,20 @@
-- Allow $PLUGINS to contain "-name" items to remove plugins?
+- Convert session data into a dict or similar.
 
 - Fix SASL "Authentication failed" message to include EMSS code
-
-- Add better MIME attachment discrimination to patterns, instead of just
-  keying on a blank line.
 
 - Write install document.
 
 - Build up TLS support.
 
-- Use lib/cli for all executables
-
-- Build a common line-driven protocol main loop, which does:
-    set_timeout();
-    if (!startup(argc, argv)) return 0;
-    respond_ready();
-    while (ibuf_getstr_crlf(&inbuf, &line))
-      handle_line(&line);
-    if (ibuf_timedout(&inbuf))
-      respond_timedout();
-
 - Tests:
   - Test application of environment variables in mail rules
   - Test rcpthosts/morercpthosts.cdb normal/wildcard behavior in
-    smtpfront-qmail.
+    plugin-qmail-validate
+
+Plugin: patterns
+
+  - Add better MIME attachment discrimination to patterns, instead of
+    just keying on a blank line.
 
 Plugin: mailrules
 
@@ -31,7 +22,15 @@ Plugin: mailrules
 
   - Allow selecting based on authentication state.
 
-- SMTP protocol:
+Protocol: QMQP
+
+  - Change many of the "die"s into error responses.
+
+Protocol: QMTP
+
+  - Change many of the "die"s into error responses.
+
+Protocol: SMTP
 
   - Build a shared routine for breaking out the domain name.
 
