@@ -15,12 +15,19 @@ static const response* resp;
 static char buf[8192];
 static str line;
 
+static void die(const char* msg)
+{
+  response r = { 451, msg };
+  respond(&r);
+  exit(111);
+}
+
 static void get_wrapper(ibuf* in)
 {
   unsigned long wraplen;
   switch (get_netstring_len(in, &wraplen)) {
   case -1: exit(0);
-  case 0: die1(111, "Invalid wrapper netstring");
+  case 0: die("Invalid wrapper netstring");
   }
 }
 
@@ -30,29 +37,29 @@ static void get_body(ibuf* in)
   char nl;
   switch (get_netstring_len(in, &bodylen)) {
   case -1: exit(0);
-  case 0: die1(111, "Invalid message body netstring");
+  case 0: die("Invalid message body netstring");
   }
-  if (bodylen == 0) die1(111, "Zero length body");
+  if (bodylen == 0) die("Zero length message");
   if (response_ok(resp))
     resp = handle_data_start();
   while (bodylen > 0) {
     unsigned long len = sizeof buf;
     if (len > bodylen) len = bodylen;
     if (!ibuf_read(in, buf, len) && in->count == 0)
-      die1(111, "EOF while reading body");
+      die("EOF while reading body");
     if (response_ok(resp))
       handle_data_bytes(buf, in->count);
     bodylen -= in->count;
   }
-  if (!ibuf_getc(in, &nl)) die1(111, "EOF while reading comma");
-  if (nl != ',') die1(111, "Invalid netstring terminator");
+  if (!ibuf_getc(in, &nl)) die("EOF while reading comma");
+  if (nl != ',') die("Invalid netstring terminator");
 }
 
 static void get_sender(ibuf* in)
 {
   switch (get_netstring(in, &line)) {
-  case -1: die1(111, "EOF while reading sender address");
-  case 0: die1(111, "Invalid sender netstring");
+  case -1: die("EOF while reading sender address");
+  case 0: die("Invalid sender netstring");
   }
   msg3("sender <", line.s, ">");
   if (response_ok(resp))
@@ -65,14 +72,14 @@ static void get_recips(ibuf* in)
   while (ibuf_peek(in, &ch)) {
     if (ch == ',') return;
     switch (get_netstring(in, &line)) {
-    case -1: die1(111, "EOF while reading recipient list");
-    case 0: die1(111, "Invalid recipient netstring");
+    case -1: die("EOF while reading recipient list");
+    case 0: die("Invalid recipient netstring");
     }
     msg3("recipient <", line.s, ">");
     if (response_ok(resp))
       resp = handle_recipient(&line);
   }
-  die1(111, "EOF before end of recipient list");
+  die("EOF before end of recipient list");
 }
 
 static void get_package(ibuf* in)
@@ -85,7 +92,7 @@ static void get_package(ibuf* in)
   if (response_ok(resp))
     resp = handle_data_end();
   if (!resp) resp = &resp_accepted;
-  if (!respond(resp)) die1(111, "EOF while sending response");
+  if (!respond(resp)) die("EOF while sending response");
 }
 
 static int mainloop(void)
