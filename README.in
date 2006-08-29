@@ -1,6 +1,6 @@
 @PACKAGE@
 Mail server network protocol front-ends
-Bruce Guenter <bruceg@em.ca>
+Bruce Guenter <bruce@untroubled.org>
 Version @VERSION@
 @TODAY@
 
@@ -26,8 +26,8 @@ Development versions of @PACKAGE@ are available via Subversion at:
 
 Requirements:
 
-- bglibs version 1.022
-- cvm version 0.71
+- bglibs version 1.101
+- cvm version 0.81
 
 Installation:
 
