@@ -52,11 +52,9 @@ const response* handle_init(void)
 
 const response* handle_helo(str* host)
 {
-  static str helo_domain;
   const response* resp;
   MODULE_CALL(helo, (host), 0);
-  str_copy(&helo_domain, host);
-  session.helo_domain = helo_domain.s;
+  session_setstr("helo_domain", host->s);
   return 0;
 }
 

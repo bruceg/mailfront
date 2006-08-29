@@ -1,16 +1,12 @@
 #include <string.h>
 #include <stdlib.h>
+#include <msg/msg.h>
 #include <str/env.h>
 #include "mailfront.h"
 
 struct session session = {
   .protocol = 0,
 };
-
-void session_init(void)
-{
-  memset(&session, 0, sizeof session);
-}
 
 const char* session_getenv(const char* name)
 {
@@ -63,4 +59,66 @@ int session_setenv(const char* name, const char* value, int overwrite)
 void session_resetenv(void)
 {
   session.env.len = 0;
+}
+
+
+GHASH_DEFN(session_strs,const char*,const char*,
+	   adt_hashsp,adt_cmpsp,0,adt_copysp,0,adt_freesp);
+GHASH_DEFN(session_nums,const char*,unsigned long,
+	   adt_hashsp,adt_cmpsp,0,0,0,0);
+
+void session_delnum(const char* name)
+{
+  session_nums_remove(&session.nums, &name);
+}
+
+void session_delstr(const char* name)
+{
+  session_strs_remove(&session.strs, &name);
+}
+
+const char* session_getstr(const char* name)
+{
+  struct session_strs_entry* p;
+  if ((p = session_strs_get(&session.strs, &name)) == 0)
+    return 0;
+  return p->data;
+}
+
+void session_setstr(const char* name, const char* value)
+{
+  if (session_strs_add(&session.strs, &name, &value) == 0)
+    die_oom(111);
+}
+
+int session_hasnum(const char* name, unsigned long* num)
+{
+  struct session_nums_entry* p;
+  if ((p = session_nums_get(&session.nums, &name)) == 0)
+    return 0;
+  if (num != 0)
+    *num = p->data;
+  return 1;
+}
+
+unsigned long session_getnum(const char* name, unsigned long dflt)
+{
+  struct session_nums_entry* p;
+  if ((p = session_nums_get(&session.nums, &name)) == 0)
+    return dflt;
+  return p->data;
+}
+
+void session_setnum(const char* name, unsigned long value)
+{
+  if (session_nums_add(&session.nums, &name, &value) == 0)
+    die_oom(111);
+}
+
+
+void session_init(void)
+{
+  memset(&session, 0, sizeof session);
+  session_strs_init(&session.strs);
+  session_nums_init(&session.nums);
 }

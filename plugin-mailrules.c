@@ -299,8 +299,10 @@ static const response* init(void)
 
 static const response* reset(void)
 {
-  if (loaded)
+  if (loaded) {
     session_resetenv();
+    session_delnum("maxdatabytes");
+  }
   return 0;
 }
 
@@ -360,12 +362,14 @@ static const response* build_response(int type, const str* message)
 static const response* apply_rule(const struct rule* rule)
 {
   const response* resp;
+  unsigned long maxdatabytes;
   resp = build_response(rule->code, &rule->response);
   apply_environment(&rule->environment);
-  if (session.maxdatabytes == 0
+  maxdatabytes = session_getnum("maxdatabytes", ~0UL);
+  if (maxdatabytes == 0
       || (rule->databytes > 0
-	  && session.maxdatabytes > rule->databytes))
-    session.maxdatabytes = rule->databytes;
+	  && maxdatabytes > rule->databytes))
+    session_setnum("maxdatabytes", rule->databytes);
   return resp;
 }
 

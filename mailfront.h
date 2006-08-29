@@ -2,6 +2,7 @@
 #define MAIL_FRONT__MAILFRONT__H__
 
 #include "responses.h"
+#include <adt/ghash.h>
 #include <iobuf/iobuf.h>
 #include <str/str.h>
 #include "constants.h"
@@ -33,16 +34,13 @@ struct session
 {
   struct protocol* protocol;
   struct plugin* backend;
-
-  const char* helo_domain;
-
-  int authenticated;
-  unsigned long maxdatabytes;
-  unsigned long maxhops;
-  unsigned long maxrcpts;
-
+  struct ghash strs;
+  struct ghash nums;
   str env;
 };
+
+GHASH_DECL(session_strs,const char*,const char*);
+GHASH_DECL(session_nums,const char*,unsigned long);
 
 extern struct session session;
 
@@ -53,14 +51,6 @@ extern void add_plugin(struct plugin*);
 extern const response* load_modules(const char* protocol_name,
 				    const char* backend_name,
 				    const char** plugins);
-
-/* From session.c */
-extern void session_init(void);
-extern const char* session_getenv(const char* name);
-extern unsigned long session_getenvu(const char* name);
-extern int session_exportenv(void);
-extern int session_setenv(const char* name, const char* value, int overwrite);
-extern void session_resetenv(void);
 
 /* From mailfront.c */
 extern const char UNKNOWN[];
@@ -79,6 +69,21 @@ extern int respond_line(unsigned number, int final,
 /* From netstring.c */
 int get_netstring_len(ibuf* in, unsigned long* i);
 int get_netstring(ibuf* in, str* s);
+
+/* From session.c */
+extern void session_init(void);
+extern const char* session_getenv(const char* name);
+extern unsigned long session_getenvu(const char* name);
+extern int session_exportenv(void);
+extern int session_setenv(const char* name, const char* value, int overwrite);
+extern void session_resetenv(void);
+extern void session_delnum(const char* name);
+extern void session_delstr(const char* name);
+extern unsigned long session_getnum(const char* name, unsigned long dflt);
+extern int session_hasnum(const char* name, unsigned long* num);
+extern const char* session_getstr(const char* name);
+extern void session_setnum(const char* name, unsigned long value);
+extern void session_setstr(const char* name, const char* value);
 
 /* Defined by a protocol module */
 extern int protocol_init(void);

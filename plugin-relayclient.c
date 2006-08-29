@@ -10,7 +10,7 @@ static const response* do_recipient(str* recipient)
     str_cats(recipient, relayclient);
     return &resp_ok;
   }
-  else if (session.authenticated)
+  else if (session_getnum("authenticated", 0))
     return &resp_ok;
   return 0;
 }

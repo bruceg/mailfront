@@ -17,7 +17,7 @@ static const response* init(void)
 {
   /* This MUST be done in the init section to make sure the SMTP
    * greeting displays the current value. */
-  session.maxdatabytes = session_getenvu("DATABYTES");
+  session_setnum("maxdatabytes", session_getenvu("DATABYTES"));
   return 0;
 }
 
@@ -27,31 +27,36 @@ static const response* reset(void)
   return 0;
 }
 
-static void minenv(unsigned long* u, const char* name)
+static unsigned long minenv(const char* sname, const char* name)
 {
+  unsigned long u;
   unsigned long value = session_getenvu(name);
-  if (value > 0
-      && (*u == 0
-	  || *u > value))
-    *u = value;
+  u = 0;
+  if (value > 0)
+    if (!session_hasnum(sname, &u)
+	|| u > value) {
+      session_setnum(sname, value);
+      return value;
+    }
+  return u;
 }
 
 static const response* sender(str* r)
 {
   /* This MUST be done as a sender match to make sure SMTP "MAIL FROM"
    * commands with a SIZE parameter can be rejected properly. */
-  minenv(&session.maxdatabytes, "DATABYTES");
-  minenv(&session.maxrcpts, "MAXRCPTS");
+  minenv("maxdatabytes", "DATABYTES");
+  minenv("maxrcpts", "MAXRCPTS");
   (void)r;
   return 0;
 }
 
 static const response* recipient(str* r)
 {
-  minenv(&session.maxdatabytes, "DATABYTES");
-  minenv(&session.maxrcpts, "MAXRCPTS");
+  unsigned long maxrcpts = minenv("maxrcpts", "MAXRCPTS");
+  minenv("maxdatabytes", "DATABYTES");
   ++rcpt_count;
-  if (session.maxrcpts > 0 && rcpt_count > session.maxrcpts)
+  if (maxrcpts > 0 && rcpt_count > maxrcpts)
     return &resp_manyrcpt;
   return 0;
   (void)r;
@@ -59,9 +64,11 @@ static const response* recipient(str* r)
 
 static const response* start(void)
 {
-  minenv(&session.maxdatabytes, "DATABYTES");
-  if ((session.maxhops = session_getenvu("MAXHOPS")) == 0)
-    session.maxhops = 100;
+  unsigned long maxhops;
+  minenv("maxdatabytes", "DATABYTES");
+  if ((maxhops = session_getenvu("MAXHOPS")) == 0)
+    maxhops = 100;
+  session_setnum("maxhops", maxhops);
   data_bytes = 0;
   count_rec = 0;
   count_dt = 0;
@@ -76,8 +83,10 @@ static const response* block(const char* bytes, unsigned long len)
 {
   unsigned i;
   const char* p;
+  const unsigned long maxdatabytes = session_getnum("maxdatabytes", ~0UL);
+  const unsigned long maxhops = session_getnum("maxhops", 100);
   data_bytes += len;
-  if (session.maxdatabytes && data_bytes > session.maxdatabytes)
+  if (maxdatabytes > 0 && data_bytes > maxdatabytes)
     return &resp_too_long;
   for (i = 0, p = bytes; in_header && i < len; ++i, ++p) {
     char ch = *p;
@@ -94,7 +103,7 @@ static const response* block(const char* bytes, unsigned long len)
 	    in_rec = 0;
 	  else if (linepos >= 8) {
 	    in_dt = in_rec = 0;
-	    if (++count_rec > session.maxhops)
+	    if (++count_rec > maxhops)
 	      return &resp_hops;
 	  }
 	}
@@ -104,7 +113,7 @@ static const response* block(const char* bytes, unsigned long len)
 	    in_dt = 0;
 	  else if (linepos >= 12) {
 	    in_dt = in_rec = 0;
-	    if (++count_dt > session.maxhops)
+	    if (++count_dt > maxhops)
 	      return &resp_hops;
 	  }
 	}

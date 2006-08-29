@@ -1,4 +1,4 @@
-- Convert session data into a dict or similar.
+* Convert session data into a dict or similar.
 
 - Fix SASL "Authentication failed" message to include EMSS code
 
@@ -21,14 +21,6 @@ Plugin: mailrules
   - Add variable substitution to rule variable setting (ie x=${y} etc)
 
   - Allow selecting based on authentication state.
-
-Protocol: QMQP
-
-  - Change many of the "die"s into error responses.
-
-Protocol: QMTP
-
-  - Change many of the "die"s into error responses.
 
 Protocol: SMTP
 

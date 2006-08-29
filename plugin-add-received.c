@@ -89,7 +89,7 @@ static int add_header_add(str* s)
 static int build_received(str* s)
 {
   if (!str_cats(s, "Received: from ")) return 0;
-  if (!str_catfromby(s, session.helo_domain,
+  if (!str_catfromby(s, session_getstr("helo_domain"),
 		     remote_host, remote_ip))
     return 0;
   if (!str_cats(s, "\n  by ")) return 0;

@@ -144,7 +144,7 @@ static int EHLO(void)
   default: return respond(&resp_internal);
   }
   if (!str_copys(&line, "SIZE ")) return 0;
-  if (!str_catu(&line, session.maxdatabytes)) return 0;
+  if (!str_catu(&line, session_getnum("maxdatabytes", 0))) return 0;
   if (!respond_line(250, 0, line.s, line.len)) return 0;
   return respond(&resp_ehlo);
 }
@@ -166,6 +166,7 @@ static int MAIL(void)
   const response* resp;
   const char* param;
   unsigned long size;
+  unsigned long maxdatabytes;
   msg2("MAIL ", arg.s);
   do_reset();
   parse_addr_arg();
@@ -174,11 +175,11 @@ static int MAIL(void)
   if (number_ok(resp)) {
     /* Look up the size limit after handling the sender,
        in order to honour limits set in the mail rules. */
-    if (session.maxdatabytes > 0 &&
-	(param = find_param("SIZE")) != 0 &&
+    maxdatabytes = session_getnum("maxdatabytes", ~0UL);
+    if ((param = find_param("SIZE")) != 0 &&
 	(size = strtoul(param, (char**)&param, 10)) > 0 &&
 	*param == 0 &&
-	size > session.maxdatabytes)
+	size > maxdatabytes)
       return respond(&resp_toobig);
     saw_mail = 1;
   }
@@ -289,15 +290,15 @@ static int VRFY(void)
 static int AUTH(void)
 {
   int i;
-  if (session.authenticated) return respond(&resp_auth_already);
+  if (session_getnum("authenticated", 0)) return respond(&resp_auth_already);
   if (arg.len == 0) return respond(&resp_needsparam);
   if ((i = sasl_auth1(&saslauth, &arg)) != 0) {
     const char* msg = sasl_auth_msg(&i);
     return respond_line(i, 1, msg, strlen(msg));
   }
   else {
-    session.authenticated = 1;
-    session.helo_domain = 0;
+    session_setnum("authenticated", 1);
+    session_delstr("helo_domain");
     respond(&resp_authenticated);
   }
   return 1;
