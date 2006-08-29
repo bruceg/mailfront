@@ -130,8 +130,8 @@ static int HELO(void)
 static int EHLO(void)
 {
   static str auth_resp;
-  session.protocol->name = "ESMTP";
   const response* resp;
+  session.protocol->name = "ESMTP";
   if ((resp = handle_helo(&arg)) != 0)
     return respond(resp);
 
