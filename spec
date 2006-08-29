@@ -6,8 +6,8 @@ License: GPL
 Group: Utilities/System
 Source: http://untroubled.org/@PACKAGE@/@PACKAGE@-@VERSION@.tar.gz
 BuildRoot: %{_tmppath}/@PACKAGE@-buildroot
-BuildRequires: bglibs >= 1.024
-BuildRequires: cvm-devel >= 0.71
+BuildRequires: bglibs >= 1.101
+BuildRequires: cvm-devel >= 0.81
 URL: http://untroubled.org/@PACKAGE@/
 Packager: Bruce Guenter <bruceg@em.ca>
 
@@ -19,8 +19,10 @@ for mail servers.  Handles POP3, QMQP, QMTP, SMTP, and IMAP
 %prep
 %setup
 echo "gcc %{optflags}" >conf-cc
-echo "gcc -s" >conf-ld
+echo "gcc %{optflags} -fPIC -shared" >conf-ccso
+echo "gcc -s -rdynamic" >conf-ld
 echo %{_bindir} >conf-bin
+echo %{_libdir}/mailfront >conf-modules
 
 %build
 make
@@ -36,3 +38,4 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %doc ANNOUNCEMENT COPYING NEWS README *.html
 %{_bindir}/*
+%{_libdir}/mailfront
