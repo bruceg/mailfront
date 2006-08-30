@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------
 Changes in version 1.01
 
+- Reversed the order of cvm-validate and qmail-validate in the wrapper
+  scripts (and documentation) due to the semantics of the two plugins.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
@@ -17,8 +19,8 @@ favor of using "mailfront" directly.  The *front-qmail wrappers preload
 all the plugins that were previously compiled into the corresponding
 programs:
 
-	check-fqdn counters mailrules relayclient qmail-validate
-	cvm-validate add-received patterns accept-sender
+	check-fqdn counters mailrules relayclient cvm-validate
+	qmail-validate add-received patterns accept-sender
 
 NOTE: The *front-reject backends have been dropped in favor of a plugin.
 In addition, the $REQUIRE_AUTH feature has been moved to another plugin.
