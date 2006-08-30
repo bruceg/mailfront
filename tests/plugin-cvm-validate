@@ -1,0 +1,16 @@
+PLUGINS=cvm-validate:accept
+CVM_LOOKUP=$tmp/cvm
+CVM_LOOKUP_SECRET=test
+export CVM_LOOKUP CVM_LOOKUP_SECRET
+
+sfecho <<EOF
+MAIL FROM:<somewhere>
+RCPT TO:<testuser@here>
+RCPT TO:<testxser@here>
+EOF
+
+unset CVM_LOOKUP CVM_LOOKUP_SECRET
+<result>
+250 Sender='somewhere'.^M
+250 Recipient='testuser@here'.^M
+553 5.1.1 Sorry, that recipient does not exist.^M
