@@ -68,6 +68,16 @@ static void* load_object(const char* type,
   return ptr;
 }
 
+static struct plugin* find_builtin_plugin(const char* name)
+{
+  int i;
+  for (i = 0; builtin_plugins[i].name != 0; ++i) {
+    if (strcmp(builtin_plugins[i].name, name) == 0)
+      return &builtin_plugins[i];
+  }
+  return 0;
+}
+
 static const response* load_plugin(const char* name)
 {
   struct plugin* plugin;
@@ -83,10 +93,12 @@ static const response* load_plugin(const char* name)
   else
     add = append_plugin;
   if ((plugin = remove_plugin(name)) == 0) {
-    if ((plugin = load_object("plugin", name)) == 0)
-      return &resp_load;
-    if ((plugin->name = strdup(name)) == 0)
-      return &resp_oom;
+    if ((plugin = find_builtin_plugin(name)) == 0) {
+      if ((plugin = load_object("plugin", name)) == 0)
+	return &resp_load;
+      if ((plugin->name = strdup(name)) == 0)
+	return &resp_oom;
+    }
   }
   add(plugin);
   return 0;

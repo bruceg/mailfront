@@ -44,13 +44,8 @@ GHASH_DECL(session_nums,const char*,unsigned long);
 
 extern struct session session;
 
-/* From plugins.c */
-extern struct plugin* plugin_list;
-extern struct plugin* plugin_tail;
-extern void add_plugin(struct plugin*);
-extern const response* load_modules(const char* protocol_name,
-				    const char* backend_name,
-				    const char** plugins);
+/* From builtins.c */
+extern struct plugin builtin_plugins[];
 
 /* From mailfront.c */
 extern const char UNKNOWN[];
@@ -69,6 +64,14 @@ extern int respond_line(unsigned number, int final,
 /* From netstring.c */
 int get_netstring_len(ibuf* in, unsigned long* i);
 int get_netstring(ibuf* in, str* s);
+
+/* From plugins.c */
+extern struct plugin* plugin_list;
+extern struct plugin* plugin_tail;
+extern void add_plugin(struct plugin*);
+extern const response* load_modules(const char* protocol_name,
+				    const char* backend_name,
+				    const char** plugins);
 
 /* From session.c */
 extern void session_init(void);

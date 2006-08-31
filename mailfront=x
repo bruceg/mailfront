@@ -1,3 +1,4 @@
+builtins.o
 iobytes.o
 modules.o
 responses.o

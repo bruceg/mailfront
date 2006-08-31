@@ -13,9 +13,6 @@ c:::755::smtpfront-qmail
 >modules
 c:::755::backend-echo.so
 c:::755::backend-qmail.so
-c:::755::plugin-accept-recipient.so
-c:::755::plugin-accept-sender.so
-c:::755::plugin-accept.so
 c:::755::plugin-add-received.so
 c:::755::plugin-check-fqdn.so
 c:::755::plugin-counters.so
