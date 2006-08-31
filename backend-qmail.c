@@ -37,20 +37,22 @@ static const response* reset(void)
   return 0;
 }
 
-static const response* do_sender(str* sender)
+static const response* do_sender(str* sender, str* params)
 {
   if (!str_catc(&buffer, 'F') ||
       !str_cat(&buffer, sender) ||
       !str_catc(&buffer, 0)) return &resp_oom;
   return 0;
+  (void)params;
 }
 
-static const response* do_recipient(str* recipient)
+static const response* do_recipient(str* recipient, str* params)
 {
   if (!str_catc(&buffer, 'T') ||
       !str_cat(&buffer, recipient) ||
       !str_catc(&buffer, 0)) return &resp_oom;
   return 0;
+  (void)params;
 }
 
 static const response* data_start(void)

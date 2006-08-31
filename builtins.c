@@ -2,10 +2,11 @@
 
 static RESPONSE(accept,250,0);
 
-static const response* accept(str* s)
+static const response* accept(str* s, str* p)
 {
   return &resp_accept;
   (void)s;
+  (void)p;
 }
 
 struct plugin builtin_plugins[] = {

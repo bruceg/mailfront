@@ -42,7 +42,7 @@ static const response* validate_init(void)
   return 0;
 }
 
-static const response* validate_sender(str* sender)
+static const response* validate_sender(str* sender, str* params)
 {
   int at;
   str_copy(&tmp, sender);
@@ -54,9 +54,10 @@ static const response* validate_sender(str* sender)
     if (dict_get(&bmf, &tmp)) return &resp_badmailfrom;
   }
   return 0;
+  (void)params;
 }
 
-static const response* validate_recipient(str* recipient)
+static const response* validate_recipient(str* recipient, str* params)
 {
   int at;
 
@@ -84,6 +85,7 @@ static const response* validate_recipient(str* recipient)
     }
   }
   return 0;
+  (void)params;
 }
 
 struct plugin plugin = {

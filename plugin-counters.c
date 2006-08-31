@@ -41,17 +41,18 @@ static unsigned long minenv(const char* sname, const char* name)
   return u;
 }
 
-static const response* sender(str* r)
+static const response* sender(str* r, str* p)
 {
   /* This MUST be done as a sender match to make sure SMTP "MAIL FROM"
    * commands with a SIZE parameter can be rejected properly. */
   minenv("maxdatabytes", "DATABYTES");
   minenv("maxrcpts", "MAXRCPTS");
   (void)r;
+  (void)p;
   return 0;
 }
 
-static const response* recipient(str* r)
+static const response* recipient(str* r, str* p)
 {
   unsigned long maxrcpts = minenv("maxrcpts", "MAXRCPTS");
   minenv("maxdatabytes", "DATABYTES");
@@ -60,6 +61,7 @@ static const response* recipient(str* r)
     return &resp_manyrcpt;
   return 0;
   (void)r;
+  (void)p;
 }
 
 static const response* start(void)

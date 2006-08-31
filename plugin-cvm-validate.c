@@ -25,7 +25,7 @@ static const response* validate_init(void)
   return 0;
 }
 
-static const response* validate_recipient(str* recipient)
+static const response* validate_recipient(str* recipient, str* params)
 {
   struct cvm_credential creds[3];
   unsigned i;
@@ -50,6 +50,7 @@ static const response* validate_recipient(str* recipient)
   str_free(&creds[1].value);
   str_free(&creds[2].value);
   return r;
+  (void)params;
 }
 
 struct plugin plugin = {

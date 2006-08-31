@@ -14,6 +14,7 @@ static const response* resp;
 
 static char buf[8192];
 static str line;
+static str dummy;
 
 static void die(const char* msg)
 {
@@ -62,8 +63,10 @@ static void get_sender(ibuf* in)
   case 0: die("Invalid sender netstring");
   }
   msg3("sender <", line.s, ">");
-  if (response_ok(resp))
-    resp = handle_sender(&line);
+  if (response_ok(resp)) {
+    dummy.len = 0;
+    resp = handle_sender(&line, &dummy);
+  }
 }
 
 static void get_recips(ibuf* in)
@@ -76,8 +79,10 @@ static void get_recips(ibuf* in)
     case 0: die("Invalid recipient netstring");
     }
     msg3("recipient <", line.s, ">");
-    if (response_ok(resp))
-      resp = handle_recipient(&line);
+    if (response_ok(resp)) {
+      dummy.len = 0;
+      resp = handle_recipient(&line, &dummy);
+    }
   }
   die("EOF before end of recipient list");
 }
