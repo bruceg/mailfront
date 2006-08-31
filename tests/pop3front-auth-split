@@ -1,0 +1,13 @@
+pfauth $tmp/cvm <<EOF
+USER testuser@adomain
+PASS testpass
+EOF
+pfauth $tmp/cvm <<EOF
+USER testuser@adomain
+PASS testpasx
+EOF
+<result>
++OK ^M
+Yes.
++OK ^M
+-ERR Authentication failed^M
