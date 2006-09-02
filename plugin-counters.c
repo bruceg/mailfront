@@ -13,12 +13,16 @@ static unsigned linepos;     /* The number of bytes since the last LF */
 static int in_rec;	      /* True if we might be seeing Received: */
 static int in_dt;	  /* True if we might be seeing Delivered-To: */
 
-static const response* init(void)
+static const response* helo(str* host, str* welcome)
 {
-  /* This MUST be done in the init section to make sure the SMTP
-   * greeting displays the current value. */
-  session_setnum("maxdatabytes", session_getenvu("DATABYTES"));
+  if (welcome != 0) {
+    if (welcome->len > 0)
+      if (!str_catc(welcome, '\n') != 0) return &resp_oom;
+    if (!str_cats(welcome, "SIZE ")) return &resp_oom;
+    if (!str_catu(welcome, session_getenvu("DATABYTES"))) return &resp_oom;
+  }
   return 0;
+  (void)host;
 }
 
 static const response* reset(void)
@@ -127,7 +131,7 @@ static const response* block(const char* bytes, unsigned long len)
 }
 
 struct plugin plugin = {
-  .init = init,
+  .helo = helo,
   .reset = reset,
   .sender = sender,
   .recipient = recipient,

@@ -135,10 +135,11 @@ static int EHLO(void)
   line.len = 0;
   if ((resp = handle_helo(&arg, &line)) != 0)
     return respond(resp);
+
+  if (!respond_line(250, 0, domain_name.s, domain_name.len)) return 0;
   if (line.len > 0)
     if (!respond_part(250, 0, line.s, line.len)) return 0;
 
-  if (!respond_line(250, 0, domain_name.s, domain_name.len)) return 0;
   switch (sasl_auth_caps(&auth_resp)) {
   case 0: break;
   case 1:
@@ -146,9 +147,6 @@ static int EHLO(void)
     break;
   default: return respond(&resp_internal);
   }
-  if (!str_copys(&line, "SIZE ")) return 0;
-  if (!str_catu(&line, session_getnum("maxdatabytes", 0))) return 0;
-  if (!respond_line(250, 0, line.s, line.len)) return 0;
   return respond(&resp_ehlo);
 }
 
