@@ -62,6 +62,7 @@ extern int respond_part(unsigned number, int final,
 			const char* msg, unsigned long len);
 extern int respond_line(unsigned number, int final,
 			const char* msg, unsigned long len);
+extern const char* find_param(const str* params, const char* name);
 
 /* From netstring.c */
 int get_netstring_len(ibuf* in, unsigned long* i);

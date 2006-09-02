@@ -7,7 +7,6 @@
 
 #include <iobuf/iobuf.h>
 #include <msg/msg.h>
-#include <str/iter.h>
 
 static RESPONSE(authfail, 421, "4.3.0 Failed to initialize AUTH");
 
@@ -90,23 +89,6 @@ static int parse_addr_arg(void)
   return 1;
 }
 
-static const char* find_param(const char* name)
-{
-  const long len = strlen(name);
-  striter i;
-  for (striter_start(&i, &params, 0);
-       striter_valid(&i);
-       striter_advance(&i)) {
-    if (strncasecmp(i.startptr, name, len) == 0) {
-      if (i.startptr[len] == '0')
-	return i.startptr + len;
-      if (i.startptr[len] == '=')
-	return i.startptr + len + 1;
-    }
-  }
-  return 0;
-}
-
 static int QUIT(void)
 {
   respond(&resp_goodbye);
@@ -177,7 +159,7 @@ static int MAIL(void)
     /* Look up the size limit after handling the sender,
        in order to honour limits set in the mail rules. */
     maxdatabytes = session_getnum("maxdatabytes", ~0UL);
-    if ((param = find_param("SIZE")) != 0 &&
+    if ((param = find_param(&params, "SIZE")) != 0 &&
 	(size = strtoul(param, (char**)&param, 10)) > 0 &&
 	*param == 0 &&
 	size > maxdatabytes)

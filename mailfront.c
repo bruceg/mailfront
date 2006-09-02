@@ -3,6 +3,7 @@
 
 #include <systime.h>
 #include <msg/msg.h>
+#include <str/iter.h>
 #include <str/str.h>
 
 #include "mailfront.h"
@@ -172,6 +173,23 @@ int respond_part(unsigned number, int final,
 int respond(const response* resp)
 {
   return respond_part(resp->number, 1, resp->message, strlen(resp->message));
+}
+
+const char* find_param(const str* params, const char* name)
+{
+  const long len = strlen(name);
+  striter i;
+  for (striter_start(&i, params, 0);
+       striter_valid(&i);
+       striter_advance(&i)) {
+    if (strncasecmp(i.startptr, name, len) == 0) {
+      if (i.startptr[len] == '0')
+	return i.startptr + len;
+      if (i.startptr[len] == '=')
+	return i.startptr + len + 1;
+    }
+  }
+  return 0;
 }
 
 int main(int argc, char* argv[])
