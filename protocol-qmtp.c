@@ -15,7 +15,6 @@ static const response* resp;
 static char buf[8192];
 static str line;
 static str tmp;
-static str dummy;
 
 static void die(const char* msg)
 {
@@ -58,10 +57,8 @@ static void get_sender(ibuf* in)
   case 0: die("Invalid sender netstring");
   }
   msg3("sender <", line.s, ">");
-  if (response_ok(resp)) {
-    dummy.len = 0;
-    resp = handle_sender(&line, &dummy);
-  }
+  if (response_ok(resp))
+    resp = handle_sender(&line);
 }
 
 static void get_recips(ibuf* in)
@@ -85,10 +82,8 @@ static void get_recips(ibuf* in)
     if (line.s[j+len] != ',') die("Netstring missing comma");
     str_copyb(&tmp, line.s+j, len);
     msg3("recipient <", tmp.s, ">");
-    if (response_ok(resp)) {
-      dummy.len = 0;
-      resp = handle_recipient(&tmp, &dummy);
-    }
+    if (response_ok(resp))
+      resp = handle_recipient(&tmp);
     i = j + len;
   }
 }

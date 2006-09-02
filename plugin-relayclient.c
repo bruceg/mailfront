@@ -3,7 +3,7 @@
 
 static RESPONSE(ok, 250, 0);
 
-static const response* do_recipient(str* recipient, str* params)
+static const response* do_recipient(str* recipient)
 {
   const char* relayclient = session_getenv("RELAYCLIENT");
   if (relayclient != 0) {
@@ -13,7 +13,6 @@ static const response* do_recipient(str* recipient, str* params)
   else if (session_getnum("authenticated", 0))
     return &resp_ok;
   return 0;
-  (void)params;
 }
 
 struct plugin plugin = {

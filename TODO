@@ -1,5 +1,3 @@
-- Move message size checking from protocol-smtp to plugin-counters
-
 - Fix SASL "Authentication failed" message to include EMSS code
 
 - Write install document.

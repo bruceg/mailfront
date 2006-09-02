@@ -13,24 +13,22 @@ static const response* reset(void)
   return 0;
 }
 
-static const response* sender(str* s, str* p)
+static const response* sender(str* s)
 {
   str_copys(&tmp, "Sender='");
   str_cat(&tmp, s);
   str_cats(&tmp, "'.");
   resp.message = tmp.s;
   return &resp;
-  (void)p;
 }
 
-static const response* recipient(str* r, str* p)
+static const response* recipient(str* r)
 {
   str_copys(&tmp, "Recipient='");
   str_cat(&tmp, r);
   str_cats(&tmp, "'.");
   resp.message = tmp.s;
   return &resp;
-  (void)p;
 }
 
 static const response* data_block(const char* bytes, unsigned long len)

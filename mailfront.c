@@ -3,7 +3,6 @@
 
 #include <systime.h>
 #include <msg/msg.h>
-#include <str/iter.h>
 #include <str/str.h>
 
 #include "mailfront.h"
@@ -51,10 +50,10 @@ const response* handle_init(void)
   return 0;
 }
 
-const response* handle_helo(str* host, str* welcome)
+const response* handle_helo(str* host)
 {
   const response* resp;
-  MODULE_CALL(helo, (host, welcome), 0);
+  MODULE_CALL(helo, (host), 0);
   session_setstr("helo_domain", host->s);
   return 0;
 }
@@ -68,29 +67,29 @@ const response* handle_reset(void)
   return resp;
 }
 
-const response* handle_sender(str* sender, str* params)
+const response* handle_sender(str* sender)
 {
   const response* resp = 0;
   const response* tmpresp = 0;
-  MODULE_CALL(sender, (sender, params), 1);
+  MODULE_CALL(sender, (sender), 1);
   if (resp == 0)
     return &resp_no_sender;
   if (session.backend->sender != 0)
-    if (!response_ok(tmpresp = session.backend->sender(sender, params)))
+    if (!response_ok(tmpresp = session.backend->sender(sender)))
       return tmpresp;
   if (resp == 0 || resp->message == 0) resp = tmpresp;
   return resp;
 }
 
-const response* handle_recipient(str* recip, str* params)
+const response* handle_recipient(str* recip)
 {
   const response* resp = 0;
   const response* hresp = 0;
-  MODULE_CALL(recipient, (recip, params), 1);
+  MODULE_CALL(recipient, (recip), 1);
   if (resp == 0)
     return &resp_no_rcpt;
   if (session.backend->recipient != 0)
-    if (!response_ok(hresp = session.backend->recipient(recip, params)))
+    if (!response_ok(hresp = session.backend->recipient(recip)))
       return hresp;
   if (resp == 0 || resp->message == 0) resp = hresp;
   return resp;
@@ -157,39 +156,13 @@ int respond_line(unsigned number, int final,
   return 1;
 }
 
-int respond_part(unsigned number, int final,
-		 const char* msg, unsigned long len)
-{
-  const char* nl;
-  while ((nl = memchr(msg, '\n', len)) != 0) {
-    respond_line(number, 0, msg, nl - msg);
-    ++nl;
-    len -= nl - msg;
-    msg = nl;
-  }
-  return respond_line(number, final, msg, len);
-}
-
 int respond(const response* resp)
 {
-  return respond_part(resp->number, 1, resp->message, strlen(resp->message));
-}
-
-const char* find_param(const str* params, const char* name)
-{
-  const long len = strlen(name);
-  striter i;
-  for (striter_start(&i, params, 0);
-       striter_valid(&i);
-       striter_advance(&i)) {
-    if (strncasecmp(i.startptr, name, len) == 0) {
-      if (i.startptr[len] == '0')
-	return i.startptr + len;
-      if (i.startptr[len] == '=')
-	return i.startptr + len + 1;
-    }
-  }
-  return 0;
+  const char* msg;
+  const char* nl;
+  for (msg = resp->message; (nl = strchr(msg, '\n')) != 0; msg = nl + 1)
+    respond_line(resp->number, 0, msg, nl-msg);
+  return respond_line(resp->number, 1, msg, strlen(msg));
 }
 
 int main(int argc, char* argv[])

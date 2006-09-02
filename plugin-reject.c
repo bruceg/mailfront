@@ -3,7 +3,7 @@
 
 static response resp;
 
-static const response* sender(str* s, str* p)
+static const response* sender(str* s)
 {
   const char* sr;
   if ((sr = getenv("SMTPREJECT")) != 0
@@ -21,7 +21,6 @@ static const response* sender(str* s, str* p)
   }
   return 0;
   (void)s;
-  (void)p;
 }
 
 struct plugin plugin = {

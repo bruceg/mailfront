@@ -3,7 +3,7 @@
 static RESPONSE(nodomain,554,"5.1.2 Address is missing a domain name");
 static RESPONSE(nofqdn,554,"5.1.2 Address does not contain a fully qualified domain name");
 
-static const response* either(str* s, str* p)
+static const response* either(str* s)
 {
   int at;
   int dot;
@@ -14,7 +14,6 @@ static const response* either(str* s, str* p)
       return &resp_nofqdn;
   }
   return 0;
-  (void)p;
 }
 
 struct plugin plugin = {

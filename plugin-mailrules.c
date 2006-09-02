@@ -388,7 +388,7 @@ static void copy_addr(const str* addr,
 static str saved_sender;
 static str sender_domain;
 
-static const response* validate_sender(str* sender, str* params)
+static const response* validate_sender(str* sender)
 {
   struct rule* rule;
   const response* r;
@@ -402,13 +402,12 @@ static const response* validate_sender(str* sender, str* params)
 	return r;
     }
   return 0;
-  (void)params;
 }
 
 static str laddr;
 static str rdomain;
 
-static const response* validate_recipient(str* recipient, str* params)
+static const response* validate_recipient(str* recipient)
 {
   struct rule* rule;
   const response* r;
@@ -424,7 +423,6 @@ static const response* validate_recipient(str* recipient, str* params)
 	return r;
     }
   return 0;
-  (void)params;
 }
 
 struct plugin plugin = {

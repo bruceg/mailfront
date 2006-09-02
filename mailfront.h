@@ -12,10 +12,10 @@ struct plugin
   struct plugin* next;
   const char* name;
   const response* (*init)(void);
-  const response* (*helo)(str*, str*);
+  const response* (*helo)(str*);
   const response* (*reset)(void);
-  const response* (*sender)(str*, str*);
-  const response* (*recipient)(str*, str*);
+  const response* (*sender)(str*);
+  const response* (*recipient)(str*);
   const response* (*data_start)(void);
   const response* (*data_block)(const char* bytes, unsigned long len);
   const response* (*data_end)(void);
@@ -49,20 +49,17 @@ extern struct plugin builtin_plugins[];
 
 /* From mailfront.c */
 extern const char UNKNOWN[];
-extern const response* handle_helo(str* host, str* welcome);
+extern const response* handle_helo(str* host);
 extern const response* handle_init(void);
 extern const response* handle_reset(void);
-extern const response* handle_sender(str* sender, str* params);
-extern const response* handle_recipient(str* recip, str* params);
+extern const response* handle_sender(str* sender);
+extern const response* handle_recipient(str* recip);
 extern const response* handle_data_start(void);
 extern void handle_data_bytes(const char* bytes, unsigned len);
 extern const response* handle_data_end(void);
 extern int respond(const response*);
-extern int respond_part(unsigned number, int final,
-			const char* msg, unsigned long len);
 extern int respond_line(unsigned number, int final,
 			const char* msg, unsigned long len);
-extern const char* find_param(const str* params, const char* name);
 
 /* From netstring.c */
 int get_netstring_len(ibuf* in, unsigned long* i);
