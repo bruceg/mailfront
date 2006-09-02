@@ -50,10 +50,10 @@ const response* handle_init(void)
   return 0;
 }
 
-const response* handle_helo(str* host)
+const response* handle_helo(str* host, str* welcome)
 {
   const response* resp;
-  MODULE_CALL(helo, (host), 0);
+  MODULE_CALL(helo, (host, welcome), 0);
   session_setstr("helo_domain", host->s);
   return 0;
 }
@@ -156,13 +156,22 @@ int respond_line(unsigned number, int final,
   return 1;
 }
 
+int respond_part(unsigned number, int final,
+		 const char* msg, unsigned long len)
+{
+  const char* nl;
+  while ((nl = memchr(msg, '\n', len)) != 0) {
+    respond_line(number, 0, msg, nl - msg);
+    ++nl;
+    len -= nl - msg;
+    msg = nl;
+  }
+  return respond_line(number, final, msg, len);
+}
+
 int respond(const response* resp)
 {
-  const char* msg;
-  const char* nl;
-  for (msg = resp->message; (nl = strchr(msg, '\n')) != 0; msg = nl + 1)
-    respond_line(resp->number, 0, msg, nl-msg);
-  return respond_line(resp->number, 1, msg, strlen(msg));
+  return respond_part(resp->number, 1, resp->message, strlen(resp->message));
 }
 
 int main(int argc, char* argv[])

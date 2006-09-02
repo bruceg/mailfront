@@ -122,7 +122,7 @@ static int HELP(void)
 static int HELO(void)
 {
   const response* resp;
-  if ((resp = handle_helo(&arg)) != 0)
+  if ((resp = handle_helo(&arg, 0)) != 0)
     return respond(resp);
   return respond_line(250, 1, domain_name.s, domain_name.len);
 }
@@ -132,8 +132,11 @@ static int EHLO(void)
   static str auth_resp;
   const response* resp;
   session.protocol->name = "ESMTP";
-  if ((resp = handle_helo(&arg)) != 0)
+  line.len = 0;
+  if ((resp = handle_helo(&arg, &line)) != 0)
     return respond(resp);
+  if (line.len > 0)
+    if (!respond_part(250, 0, line.s, line.len)) return 0;
 
   if (!respond_line(250, 0, domain_name.s, domain_name.len)) return 0;
   switch (sasl_auth_caps(&auth_resp)) {
