@@ -1,6 +1,9 @@
 -------------------------------------------------------------------------------
 Changes in version 1.01
 
+- Fixed a bug in the counters plugin that triggered a problem in the
+  SMTP protocol when handling the SIZE=# parameter.
+
 - Reversed the order of cvm-validate and qmail-validate in the wrapper
   scripts (and documentation) due to the semantics of the two plugins.
 

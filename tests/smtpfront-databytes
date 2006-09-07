@@ -1,6 +1,16 @@
 PLUGINS=counters:accept
 
+unset DATABYTES
+sfecho <<EOF
+EHLO hostname
+MAIL FROM:<a@example.com>
+MAIL FROM:<a@example.com> SIZE
+MAIL FROM:<a@example.com> SIZE=
+MAIL FROM:<a@example.com> SIZE=100
+EOF
+
 DATABYTES=123
+export DATABYTES
 
 sfecho <<EOF
 EHLO hostname
@@ -13,6 +23,15 @@ MAIL FROM:<a@example.com> SIZE=124
 RCPT TO:<nobody@nowhere>
 EOF
 <result>
+250-unknown^M
+250-SIZE 0^M
+250-8BITMIME^M
+250-ENHANCEDSTATUSCODES^M
+250 PIPELINING^M
+250 Sender='a@example.com'.^M
+250 Sender='a@example.com'.^M
+250 Sender='a@example.com'.^M
+250 Sender='a@example.com'.^M
 250-unknown^M
 250-SIZE 123^M
 250-8BITMIME^M

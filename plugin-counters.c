@@ -13,20 +13,6 @@ static unsigned linepos;     /* The number of bytes since the last LF */
 static int in_rec;	      /* True if we might be seeing Received: */
 static int in_dt;	  /* True if we might be seeing Delivered-To: */
 
-static const response* init(void)
-{
-  /* This MUST be done in the init section to make sure the SMTP
-   * greeting displays the current value. */
-  session_setnum("maxdatabytes", session_getenvu("DATABYTES"));
-  return 0;
-}
-
-static const response* reset(void)
-{
-  rcpt_count = 0;
-  return 0;
-}
-
 static unsigned long minenv(const char* sname, const char* name)
 {
   unsigned long u;
@@ -39,6 +25,20 @@ static unsigned long minenv(const char* sname, const char* name)
       return value;
     }
   return u;
+}
+
+static const response* init(void)
+{
+  /* This MUST be done in the init section to make sure the SMTP
+   * greeting displays the current value. */
+  minenv("maxdatabytes", "DATABYTES");
+  return 0;
+}
+
+static const response* reset(void)
+{
+  rcpt_count = 0;
+  return 0;
 }
 
 static const response* sender(str* r)
