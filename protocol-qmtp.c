@@ -95,7 +95,7 @@ static void get_package(ibuf* in)
   get_sender(in);
   get_recips(in);
   if (response_ok(resp))
-    resp = handle_data_end();
+    resp = handle_message_end();
   if (!resp) resp = &resp_accepted;
   if (!respond(resp)) die("EOF while sending response");
 }

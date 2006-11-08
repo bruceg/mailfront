@@ -79,11 +79,12 @@ calls to the plugins and finally the backend.</p>
 
 <h2>Plugins</h2>
 
-<p>Plugins hook into the mail system at 4 main points:</p>
+<p>Plugins hook into the mail system at 5 main points:</p>
 
 <ol> <li>when the system is started or reset,</li> <li>when the sender
-address is received,</li> <li>when a recipient address is received,
-and</li> <li>when data is received.</li> </ol>
+address is received,</li> <li>when a recipient address is received,</li>
+<li>when data is received, and</li> <li>when the message is
+completed.</li> </ol>
 
 <p>At each of these events, mailfront goes through the list of loaded
 plugins. For each plugin that has a handler for such an event, mailfront

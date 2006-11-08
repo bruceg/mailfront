@@ -220,7 +220,7 @@ static void data_byte(char ch)
     data_bufpos = 0;
   }
 }
-static void data_end(void)
+static void message_end(void)
 {
   if (data_bufpos)
     handle_data_bytes(data_buf, data_bufpos);
@@ -237,7 +237,7 @@ static int copy_body(void)
   while (ibuf_getc(&inbuf, &ch)) {
     switch (ch) {
     case LF:
-      if (sawperiod && linepos == 0) { data_end(); return 1; }
+      if (sawperiod && linepos == 0) { message_end(); return 1; }
       data_byte(ch);
       sawperiod = sawcr = linepos = 0;
       break;
@@ -272,7 +272,7 @@ static int DATA(void)
     do_reset();
     return 0;
   }
-  if ((resp = handle_data_end()) == 0)
+  if ((resp = handle_message_end()) == 0)
     resp = &resp_accepted;
   return respond(resp);
 }

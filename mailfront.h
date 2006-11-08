@@ -18,7 +18,7 @@ struct plugin
   const response* (*recipient)(str*);
   const response* (*data_start)(void);
   const response* (*data_block)(const char* bytes, unsigned long len);
-  const response* (*data_end)(void);
+  const response* (*message_end)(void);
 };
 
 struct protocol
@@ -56,7 +56,7 @@ extern const response* handle_sender(str* sender);
 extern const response* handle_recipient(str* recip);
 extern const response* handle_data_start(void);
 extern void handle_data_bytes(const char* bytes, unsigned len);
-extern const response* handle_data_end(void);
+extern const response* handle_message_end(void);
 extern int respond(const response*);
 extern int respond_line(unsigned number, int final,
 			const char* msg, unsigned long len);

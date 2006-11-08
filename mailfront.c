@@ -127,14 +127,14 @@ void handle_data_bytes(const char* bytes, unsigned len)
     session.backend->data_block(bytes, len);
 }
 
-const response* handle_data_end(void)
+const response* handle_message_end(void)
 {
   const response* resp = 0;
   if (!response_ok(data_response))
     return data_response;
-  MODULE_CALL(data_end, (), 0);
-  return (session.backend->data_end != 0)
-    ? session.backend->data_end()
+  MODULE_CALL(message_end, (), 0);
+  return (session.backend->message_end != 0)
+    ? session.backend->message_end()
     : resp;
 }
 
