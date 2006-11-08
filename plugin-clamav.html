@@ -1,0 +1,51 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">mailfront</a></h2>
+
+<h1>Plugin: clamav</h1>
+
+<hr />
+
+<p>This plugin scans messages against a <a
+href="http://www.clamav.net/">ClamAV</a> server.  If the message data is
+detected as having a virus, the message is rejected, and the error
+response contains the virus name as detected by ClamAV.  This scanner
+only operates over TCP/IP sockets (either remotely or locally).</p>
+
+<h2>Configuration</h2>
+
+<dl>
+
+<dt><tt>$CLAMD_HOST</tt></dt> <dd>The hostname of the ClamAV scanner.
+If this name resolves to multiple IP addresses, all of them are tried in
+sequence (starting at a random point) until one scans the message.</dd>
+
+<dt><tt>$CLAMD_PORT</tt></dt> <dd>Use this port number for the
+command/response data. (defaults to 3310)</dd>
+
+<dt><tt>$CLAMD_TIMEOUT</tt></dt> <dd>The maximum amount of time to wait
+for a response from the ClamAD scanner, in milliseconds. (defaults to
+5000)</dd>
+
+</dl>
+
+<h2>Sender Action</h2>
+
+<p>None</p>
+
+<h2>Recipient Action</h2>
+
+<p>None</p>
+
+<h2>Data Action</h2>
+
+<p>None</p>
+
+<h2>Message Action</h2>
+
+<p>The message is scanned when all the data has been completely
+transmitted (to prevent timeout issues with the ClamAV server).</p>
+
+</body>
+</html>

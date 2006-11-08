@@ -9,6 +9,10 @@
   - Test rcpthosts/morercpthosts.cdb normal/wildcard behavior in
     plugin-qmail-validate
 
+Plugin: clamav
+
+  - Add tests (not sure how to emulate the daemon properly)
+
 Plugin: patterns
 
   - Add better MIME attachment discrimination to patterns, instead of

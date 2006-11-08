@@ -1,8 +1,10 @@
 -------------------------------------------------------------------------------
 Changes in version 1.10
 
+- Added a ClamAV virus scanner plugin.
+
 - Modified the plugin API to add a flags word and to (optionally) save
-  messages to a temporary file.
+  messages to a temporary file (needed by the ClamAV plugin).
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
