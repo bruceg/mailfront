@@ -9,6 +9,7 @@ static response resp_load = { 451, 0 };
 
 struct plugin* plugin_list = 0;
 struct plugin* plugin_tail = 0;
+unsigned module_flags = 0;
 static const char* module_path = 0;
 
 static void append_plugin(struct plugin* plugin)
@@ -101,6 +102,7 @@ static const response* load_plugin(const char* name)
     }
   }
   add(plugin);
+  module_flags |= plugin->flags;
   return 0;
 }
 
@@ -140,6 +142,7 @@ const response* load_modules(const char* protocol_name,
     return &resp_load;
   if ((session.backend = load_object("backend", backend_name)) == 0)
     return &resp_load;
+  module_flags |= session.backend->flags;
   while (*plugins != 0)
     if ((r = load_plugins(*plugins++)) != 0)
       return r;

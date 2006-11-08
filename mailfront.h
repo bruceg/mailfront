@@ -11,6 +11,7 @@ struct plugin
 {
   struct plugin* next;
   const char* name;
+  unsigned flags;
   const response* (*init)(void);
   const response* (*helo)(str*);
   const response* (*reset)(void);
@@ -67,9 +68,10 @@ extern int scratchfile(void);
 int get_netstring_len(ibuf* in, unsigned long* i);
 int get_netstring(ibuf* in, str* s);
 
-/* From plugins.c */
+/* From modules.c */
 extern struct plugin* plugin_list;
 extern struct plugin* plugin_tail;
+extern unsigned module_flags;
 extern void add_plugin(struct plugin*);
 extern const response* load_modules(const char* protocol_name,
 				    const char* backend_name,
