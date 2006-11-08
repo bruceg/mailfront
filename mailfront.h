@@ -7,6 +7,8 @@
 #include <str/str.h>
 #include "constants.h"
 
+#define FLAG_NEED_FILE (1<<0)
+
 struct plugin
 {
   struct plugin* next;

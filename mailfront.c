@@ -104,8 +104,12 @@ static const response* data_response;
 const response* handle_data_start(void)
 {
   const response* resp = 0;
-  if ((session.fd = scratchfile()) == -1)
-    return &resp_internal;
+  if (module_flags & FLAG_NEED_FILE) {
+    if ((session.fd = scratchfile()) == -1)
+      return &resp_internal;
+  }
+  else
+    session.fd = -1;
   if (session.backend->data_start != 0)
     resp = session.backend->data_start();
   if (response_ok(resp))
