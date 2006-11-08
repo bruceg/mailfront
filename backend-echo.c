@@ -47,13 +47,14 @@ static const response* data_block(const char* bytes, unsigned long len)
   return 0;
 }
 
-static const response* message_end(void)
+static const response* message_end(int fd)
 {
   str_copys(&tmp, "Received ");
   str_catu(&tmp, databytes);
   str_cats(&tmp, " bytes.");
   resp.message = tmp.s;
   return &resp;
+  (void)fd;
 }
 
 struct plugin backend = {

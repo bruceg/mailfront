@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------
 Changes in version 1.10
 
+- Modified the plugin API to save messages to a temporary file.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/

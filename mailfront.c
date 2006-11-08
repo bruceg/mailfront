@@ -1,8 +1,10 @@
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <systime.h>
 #include <msg/msg.h>
+#include <path/path.h>
 #include <str/str.h>
 
 #include "mailfront.h"
@@ -18,6 +20,8 @@ const char program[] = "mailfront";
 const int authenticating = 0;
 extern void set_timeout(void);
 extern void report_io_bytes(void);
+
+static str tmp_prefix;
 
 #define MODULE_CALL(NAME,PARAMS,SHORT) do{ \
   struct plugin* plugin; \
@@ -100,6 +104,8 @@ static const response* data_response;
 const response* handle_data_start(void)
 {
   const response* resp = 0;
+  if ((session.fd = scratchfile()) == -1)
+    return &resp_internal;
   if (session.backend->data_start != 0)
     resp = session.backend->data_start();
   if (response_ok(resp))
@@ -125,6 +131,9 @@ void handle_data_bytes(const char* bytes, unsigned len)
       }
   if (session.backend->data_block != 0)
     session.backend->data_block(bytes, len);
+  if (session.fd >= 0)
+    if (write(session.fd, bytes, len) != (ssize_t)len)
+      data_response = &resp_internal;
 }
 
 const response* handle_message_end(void)
@@ -132,10 +141,12 @@ const response* handle_message_end(void)
   const response* resp = 0;
   if (!response_ok(data_response))
     return data_response;
-  MODULE_CALL(message_end, (), 0);
-  return (session.backend->message_end != 0)
-    ? session.backend->message_end()
-    : resp;
+  MODULE_CALL(message_end, (session.fd), 0);
+  if (session.backend->message_end != 0)
+    resp = session.backend->message_end(session.fd);
+  close(session.fd);
+  session.fd = -1;
+  return resp;
 }
 
 int respond_line(unsigned number, int final,
@@ -165,13 +176,27 @@ int respond(const response* resp)
   return respond_line(resp->number, 1, msg, strlen(msg));
 }
 
+int scratchfile(void)
+{
+  static str filename;
+  int fd;
+  if ((fd = path_mktemp(tmp_prefix.s, &filename)) != -1)
+    unlink(filename.s);
+  return fd;
+}
+
 int main(int argc, char* argv[])
 {
   const response* resp;
+  const char* tmp;
 
   if (argc < 3)
     die1(111, "Protocol or backend name are missing from the command line");
 
+  if ((tmp = getenv("TMPPATH")) == 0)
+    tmp = "/tmp";
+  if (!str_copy2s(&tmp_prefix, tmp, "/mailfront.tmp.")) die_oom(111);
+  
   session_init();
   if ((resp = load_modules(argv[1], argv[2], (const char**)(argv+3))) != 0
       || (resp = handle_init()) != 0) {

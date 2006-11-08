@@ -18,7 +18,7 @@ struct plugin
   const response* (*recipient)(str*);
   const response* (*data_start)(void);
   const response* (*data_block)(const char* bytes, unsigned long len);
-  const response* (*message_end)(void);
+  const response* (*message_end)(int fd);
 };
 
 struct protocol
@@ -37,6 +37,7 @@ struct session
   struct ghash strs;
   struct ghash nums;
   str env;
+  int fd;
 };
 
 GHASH_DECL(session_strs,const char*,const char*);
@@ -60,6 +61,7 @@ extern const response* handle_message_end(void);
 extern int respond(const response*);
 extern int respond_line(unsigned number, int final,
 			const char* msg, unsigned long len);
+extern int scratchfile(void);
 
 /* From netstring.c */
 int get_netstring_len(ibuf* in, unsigned long* i);

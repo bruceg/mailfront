@@ -158,7 +158,7 @@ static void parse_status(int status, response* resp)
   resp->message = message;
 }
 
-static const response* message_end(void)
+static const response* message_end(int fd)
 {
   static response resp;
 
@@ -182,6 +182,7 @@ static const response* message_end(void)
     resp.message = buffer.s;
   }
   return &resp;
+  (void)fd;
 }
 
 struct plugin backend = {
