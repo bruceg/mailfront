@@ -182,10 +182,11 @@ int respond(const response* resp)
 
 int scratchfile(void)
 {
-  static str filename;
+  str filename = {0,0,0};
   int fd;
   if ((fd = path_mktemp(tmp_prefix.s, &filename)) != -1)
     unlink(filename.s);
+  str_free(&filename);
   return fd;
 }
 
