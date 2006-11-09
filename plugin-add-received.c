@@ -1,6 +1,7 @@
 #include <systime.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <msg/msg.h>
 #include "mailfront.h"
 
@@ -126,17 +127,14 @@ static const response* init(void)
 
 static const response* data_start(int fd)
 {
-  if (session.backend->data_block != 0) {
-    received.len = 0;
-    if (!fixup_received(&received) ||
-	!add_header_add(&received) ||
-	!build_received(&received))
-      return &resp_internal;
-
-    return session.backend->data_block(received.s, received.len);
-  }
+  received.len = 0;
+  if (!fixup_received(&received) ||
+      !add_header_add(&received) ||
+      !build_received(&received))
+    return &resp_internal;
+  if (write(fd, received.s, received.len) != (ssize_t)received.len)
+    return &resp_internal;
   return 0;
-  (void)fd;
 }
 
 struct plugin plugin = {
