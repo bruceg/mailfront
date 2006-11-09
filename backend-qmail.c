@@ -40,7 +40,7 @@ static const response* do_recipient(str* recipient)
   return 0;
 }
 
-static const response* data_start(void)
+static const response* data_start(int fd)
 {
   const char* qh;
 
@@ -49,6 +49,7 @@ static const response* data_start(void)
   if (chdir(qh) == -1) return &resp_no_chdir;
 
   return 0;
+  (void)fd;
 }
 
 static int retry_write(int fd, const char* bytes, unsigned long len)

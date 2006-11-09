@@ -86,7 +86,7 @@ static int patterns_read(const char* filename)
   return 1;
 }
 
-static const response* init(void)
+static const response* init(int fd)
 {
   const char* tmp;
   unsigned u;
@@ -101,6 +101,7 @@ static const response* init(void)
   linemode = T_HEADER;
   linepos = 0;
   return 0;
+  (void)fd;
 }
 
 static const response* check_line(void)

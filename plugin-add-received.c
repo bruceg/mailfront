@@ -124,7 +124,7 @@ static const response* init(void)
   return 0;
 }
 
-static const response* data_start(void)
+static const response* data_start(int fd)
 {
   if (session.backend->data_block != 0) {
     received.len = 0;
@@ -136,6 +136,7 @@ static const response* data_start(void)
     return session.backend->data_block(received.s, received.len);
   }
   return 0;
+  (void)fd;
 }
 
 struct plugin plugin = {

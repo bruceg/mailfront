@@ -62,7 +62,7 @@ static const response* recipient(str* r)
   (void)r;
 }
 
-static const response* start(void)
+static const response* start(int fd)
 {
   unsigned long maxhops;
   minenv("maxdatabytes", "DATABYTES");
@@ -77,6 +77,7 @@ static const response* start(void)
   in_rec = 1;
   in_dt = 1;
   return 0;
+  (void)fd;
 }
 
 static const response* block(const char* bytes, unsigned long len)

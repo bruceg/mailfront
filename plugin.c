@@ -25,7 +25,7 @@ static const response* recipient(str* recipient)
   return 0;
 }
 
-static const response* data_start(void)
+static const response* data_start(int fd)
 {
   return 0;
 }

@@ -16,7 +16,7 @@ struct plugin
   const response* (*reset)(void);
   const response* (*sender)(str*);
   const response* (*recipient)(str*);
-  const response* (*data_start)(void);
+  const response* (*data_start)(int fd);
   const response* (*data_block)(const char* bytes, unsigned long len);
   const response* (*message_end)(int fd);
 };

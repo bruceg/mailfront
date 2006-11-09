@@ -106,10 +106,10 @@ const response* handle_data_start(void)
   const response* resp = 0;
   if ((session.fd = scratchfile()) == -1)
     return &resp_internal;
-  if (session.backend->data_start != 0)
-    resp = session.backend->data_start();
   if (response_ok(resp))
-    MODULE_CALL(data_start, (), 0);
+    MODULE_CALL(data_start, (session.fd), 0);
+  if (session.backend->data_start != 0)
+    resp = session.backend->data_start(session.fd);
   data_response = response_ok(resp)
     ? 0
     : resp;
