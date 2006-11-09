@@ -40,7 +40,6 @@ static const response* message_end(int fd)
 }
 
 struct plugin plugin = {
-  .flags = 0,
   .init = init,
   .helo = helo,
   .reset = reset,
