@@ -104,8 +104,10 @@ static const response* data_response;
 const response* handle_data_start(void)
 {
   const response* resp = 0;
-  if ((session.fd = scratchfile()) == -1)
-    return &resp_internal;
+  if (module_flags & FLAG_NEED_FILE) {
+    if ((session.fd = scratchfile()) == -1)
+      return &resp_internal;
+  }
   if (response_ok(resp))
     MODULE_CALL(data_start, (session.fd), 0);
   if (session.backend->data_start != 0)
@@ -131,8 +133,9 @@ void handle_data_bytes(const char* bytes, unsigned len)
       }
   if (session.backend->data_block != 0)
     session.backend->data_block(bytes, len);
-  if (write(session.fd, bytes, len) != (ssize_t)len)
-    data_response = &resp_internal;
+  if (session.fd >= 0)
+    if (write(session.fd, bytes, len) != (ssize_t)len)
+      data_response = &resp_internal;
 }
 
 const response* handle_message_end(void)

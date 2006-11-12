@@ -102,5 +102,6 @@ static const response* message_end(int fd)
 }
 
 struct plugin plugin = {
+  .flags = FLAG_NEED_FILE,
   .message_end = message_end,
 };

@@ -157,6 +157,7 @@ static const response* message_end(int fd)
 }
 
 struct plugin backend = {
+  .flags = FLAG_NEED_FILE,
   .reset = reset,
   .sender = do_sender,
   .recipient = do_recipient,
