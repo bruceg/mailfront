@@ -1,0 +1,39 @@
+<loop tmppath /tmp /@notmp@>
+<loop plugins "" force-file>
+
+PLUGINS=${plugins}:add-received:accept
+TMPPATH=$tmppath
+export TMPPATH
+
+sfecho <<EOF
+MAIL FROM:<>
+RCPT TO:<test@example.com>
+DATA
+.
+EOF
+
+unset TMPPATH
+
+<result /tmp "">
+250 Sender=''.^M
+250 Recipient='test@example.com'.^M
+354 End your message with a period on a line by itself.^M
+250 Received 128 bytes.^M
+
+<result /tmp force-file>
+250 Sender=''.^M
+250 Recipient='test@example.com'.^M
+354 End your message with a period on a line by itself.^M
+250 Received 128 bytes.^M
+
+<result /@notmp@ "">
+250 Sender=''.^M
+250 Recipient='test@example.com'.^M
+354 End your message with a period on a line by itself.^M
+250 Received 128 bytes.^M
+
+<result /@notmp@ force-file>
+250 Sender=''.^M
+250 Recipient='test@example.com'.^M
+451 4.3.0 Internal error.^M
+500 5.5.1 Not implemented.^M
