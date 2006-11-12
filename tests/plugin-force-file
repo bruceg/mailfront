@@ -1,9 +1,9 @@
-<loop tmppath /tmp /@notmp@>
+<loop tmpdir /tmp /@notmp@>
 <loop plugins "" force-file>
 
 PLUGINS=${plugins}:add-received:accept
-TMPPATH=$tmppath
-export TMPPATH
+TMPDIR=$tmpdir 
+export TMPDIR
 
 sfecho <<EOF
 MAIL FROM:<>
@@ -12,7 +12,7 @@ DATA
 .
 EOF
 
-unset TMPPATH
+unset TMPDIR
 
 <result /tmp "">
 250 Sender=''.^M

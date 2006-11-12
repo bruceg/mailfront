@@ -199,7 +199,7 @@ int main(int argc, char* argv[])
   if (argc < 3)
     die1(111, "Protocol or backend name are missing from the command line");
 
-  if ((tmp = getenv("TMPPATH")) == 0)
+  if ((tmp = getenv("TMPDIR")) == 0)
     tmp = "/tmp";
   if (!str_copy2s(&tmp_prefix, tmp, "/mailfront.tmp.")) die_oom(111);
   
