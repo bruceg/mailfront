@@ -108,10 +108,12 @@ const response* handle_data_start(void)
     if ((session.fd = scratchfile()) == -1)
       return &resp_internal;
   }
-  if (response_ok(resp))
-    MODULE_CALL(data_start, (session.fd), 0);
+  else
+    session.fd = -1;
   if (session.backend->data_start != 0)
     resp = session.backend->data_start(session.fd);
+  if (response_ok(resp))
+    MODULE_CALL(data_start, (session.fd), 0);
   data_response = response_ok(resp)
     ? 0
     : resp;
@@ -146,7 +148,8 @@ const response* handle_message_end(void)
   MODULE_CALL(message_end, (session.fd), 0);
   if (session.backend->message_end != 0)
     resp = session.backend->message_end(session.fd);
-  close(session.fd);
+  if (session.fd >= 0)
+    close(session.fd);
   session.fd = -1;
   return resp;
 }
