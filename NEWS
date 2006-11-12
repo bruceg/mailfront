@@ -1,7 +1,9 @@
 -------------------------------------------------------------------------------
 Changes in version 1.10
 
-- Added a ClamAV virus scanner plugin.
+- Added a ClamAV virus scanner plugin.  Note: Using this plugin will
+  cause mailfront to save messages to temporary files.  See
+  mailfront.html for details.
 
 - Modified the plugin API to add a version code, a flags word, and to
   (optionally) save messages to a temporary file.

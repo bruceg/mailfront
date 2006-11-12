@@ -112,6 +112,8 @@ Plugins may modify the sender or recipient address, but not the data
 
 <li><a href="plugin-check-fqdn.html">check-fqdn</a></li>
 
+<li><a href="plugin-clamav.html">clamav</a></li>
+
 <li><a href="plugin-counters.html">counters</a></li>
 
 <li><a href="plugin-cvm-validate.html">cvm-validate</a></li>
@@ -149,6 +151,14 @@ plugins described above.</p>
 <li><a href="backend-qmail.html">qmail</a></li>
 
 </ul>
+
+<h2>Temporary Files</h2>
+
+<p>Some plugins require the use of a temporary file, either to be able
+to modify contents after receiving a message or to fulfill external
+timing requirements.  These plugins are noted in their documentation
+above.  The temporary files are created in the directory named by
+<tt>$TMPDIR</tt> (defaults to "<tt>/tmp</tt>").</p>
 
 </body>
 </html>
