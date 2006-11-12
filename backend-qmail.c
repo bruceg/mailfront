@@ -17,9 +17,25 @@ static RESPONSE(no_chdir,451,"4.3.0 Could not change to the qmail directory.");
 static RESPONSE(qq_crashed,451,"4.3.0 qmail-queue crashed.");
 
 static str buffer;
+static unsigned long databytes;
+
+static const char* qqargs[2] = { 0, 0 };
+static int qqpid = -1;
+static int qqepipe[2] = { -1, -1 };
+static int qqmpipe[2] = { -1, -1 };
+
+static void close_qqpipe(void)
+{
+  if (qqepipe[0] != -1) close(qqepipe[0]);
+  if (qqepipe[1] != -1) close(qqepipe[1]);
+  if (qqmpipe[0] != -1) close(qqmpipe[0]);
+  if (qqmpipe[1] != -1) close(qqmpipe[1]);
+  qqepipe[0] = qqepipe[1] = qqmpipe[0] = qqmpipe[1] = -1;
+}
 
 static const response* reset(void)
 {
+  close_qqpipe();
   str_truncate(&buffer, 0);
   return 0;
 }
@@ -40,14 +56,50 @@ static const response* do_recipient(str* recipient)
   return 0;
 }
 
+static int start_qq(int msgfd, int envfd)
+{
+  if ((qqpid = fork()) == -1) {
+    close_qqpipe();
+    return -1;
+  }
+
+  if (qqpid == 0) {
+    if (!session_exportenv()) exit(51);
+    if (dup2(msgfd, 0) == -1) exit(120);
+    if (dup2(envfd, 1) == -1) exit(120);
+    close_qqpipe();
+    execvp(qqargs[0], (char**)qqargs);
+    exit(120);
+  }
+  return 0;
+}
+
 static const response* data_start(int fd)
 {
   const char* qh;
+
+  qqargs[0] = session_getenv("QMAILQUEUE");
+  if (qqargs[0] == 0) qqargs[0] = "bin/qmail-queue";
 
   if ((qh = session_getenv("QMAILHOME")) == 0)
     qh = conf_qmail;
   if (chdir(qh) == -1) return &resp_no_chdir;
 
+  sig_pipe_block();
+
+  if (pipe(qqepipe) == -1) return &resp_no_pipe;
+
+  if (session.fd < 0) {
+    if (pipe(qqmpipe) == -1) {
+      close_qqpipe();
+      return &resp_no_pipe;
+    }
+
+    if (start_qq(qqmpipe[0], qqepipe[0]) == -1)
+      return &resp_no_fork;
+  }
+
+  databytes = 0;
   return 0;
   (void)fd;
 }
@@ -61,6 +113,16 @@ static int retry_write(int fd, const char* bytes, unsigned long len)
     bytes += written;
   }
   return 1;
+}
+
+static const response* data_block(const char* bytes, unsigned long len)
+{
+  if (session.fd < 0) {
+    if (!retry_write(qqmpipe[1], bytes, len))
+      return &resp_no_write;
+    databytes += len;
+  }
+  return 0;
 }
 
 static void parse_status(int status, response* resp)
@@ -104,50 +166,35 @@ static void parse_status(int status, response* resp)
 static const response* message_end(int fd)
 {
   static response resp;
-  const char* qqargs[2] = { 0, 0 };
-  int qqpid = -1;
-  int epipe[2];
+
   int status;
   struct stat st;
 
-  if (lseek(fd, 0, SEEK_SET) != 0)
-    return &resp_internal;
-  if ((qqargs[0] = session_getenv("QMAILQUEUE")) == 0)
-    qqargs[0] = "bin/qmail-queue";
-
-  if (pipe(epipe) == -1) return &resp_no_pipe;
-  sig_pipe_block();
-
-  if ((qqpid = fork()) == -1) {
-    close(epipe[0]); close(epipe[1]);
-    return &resp_no_fork;
+  if (session.fd < 0) {
+    close(qqmpipe[1]);
+    qqmpipe[1] = -1;
   }
-
-  if (qqpid == 0) {
-    if (!session_exportenv()) exit(51);
-    close(epipe[1]);
-    if (dup2(fd, 0) == -1) exit(120);
-    if (dup2(epipe[0], 1) == -1) exit(120);
-    close(epipe[0]);
-    execvp(qqargs[0], (char**)qqargs);
-    exit(120);
+  else {
+    if (lseek(session.fd, 0, SEEK_SET) != 0)
+      return &resp_internal;
+    if (fstat(session.fd, &st) != 0)
+      return &resp_internal;
+    databytes = st.st_size;
+    if (start_qq(session.fd, qqepipe[0]) == -1)
+      return &resp_no_fork;
   }
-
-  close(epipe[0]);
-  if (!retry_write(epipe[1], buffer.s, buffer.len+1)) return &resp_no_write;
-  close(epipe[1]);
-
+  if (!retry_write(qqepipe[1], buffer.s, buffer.len+1)) return &resp_no_write;
+  close_qqpipe();
   if (waitpid(qqpid, &status, WUNTRACED) == -1) return &resp_qq_crashed;
   if (!WIFEXITED(status)) return &resp_qq_crashed;
 
   if ((status = WEXITSTATUS(status)) != 0)
     parse_status(status, &resp);
   else {
-    fstat(fd, &st);
     str_copys(&buffer, "2.6.0 Accepted message qp ");
     str_catu(&buffer, qqpid);
     str_cats(&buffer, " bytes ");
-    str_catu(&buffer, st.st_size);
+    str_catu(&buffer, databytes);
     msg1(buffer.s);
     resp.number = 250;
     resp.message = buffer.s;
@@ -157,10 +204,10 @@ static const response* message_end(int fd)
 }
 
 struct plugin backend = {
-  .flags = FLAG_NEED_FILE,
   .reset = reset,
   .sender = do_sender,
   .recipient = do_recipient,
   .data_start = data_start,
+  .data_block = data_block,
   .message_end = message_end,
 };

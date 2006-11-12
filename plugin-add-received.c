@@ -132,8 +132,14 @@ static const response* data_start(int fd)
       !add_header_add(&received) ||
       !build_received(&received))
     return &resp_internal;
-  if (write(fd, received.s, received.len) != (ssize_t)received.len)
-    return &resp_internal;
+  if (fd < 0) {
+    if (session.backend->data_block != 0)
+      return session.backend->data_block(received.s, received.len);
+  }
+  else {
+    if (write(fd, received.s, received.len) != (ssize_t)received.len)
+      return &resp_internal;
+  }
   return 0;
 }
 
