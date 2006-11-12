@@ -108,6 +108,7 @@ static int mainloop(void)
 }
 
 struct protocol protocol = {
+  .version = PROTOCOL_VERSION,
   .name = "QMTP",
   .respond_line = qmtp_respond_line,
   .mainloop = mainloop,

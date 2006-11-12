@@ -16,5 +16,6 @@ static const response* do_recipient(str* recipient)
 }
 
 struct plugin plugin = {
+  .version = PLUGIN_VERSION,
   .recipient = do_recipient,
 };

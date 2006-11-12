@@ -407,6 +407,7 @@ static int smtp_respond_line(unsigned num, int final,
 }
 
 struct protocol protocol = {
+  .version = PROTOCOL_VERSION,
   .name = "SMTP",
   .respond_line = smtp_respond_line,
   .init = init,

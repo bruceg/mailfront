@@ -126,6 +126,7 @@ static const response* block(const char* bytes, unsigned long len)
 }
 
 struct plugin plugin = {
+  .version = PLUGIN_VERSION,
   .init = init,
   .reset = reset,
   .sender = sender,

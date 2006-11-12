@@ -85,6 +85,7 @@ static const response* message_end(int fd)
 }
 
 struct plugin backend = {
+  .version = PLUGIN_VERSION,
   .reset = reset,
   .sender = sender,
   .recipient = recipient,

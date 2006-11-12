@@ -9,8 +9,11 @@
 
 #define FLAG_NEED_FILE (1<<0)
 
+#define PLUGIN_VERSION 2
+
 struct plugin
 {
+  unsigned version;
   struct plugin* next;
   const char* name;
   unsigned flags;
@@ -24,8 +27,11 @@ struct plugin
   const response* (*message_end)(int fd);
 };
 
+#define PROTOCOL_VERSION 2
+
 struct protocol
 {
+  unsigned version;
   const char* name;
   int (*respond_line)(unsigned number, int final,
 		      const char* msg, unsigned long len);

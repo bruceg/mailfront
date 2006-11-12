@@ -6,6 +6,9 @@
 #include "conf_modules.c"
 
 static response resp_load = { 451, 0 };
+static RESPONSE(backend_version,451,"4.3.0 Backend ABI version mismatch");
+static RESPONSE(plugin_version,451,"4.3.0 Plugin ABI version mismatch");
+static RESPONSE(protocol_version,451,"4.3.0 Protocol ABI version mismatch");
 
 struct plugin* plugin_list = 0;
 struct plugin* plugin_tail = 0;
@@ -97,6 +100,8 @@ static const response* load_plugin(const char* name)
     if ((plugin = find_builtin_plugin(name)) == 0) {
       if ((plugin = load_object("plugin", name)) == 0)
 	return &resp_load;
+      if (plugin->version != PLUGIN_VERSION)
+	return &resp_plugin_version;
       if ((plugin->name = strdup(name)) == 0)
 	return &resp_oom;
     }
@@ -140,8 +145,12 @@ const response* load_modules(const char* protocol_name,
     module_path = conf_modules;
   if ((session.protocol = load_object("protocol", protocol_name)) == 0)
     return &resp_load;
+  if (session.protocol->version != PROTOCOL_VERSION)
+    return &resp_protocol_version;
   if ((session.backend = load_object("backend", backend_name)) == 0)
     return &resp_load;
+  if (session.backend->version != PLUGIN_VERSION)
+    return &resp_backend_version;
   module_flags |= session.backend->flags;
   while (*plugins != 0)
     if ((r = load_plugins(*plugins++)) != 0)

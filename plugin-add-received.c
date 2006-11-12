@@ -144,6 +144,7 @@ static const response* data_start(int fd)
 }
 
 struct plugin plugin = {
+  .version = PLUGIN_VERSION,
   .init = init,
   .data_start = data_start,
 };

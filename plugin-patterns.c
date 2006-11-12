@@ -149,6 +149,7 @@ static const response* check(const char* bytes, unsigned long len)
 }
 
 struct plugin plugin = {
+  .version = PLUGIN_VERSION,
   .data_start = init,
   .data_block = check,
 };

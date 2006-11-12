@@ -17,6 +17,7 @@ static const response* either(str* s)
 }
 
 struct plugin plugin = {
+  .version = PLUGIN_VERSION,
   .sender = either,
   .recipient = either,
 };

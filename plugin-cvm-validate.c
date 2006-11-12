@@ -53,6 +53,7 @@ static const response* validate_recipient(str* recipient)
 }
 
 struct plugin plugin = {
+  .version = PLUGIN_VERSION,
   .init = validate_init,
   .recipient = validate_recipient,
 };

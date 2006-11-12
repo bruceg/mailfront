@@ -102,6 +102,7 @@ static const response* message_end(int fd)
 }
 
 struct plugin plugin = {
+  .version = PLUGIN_VERSION,
   .flags = FLAG_NEED_FILE,
   .message_end = message_end,
 };
