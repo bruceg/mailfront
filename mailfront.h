@@ -57,6 +57,9 @@ extern struct session session;
 /* From builtins.c */
 extern struct plugin builtin_plugins[];
 
+/* From getprotoenv.c */
+extern const char* getprotoenv(const char*);
+
 /* From mailfront.c */
 extern const char UNKNOWN[];
 extern const response* handle_helo(str* host);

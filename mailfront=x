@@ -1,4 +1,5 @@
 builtins.o
+getprotoenv.o
 iobytes.o
 modules.o
 responses.o

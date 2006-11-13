@@ -15,17 +15,6 @@ static const char* local_ip;
 static const char* remote_host;
 static const char* remote_ip;
 
-static void getprotoenv(const char* name, const char** dest)
-{
-  static str fullname;
-  const char* env;
-  if (!str_copy2s(&fullname, linkproto, name)) die_oom(111);
-  if ((env = getenv(fullname.s)) != 0
-      && env[0] == 0)
-    env = 0;
-  *dest = env;
-}
-
 static const char* date_string(void)
 {
   static char datebuf[64];
@@ -106,12 +95,11 @@ static const response* init(void)
 {
   const char* tmp;
 
-  if ((linkproto = getenv("PROTO")) == 0)
-    linkproto = "TCP";
-  getprotoenv("LOCALIP", &local_ip);
-  getprotoenv("REMOTEIP", &remote_ip);
-  getprotoenv("LOCALHOST", &local_host);
-  getprotoenv("REMOTEHOST", &remote_host);
+  linkproto = getprotoenv(0);
+  local_ip = getprotoenv("LOCALIP");
+  remote_ip = getprotoenv("REMOTEIP");
+  local_host = getprotoenv("LOCALHOST");
+  remote_host = getprotoenv("REMOTEHOST");
 
   if ((tmp = getenv("FIXUP_RECEIVED_HOST")) != 0) {
     if (!str_copys(&fixup_host, tmp)) return &resp_oom;

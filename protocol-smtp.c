@@ -363,7 +363,7 @@ static int init(void)
 {
   const char* tmp;
 
-  if ((tmp = getenv("TCPLOCALHOST")) == 0) tmp = UNKNOWN;
+  if ((tmp = getprotoenv("LOCALHOST")) == 0) tmp = UNKNOWN;
   str_copys(&domain_name, tmp);
 
   if ((tmp = getenv("SMTPGREETING")) != 0)
