@@ -27,3 +27,9 @@ c:::755::plugin-require-auth.so
 c:::755::protocol-qmqp.so
 c:::755::protocol-qmtp.so
 c:::755::protocol-smtp.so
+
+>include
+d:::755:mailfront
+c:::755:mailfront:constants.h
+c:::755:mailfront:mailfront.h
+c:::755:mailfront:responses.h

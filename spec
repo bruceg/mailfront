@@ -16,6 +16,13 @@ This is mailfront, a package containing customizeable network front-ends
 for mail servers.  Handles POP3, QMQP, QMTP, SMTP, and IMAP
 (authentication only).
 
+%package devel
+Summary: Mailfront development bits
+Group: Development/Libraries
+%description devel
+Headers for building modules (front-ends, plugins, and back-ends) for
+mailfront.
+
 %prep
 %setup
 echo "gcc %{optflags}" >conf-cc
@@ -23,6 +30,7 @@ echo "gcc %{optflags} -fPIC -shared" >conf-ccso
 echo "gcc -s -rdynamic" >conf-ld
 echo %{_bindir} >conf-bin
 echo %{_libdir}/mailfront >conf-modules
+echo %{_includedir} >conf-include
 
 %build
 make
@@ -39,3 +47,6 @@ rm -rf %{buildroot}
 %doc ANNOUNCEMENT COPYING NEWS README *.html
 %{_bindir}/*
 %{_libdir}/mailfront
+
+%files devel
+%{_includedir}/mailfront
