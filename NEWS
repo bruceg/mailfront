@@ -8,6 +8,8 @@ Changes in version 1.10
 - Modified the plugin API to add a version code, a flags word, and to
   (optionally) save messages to a temporary file.
 
+- Fixed a few cases where the UCSPI-TCP protocol was assumed.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

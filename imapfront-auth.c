@@ -329,7 +329,8 @@ static int startup(int argc, char* argv[])
     respond(NOTAG, "NO Usage: imapfront-auth imapd [args ...]");
     return 0;
   }
-  domain = getenv("TCPLOCALHOST");
+  if ((domain = cvm_ucspi_domain()) == 0)
+    domain = "unknown";
   nextcmd = argv + 1;
   if ((cvm = getenv("CVM_SASL_PLAIN")) == 0) {
     respond(NOTAG, "NO $CVM_SASL_PLAIN is not set");

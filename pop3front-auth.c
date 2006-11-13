@@ -103,7 +103,8 @@ command commands[] = {
 int startup(int argc, char* argv[])
 {
   static const char usage[] = "usage: pop3front-auth cvm program [args...]\n";
-  domain = getenv("TCPLOCALHOST");
+  if ((domain = cvm_ucspi_domain()) == 0)
+    domain = "unknown";
   if (argc < 3) {
     obuf_putsflush(&errbuf, usage);
     return 0;
