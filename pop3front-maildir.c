@@ -132,6 +132,7 @@ static int scan_maildir(void)
   msg_count = 0;
   if (!scan_dir("cur", &msg_filenames, &cur_count, max_cur_count)) return 0;
   if (!scan_dir("new", &msg_filenames, &new_count, max_new_count)) return 0;
+  if (msg_count == 0) return 1;
   if (!str_sort(&msg_filenames, 0, -1, fn_compare)) return 0;
 
   del_count = 0;

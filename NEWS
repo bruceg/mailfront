@@ -10,6 +10,9 @@ Changes in version 1.10
 
 - Fixed a few cases where the UCSPI-TCP protocol was assumed.
 
+- Fixed pop3front-maildir breakage on dietlibc/uClibc and empty
+  maildirs.  Thanks Wayne Marshall.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
