@@ -23,7 +23,7 @@ MAIL FROM:<a@example.com> SIZE=124
 RCPT TO:<nobody@nowhere>
 EOF
 <result>
-250-unknown^M
+250-local.host^M
 250-SIZE 0^M
 250-8BITMIME^M
 250-ENHANCEDSTATUSCODES^M
@@ -32,7 +32,7 @@ EOF
 250 Sender='a@example.com'.^M
 250 Sender='a@example.com'.^M
 250 Sender='a@example.com'.^M
-250-unknown^M
+250-local.host^M
 250-SIZE 123^M
 250-8BITMIME^M
 250-ENHANCEDSTATUSCODES^M

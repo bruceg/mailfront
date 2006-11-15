@@ -20,7 +20,7 @@ EOF
 rm -f $tmp/rules
 
 <result>
-250-unknown^M
+250-local.host^M
 250-SIZE 0^M
 250-8BITMIME^M
 250-ENHANCEDSTATUSCODES^M
