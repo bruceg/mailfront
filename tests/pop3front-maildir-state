@@ -7,7 +7,7 @@ tstmsg new/this.is.a.very.long.filename.that.should.get.truncated.after.the.X...
   echo $command
   if $quit; then echo QUIT; fi
 ) | pfmaildir $maildir
-( cd $maildir && find new cur -type f )
+( cd $maildir && find new cur -type f | sort )
 <result false UIDL>
 +OK ^M
 1 1^M
