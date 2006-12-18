@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+Changes in version 1.11
+
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 1.10
 
 - Added a ClamAV virus scanner plugin.  Note: Using this plugin will
