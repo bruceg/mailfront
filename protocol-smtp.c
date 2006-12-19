@@ -3,6 +3,7 @@
 #include <systime.h>
 
 #include "mailfront.h"
+#include <cvm/facts.h>
 #include <cvm/sasl.h>
 
 #include <iobuf/iobuf.h>
@@ -299,6 +300,15 @@ static int AUTH(void)
   else {
     session_setnum("authenticated", 1);
     session_delstr("helo_domain");
+    session_setstr("auth_user", cvm_fact_username);
+    session_setnum("auth_uid", cvm_fact_userid);
+    session_setnum("auth_gid", cvm_fact_groupid);
+    if (cvm_fact_realname != 0)
+      session_setstr("auth_realname", cvm_fact_realname);
+    if (cvm_fact_domain != 0)
+      session_setstr("auth_domain", cvm_fact_domain);
+    if (cvm_fact_mailbox != 0)
+      session_setstr("auth_mailbox", cvm_fact_mailbox);
     respond(&resp_authenticated);
   }
   return 1;
