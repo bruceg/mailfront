@@ -119,6 +119,7 @@ void session_setnum(const char* name, unsigned long value)
 void session_init(void)
 {
   memset(&session, 0, sizeof session);
+  session.fd = -1;
   session_strs_init(&session.strs);
   session_nums_init(&session.nums);
 }

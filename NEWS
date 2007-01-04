@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------
 Changes in version 1.11
 
+- Fixed the main mailfront program to clean up temporary files properly.
+
 - Modified the SMTP protocol module to export the SASL authentication
   information internally.
 

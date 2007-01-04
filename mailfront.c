@@ -65,6 +65,10 @@ const response* handle_helo(str* host)
 const response* handle_reset(void)
 {
   const response* resp = 0;
+  if (session.fd >= 0) {
+    close(session.fd);
+    session.fd = -1;
+  }
   if (session.backend->reset != 0)
     session.backend->reset();
   MODULE_CALL(reset, (), 0);
@@ -104,12 +108,14 @@ static const response* data_response;
 const response* handle_data_start(void)
 {
   const response* resp = 0;
+  if (session.fd >= 0) {
+    close(session.fd);
+    session.fd = -1;
+  }
   if (module_flags & FLAG_NEED_FILE) {
     if ((session.fd = scratchfile()) == -1)
       return &resp_internal;
   }
-  else
-    session.fd = -1;
   if (session.backend->data_start != 0)
     resp = session.backend->data_start(session.fd);
   if (response_ok(resp))
