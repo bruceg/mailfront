@@ -7,11 +7,27 @@ static const response* either(str* s)
 {
   int at;
   int dot;
+  const char* name;
   if (s->len > 0) {
-    if ((at = str_findlast(s, '@')) <= 0)
-      return &resp_nodomain;
-    if ((dot = str_findlast(s, '.')) < at)
-      return &resp_nofqdn;
+    if ((at = str_findlast(s, '@')) <= 0) {
+      if ((name = session_getenv("DEFAULTHOST")) != 0) {
+	at = s->len;
+	if (!str_catc(s, '@')
+	    || !str_cats(s, name))
+	  return &resp_oom;
+      }
+      else
+	return &resp_nodomain;
+    }
+    if ((dot = str_findlast(s, '.')) < at) {
+      if ((name = session_getenv("DEFAULTDOMAIN")) != 0) {
+	if (!str_catc(s, '.')
+	    || !str_cats(s, name))
+	  return &resp_oom;
+      }
+      else
+	return &resp_nofqdn;
+    }
   }
   return 0;
 }

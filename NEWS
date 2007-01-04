@@ -6,6 +6,9 @@ Changes in version 1.11
 - Modified the SMTP protocol module to export the SASL authentication
   information internally.
 
+- Modified the check-fqdn plugin to append $DEFAULTHOST and
+  $DEFAULTDOMAIN to addresses if necessary.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
