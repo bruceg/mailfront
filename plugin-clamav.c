@@ -38,6 +38,7 @@ static const response* message_end(int fd)
   struct timeval tv;
   int sock;
   unsigned long timeout;
+  unsigned long connect_timeout;
   ibuf netin;
   obuf netout;
   
@@ -51,6 +52,10 @@ static const response* message_end(int fd)
 	|| (timeout = strtoul(tmp, (char**)&tmp, 10)) == 0
 	|| *tmp != 0)
       timeout = 5000;
+    if ((tmp = session_getenv("CLAMD_CONNECT_TIMEOUT")) == 0
+	|| (connect_timeout = strtoul(tmp, (char**)&tmp, 10)) == 0
+	|| *tmp != 0)
+      connect_timeout = timeout;
     if ((ip_count = resolve_ipv4name_n(hostname, ips, MAX_IPS)) <= 0)
       return &resp_no_hostname;
 
@@ -60,7 +65,7 @@ static const response* message_end(int fd)
       const ipv4addr* addr = &ips[(i + offset) % ip_count];
       if (lseek(fd, 0, SEEK_SET) != 0)
 	return &resp_internal;
-      if ((sock = try_connect(addr, port, timeout)) < 0)
+      if ((sock = try_connect(addr, port, connect_timeout)) < 0)
 	continue;
 
       if (ibuf_init(&netin, sock, 0, IOBUF_NEEDSCLOSE, 0)) {
@@ -69,7 +74,7 @@ static const response* message_end(int fd)
 	    && ibuf_getstr(&netin, &line, LF)
 	    && memcmp(line.s, "PORT ", 5) == 0
 	    && (port = strtoul(line.s+5, 0, 10)) > 0) {
-	  if ((sock = try_connect(addr, port, timeout)) >= 0) {
+	  if ((sock = try_connect(addr, port, connect_timeout)) >= 0) {
 	    if (obuf_init(&netout, sock, 0, IOBUF_NEEDSCLOSE, 0)) {
 	      netout.io.timeout = timeout;
 	      if (obuf_copyfromfd(fd, &netout)

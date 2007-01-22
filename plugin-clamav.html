@@ -20,6 +20,10 @@ files.</p>
 
 <dl>
 
+<dt><tt>$CLAMD_CONNECT_TIMEOUT</tt></dt> <dd>The maximum amount of time
+to wait for a response when connecting to a ClamAV scanner, in
+milliseconds. (defaults to $CLAMD_TIMEOUT below)</dd>
+
 <dt><tt>$CLAMD_HOST</tt></dt> <dd>The hostname of the ClamAV scanner.
 If this name resolves to multiple IP addresses, all of them are tried in
 sequence (starting at a random point) until one scans the message.</dd>
@@ -28,7 +32,7 @@ sequence (starting at a random point) until one scans the message.</dd>
 command/response data. (defaults to 3310)</dd>
 
 <dt><tt>$CLAMD_TIMEOUT</tt></dt> <dd>The maximum amount of time to wait
-for a response from the ClamAD scanner, in milliseconds. (defaults to
+for a response from the ClamAV scanner, in milliseconds. (defaults to
 5000)</dd>
 
 </dl>
