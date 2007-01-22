@@ -9,7 +9,8 @@ Changes in version 1.11
 - Modified the check-fqdn plugin to append $DEFAULTHOST and
   $DEFAULTDOMAIN to addresses if necessary.
 
-- Added a separate connect timeout to the ClamAV plugin.
+- Added a separate connect timeout to the ClamAV plugin, and fixed a bug
+  with handling port numbers when using multiple IPs.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/

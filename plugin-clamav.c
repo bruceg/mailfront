@@ -30,7 +30,8 @@ static const response* message_end(int fd)
 {
   const char* hostname;
   const char* tmp;
-  ipv4port port;
+  ipv4port cmdport;
+  ipv4port dataport;
   ipv4addr ips[MAX_IPS];
   int ip_count;
   int i;
@@ -45,9 +46,9 @@ static const response* message_end(int fd)
   if ((hostname = session_getenv("CLAMD_HOST")) != 0) {
 
     if ((tmp = session_getenv("CLAMD_PORT")) == 0
-	|| (port = strtoul(tmp, (char**)&tmp, 10)) == 0
+	|| (cmdport = strtoul(tmp, (char**)&tmp, 10)) == 0
 	|| *tmp != 0)
-      port = 3310;
+      cmdport = 3310;
     if ((tmp = session_getenv("CLAMD_TIMEOUT")) == 0
 	|| (timeout = strtoul(tmp, (char**)&tmp, 10)) == 0
 	|| *tmp != 0)
@@ -65,7 +66,7 @@ static const response* message_end(int fd)
       const ipv4addr* addr = &ips[(i + offset) % ip_count];
       if (lseek(fd, 0, SEEK_SET) != 0)
 	return &resp_internal;
-      if ((sock = try_connect(addr, port, connect_timeout)) < 0)
+      if ((sock = try_connect(addr, cmdport, connect_timeout)) < 0)
 	continue;
 
       if (ibuf_init(&netin, sock, 0, IOBUF_NEEDSCLOSE, 0)) {
@@ -73,8 +74,8 @@ static const response* message_end(int fd)
 	if (write(sock, "STREAM\n", 7) == 7
 	    && ibuf_getstr(&netin, &line, LF)
 	    && memcmp(line.s, "PORT ", 5) == 0
-	    && (port = strtoul(line.s+5, 0, 10)) > 0) {
-	  if ((sock = try_connect(addr, port, connect_timeout)) >= 0) {
+	    && (dataport = strtoul(line.s+5, 0, 10)) > 0) {
+	  if ((sock = try_connect(addr, dataport, connect_timeout)) >= 0) {
 	    if (obuf_init(&netout, sock, 0, IOBUF_NEEDSCLOSE, 0)) {
 	      netout.io.timeout = timeout;
 	      if (obuf_copyfromfd(fd, &netout)
