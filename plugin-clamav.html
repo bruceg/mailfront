@@ -31,6 +31,10 @@ sequence (starting at a random point) until one scans the message.</dd>
 <dt><tt>$CLAMD_PORT</tt></dt> <dd>Use this port number for the
 command/response data. (defaults to 3310)</dd>
 
+<dt><tt>$CLAMD_SEND_TIMEOUT</tt></dt> <dd>The maximum amount of time to
+wait for the output buffer to clear when sending data to a ClamAV
+scanner, in milliseconds. (defaults to $CLAMD_TIMEOUT below)</dd>
+
 <dt><tt>$CLAMD_TIMEOUT</tt></dt> <dd>The maximum amount of time to wait
 for a response from the ClamAV scanner, in milliseconds. (defaults to
 5000)</dd>

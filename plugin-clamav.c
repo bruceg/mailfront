@@ -40,6 +40,7 @@ static const response* message_end(int fd)
   int sock;
   unsigned long timeout;
   unsigned long connect_timeout;
+  unsigned long send_timeout;
   ibuf netin;
   obuf netout;
   
@@ -57,6 +58,10 @@ static const response* message_end(int fd)
 	|| (connect_timeout = strtoul(tmp, (char**)&tmp, 10)) == 0
 	|| *tmp != 0)
       connect_timeout = timeout;
+    if ((tmp = session_getenv("CLAMD_SEND_TIMEOUT")) == 0
+	|| (send_timeout = strtoul(tmp, (char**)&tmp, 10)) == 0
+	|| *tmp != 0)
+      send_timeout = timeout;
     if ((ip_count = resolve_ipv4name_n(hostname, ips, MAX_IPS)) <= 0)
       return &resp_no_hostname;
 
@@ -77,7 +82,7 @@ static const response* message_end(int fd)
 	    && (dataport = strtoul(line.s+5, 0, 10)) > 0) {
 	  if ((sock = try_connect(addr, dataport, connect_timeout)) >= 0) {
 	    if (obuf_init(&netout, sock, 0, IOBUF_NEEDSCLOSE, 0)) {
-	      netout.io.timeout = timeout;
+	      netout.io.timeout = send_timeout;
 	      if (obuf_copyfromfd(fd, &netout)
 		  && obuf_close(&netout)
 		  && ibuf_getstr(&netin, &line, LF)) {
