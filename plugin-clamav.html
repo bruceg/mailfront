@@ -24,6 +24,12 @@ files.</p>
 to wait for a response when connecting to a ClamAV scanner, in
 milliseconds. (defaults to $CLAMD_TIMEOUT below)</dd>
 
+<dt><tt>$CLAMD_MAXSIZE</tt></dt> <dd>The maximum message size to be
+scanned, in bytes.  This limit is useful for avoiding overloading the
+scanning system(s).  If the incoming message is larger than this
+threshold, a warning is printed and no scanning is done.  If unset or
+set to "<tt>0</tt>", there is no limit.</dd>
+
 <dt><tt>$CLAMD_HOST</tt></dt> <dd>The hostname of the ClamAV scanner.
 If this name resolves to multiple IP addresses, all of them are tried in
 sequence (starting at a random point) until one scans the message.</dd>

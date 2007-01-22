@@ -1,8 +1,11 @@
 #include "mailfront.h"
 
+#include <sysdeps.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
+#include <msg/msg.h>
 #include <net/resolve.h>
 #include <net/socket.h>
 
@@ -41,10 +44,23 @@ static const response* message_end(int fd)
   unsigned long timeout;
   unsigned long connect_timeout;
   unsigned long send_timeout;
+  unsigned long maxsize;
   ibuf netin;
   obuf netout;
+  struct stat st;
   
   if ((hostname = session_getenv("CLAMD_HOST")) != 0) {
+
+    if ((tmp = session_getenv("CLAMD_MAXSIZE")) != 0
+	&& (maxsize = strtoul(tmp, (char**)&tmp, 10)) != 0
+	&& *tmp == 0) {
+      if (fstat(fd, &st) != 0)
+	return &resp_internal;
+      if (st.st_size > (ssize_t)maxsize){
+	warn1("ClamAV scanning skipped: message larger than maximum");
+	return 0;
+      }
+    }
 
     if ((tmp = session_getenv("CLAMD_PORT")) == 0
 	|| (cmdport = strtoul(tmp, (char**)&tmp, 10)) == 0
