@@ -13,6 +13,8 @@ Changes in version 1.11
   the ClamAV plugin, and fixed a bug with handling port numbers when
   using multiple IPs.
 
+- Modified the ClamAV plugin to prefer $CLAMAV_* settings over $CLAMD_*
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

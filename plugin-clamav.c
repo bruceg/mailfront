@@ -49,9 +49,10 @@ static const response* message_end(int fd)
   obuf netout;
   struct stat st;
   
-  if ((hostname = session_getenv("CLAMD_HOST")) != 0) {
+  if ((hostname = session_getenv("CLAMAV_HOST")) != 0
+      || (hostname = session_getenv("CLAMD_HOST")) != 0) {
 
-    if ((tmp = session_getenv("CLAMD_MAXSIZE")) != 0
+    if ((tmp = session_getenv("CLAMAV_MAXSIZE")) != 0
 	&& (maxsize = strtoul(tmp, (char**)&tmp, 10)) != 0
 	&& *tmp == 0) {
       if (fstat(fd, &st) != 0)
@@ -62,19 +63,21 @@ static const response* message_end(int fd)
       }
     }
 
-    if ((tmp = session_getenv("CLAMD_PORT")) == 0
+    if (((tmp = session_getenv("CLAMAV_PORT")) == 0
+	 && (tmp = session_getenv("CLAMD_PORT")) == 0)
 	|| (cmdport = strtoul(tmp, (char**)&tmp, 10)) == 0
 	|| *tmp != 0)
       cmdport = 3310;
-    if ((tmp = session_getenv("CLAMD_TIMEOUT")) == 0
+    if (((tmp = session_getenv("CLAMAV_TIMEOUT")) == 0
+	 && (tmp = session_getenv("CLAMD_TIMEOUT")) == 0)
 	|| (timeout = strtoul(tmp, (char**)&tmp, 10)) == 0
 	|| *tmp != 0)
       timeout = 5000;
-    if ((tmp = session_getenv("CLAMD_CONNECT_TIMEOUT")) == 0
+    if ((tmp = session_getenv("CLAMAV_CONNECT_TIMEOUT")) == 0
 	|| (connect_timeout = strtoul(tmp, (char**)&tmp, 10)) == 0
 	|| *tmp != 0)
       connect_timeout = timeout;
-    if ((tmp = session_getenv("CLAMD_SEND_TIMEOUT")) == 0
+    if ((tmp = session_getenv("CLAMAV_SEND_TIMEOUT")) == 0
 	|| (send_timeout = strtoul(tmp, (char**)&tmp, 10)) == 0
 	|| *tmp != 0)
       send_timeout = timeout;

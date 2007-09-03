@@ -20,30 +20,40 @@ files.</p>
 
 <dl>
 
-<dt><tt>$CLAMD_CONNECT_TIMEOUT</tt></dt> <dd>The maximum amount of time
+<dt><tt>$CLAMAV_CONNECT_TIMEOUT</tt></dt> <dd>The maximum amount of time
 to wait for a response when connecting to a ClamAV scanner, in
-milliseconds. (defaults to $CLAMD_TIMEOUT below)</dd>
+milliseconds. (defaults to <tt>$CLAMAV_TIMEOUT</tt> below)</dd>
 
-<dt><tt>$CLAMD_MAXSIZE</tt></dt> <dd>The maximum message size to be
+<dt><tt>$CLAMAV_MAXSIZE</tt></dt> <dd>The maximum message size to be
 scanned, in bytes.  This limit is useful for avoiding overloading the
 scanning system(s).  If the incoming message is larger than this
 threshold, a warning is printed and no scanning is done.  If unset or
 set to "<tt>0</tt>", there is no limit.</dd>
 
-<dt><tt>$CLAMD_HOST</tt></dt> <dd>The hostname of the ClamAV scanner.
+<dt><tt>$CLAMAV_HOST</tt></dt> <dd>The hostname of the ClamAV scanner.
 If this name resolves to multiple IP addresses, all of them are tried in
 sequence (starting at a random point) until one scans the message.</dd>
 
-<dt><tt>$CLAMD_PORT</tt></dt> <dd>Use this port number for the
+<dt><tt>$CLAMAV_PORT</tt></dt> <dd>Use this port number for the
 command/response data. (defaults to 3310)</dd>
 
-<dt><tt>$CLAMD_SEND_TIMEOUT</tt></dt> <dd>The maximum amount of time to
+<dt><tt>$CLAMAV_SEND_TIMEOUT</tt></dt> <dd>The maximum amount of time to
 wait for the output buffer to clear when sending data to a ClamAV
-scanner, in milliseconds. (defaults to $CLAMD_TIMEOUT below)</dd>
+scanner, in milliseconds. (defaults to <tt>$CLAMAV_TIMEOUT</tt>
+below)</dd>
 
-<dt><tt>$CLAMD_TIMEOUT</tt></dt> <dd>The maximum amount of time to wait
+<dt><tt>$CLAMAV_TIMEOUT</tt></dt> <dd>The maximum amount of time to wait
 for a response from the ClamAV scanner, in milliseconds. (defaults to
 5000)</dd>
+
+<dt><tt>$CLAMD_HOST</tt></dt> <dd>Sets the scanner host address if
+<tt>$CLAMAV_HOST</tt> is unset.</dd>
+
+<dt><tt>$CLAMD_PORT</tt></dt> <dd>Sets the scanner port address if
+<tt>$CLAMAV_PORT</tt> is unset.</dd>
+
+<dt><tt>$CLAMD_TIMEOUT</tt></dt> <dd>Sets the timeout value if
+<tt>$CLAMAV_TIMEOUT</tt> is unset.</dd>
 
 </dl>
 
