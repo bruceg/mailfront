@@ -19,6 +19,7 @@ EXTRAS = [
 	'README',
 	'TODO',
 	'*.html',
+	'plugin-prototype.c',
 	]
 
 # Set RPMUPLOAD to a list of additional hostname/path destinations to
