@@ -33,8 +33,11 @@ or 24 hours).
 href="http://www.faqs.org/rfcs/rfc1869.html">RFC 1869</a> extended
 parameters on the <tt>RCPT TO:</tt> and <tt>MAIL FROM:</tt> commands.
 
-<li>Initial greeting message is configureable by
-<tt>$SMTPGREETING</tt>.
+<li>Initial greeting message is configureable by <tt>$SMTPGREETING</tt>.
+If that is not set, the greeting is generated based on the domain name
+in <tt>${$PROTO}LOCALHOST</tt> set by the invoking <a
+href="http://cr.yp.to/proto/ucspi.txt">UCSPI</a> server such as <a
+href="http://cr.yp.to/ucspi-tcp/tcpserver.html">tcpserver</a>.
 
 <li>Supports <a href="http://www.faqs.org/rfcs/rfc1870.html">RFC
 1870</a> SMTP Service Extension for Message Size Declaration.

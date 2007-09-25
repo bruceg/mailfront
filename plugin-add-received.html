@@ -20,6 +20,18 @@ below.</p>
 
 <dt><tt>$HEADER_ADD</tt></dt> <dd>Additional headers</dd>
 
+<dt><tt>$PROTO</tt></dt> <dd>This and the following four environment
+variables are inserted into their respective parts in the standard
+<tt>Received:</tt> header described below.</dd>
+
+<dt><tt>${$PROTO}LOCALHOST</tt></dt> <dd></dd>
+
+<dt><tt>${$PROTO}LOCALIP</tt></dt> <dd></dd>
+
+<dt><tt>${$PROTO}REMOTEHOST</tt></dt> <dd></dd>
+
+<dt><tt>${$PROTO}REMOTEIP</tt></dt> <dd></dd>
+
 </dl>
 
 <h2>Sender Action</h2>
@@ -38,6 +50,12 @@ set and do not exactly match the current local host and IP, a
 other.  Then a standard <tt>Received:</tt> header is added.  Finally, if
 <tt>$HEADER_ADD</tt> is set, its contents are added to the message
 headers.</p>
+
+<p>The standard <tt>Received:</tt> header has the following format:</p>
+
+<pre>Received: from <i>helo_domain</i> (<i>remotehost</i> [<i>remoteip</i>]
+        by <i>localhost</i> ([<i>remoteip</i>])
+        with <i>protocol</i> via <i>transport</i>; <i>date</i></pre>
 
 <h2>Message Action</h2>
 
