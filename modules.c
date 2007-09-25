@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <msg/msg.h>
-#include "mailfront.h"
+#include "mailfront-internal.h"
 #include "conf_modules.c"
 
 static response resp_load = { 451, 0 };

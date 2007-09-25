@@ -7,7 +7,7 @@
 #include <path/path.h>
 #include <str/str.h>
 
-#include "mailfront.h"
+#include "mailfront-internal.h"
 
 static RESPONSE(no_sender,550,"5.1.0 Mail system is not configured to accept that sender");
 static RESPONSE(no_rcpt,550,"5.1.0 Mail system is not configured to accept that recipient");
@@ -185,6 +185,21 @@ int respond(const response* resp)
   for (msg = resp->message; (nl = strchr(msg, '\n')) != 0; msg = nl + 1)
     respond_line(resp->number, 0, msg, nl-msg);
   return respond_line(resp->number, 1, msg, strlen(msg));
+}
+
+const response* backend_data_block(const char* data, unsigned long len)
+{
+  return (session.fd >= 0)
+    ? (
+       (write(session.fd, data, len) != (ssize_t)len)
+       ? &resp_internal
+       : 0
+       )
+    : (
+       (session.backend->data_block != 0)
+       ? session.backend->data_block(data, len)
+       : 0
+       );
 }
 
 int scratchfile(void)

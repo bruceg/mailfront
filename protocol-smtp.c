@@ -10,6 +10,8 @@
 #include <msg/msg.h>
 #include <str/iter.h>
 
+extern struct protocol protocol;
+
 static RESPONSE(authfail, 421, "4.3.0 Failed to initialize AUTH");
 
 static str line = {0,0,0};
@@ -132,7 +134,7 @@ static int EHLO(void)
 {
   static str auth_resp;
   const response* resp;
-  session.protocol->name = "ESMTP";
+  protocol.name = "ESMTP";
   if ((resp = handle_helo(&arg)) != 0)
     return respond(resp);
 

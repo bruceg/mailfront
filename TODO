@@ -1,3 +1,9 @@
+- Look into having the core close the temporary file and reset the
+backend early on an error response.
+
+- Buglet: cvm-validate seg faults if you forget to set CVM_LOOKUP_SECRET?
+(John Levine)
+
 - Fix SASL "Authentication failed" message to include EMSS code
 
 - Write install document.

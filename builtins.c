@@ -1,4 +1,4 @@
-#include "mailfront.h"
+#include "mailfront-internal.h"
 
 static RESPONSE(accept,250,0);
 

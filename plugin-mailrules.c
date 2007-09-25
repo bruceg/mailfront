@@ -162,9 +162,7 @@ static void apply_environment(const str* s)
   unsigned len;
   for (i = 0; i < s->len; i += len + 1) {
     len = strlen(s->s + i);
-    if (session.env.len > 0)
-      str_catc(&session.env, NUL);
-    str_catb(&session.env, s->s + i, len);
+    session_putenv(s->s + i);
   }
 }
 

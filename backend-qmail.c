@@ -89,7 +89,7 @@ static const response* data_start(int fd)
 
   if (pipe(qqepipe) == -1) return &resp_no_pipe;
 
-  if (session.fd < 0) {
+  if (fd < 0) {
     if (pipe(qqmpipe) == -1) {
       close_qqpipe();
       return &resp_no_pipe;
@@ -117,7 +117,7 @@ static int retry_write(int fd, const char* bytes, unsigned long len)
 
 static const response* data_block(const char* bytes, unsigned long len)
 {
-  if (session.fd < 0) {
+  if (qqmpipe[1] >= 0) {
     if (!retry_write(qqmpipe[1], bytes, len))
       return &resp_no_write;
     databytes += len;
@@ -170,17 +170,17 @@ static const response* message_end(int fd)
   int status;
   struct stat st;
 
-  if (session.fd < 0) {
+  if (fd < 0) {
     close(qqmpipe[1]);
     qqmpipe[1] = -1;
   }
   else {
-    if (lseek(session.fd, 0, SEEK_SET) != 0)
+    if (lseek(fd, 0, SEEK_SET) != 0)
       return &resp_internal;
-    if (fstat(session.fd, &st) != 0)
+    if (fstat(fd, &st) != 0)
       return &resp_internal;
     databytes = st.st_size;
-    if (start_qq(session.fd, qqepipe[0]) == -1)
+    if (start_qq(fd, qqepipe[0]) == -1)
       return &resp_no_fork;
   }
   if (!retry_write(qqepipe[1], buffer.s, buffer.len+1)) return &resp_no_write;

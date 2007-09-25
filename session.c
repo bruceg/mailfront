@@ -2,11 +2,16 @@
 #include <stdlib.h>
 #include <msg/msg.h>
 #include <str/env.h>
-#include "mailfront.h"
+#include "mailfront-internal.h"
 
 struct session session = {
   .protocol = 0,
 };
+
+const char* session_protocol(void)
+{
+  return session.protocol->name;
+}
 
 const char* session_getenv(const char* name)
 {
@@ -49,6 +54,14 @@ int session_exportenv(void)
   for (i = 0; i < session.env.len; i += strlen(session.env.s + i) + 1)
     if (putenv(session.env.s + i) != 0) return 0;
   return 1;
+}
+
+int session_putenv(const char* s)
+{
+  if (session.env.len > 0)
+    if (!str_catc(&session.env, 0))
+      return 0;
+  return str_catb(&session.env, s, strlen(s) + 1);
 }
 
 int session_setenv(const char* name, const char* value, int overwrite)
