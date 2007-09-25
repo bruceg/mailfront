@@ -47,6 +47,10 @@ struct session
   struct ghash nums;
   str env;
   int fd;
+  struct plugin* plugin_list;
+  struct plugin* plugin_tail;
+  unsigned flags;
+  const char* module_path;
 };
 
 GHASH_DECL(session_strs,const char*,const char*);
@@ -80,9 +84,6 @@ int get_netstring_len(ibuf* in, unsigned long* i);
 int get_netstring(ibuf* in, str* s);
 
 /* From modules.c */
-extern struct plugin* plugin_list;
-extern struct plugin* plugin_tail;
-extern unsigned module_flags;
 extern void add_plugin(struct plugin*);
 extern const response* load_modules(const char* protocol_name,
 				    const char* backend_name,

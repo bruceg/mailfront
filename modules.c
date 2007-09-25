@@ -10,27 +10,22 @@ static RESPONSE(backend_version,451,"4.3.0 Backend ABI version mismatch");
 static RESPONSE(plugin_version,451,"4.3.0 Plugin ABI version mismatch");
 static RESPONSE(protocol_version,451,"4.3.0 Protocol ABI version mismatch");
 
-struct plugin* plugin_list = 0;
-struct plugin* plugin_tail = 0;
-unsigned module_flags = 0;
-static const char* module_path = 0;
-
 static void append_plugin(struct plugin* plugin)
 {
   plugin->next = 0;
-  if (plugin_tail == 0)
-    plugin_list = plugin;
+  if (session.plugin_tail == 0)
+    session.plugin_list = plugin;
   else
-    plugin_tail->next = plugin;
-  plugin_tail = plugin;
+    session.plugin_tail->next = plugin;
+  session.plugin_tail = plugin;
 }
 
 static void prepend_plugin(struct plugin* plugin)
 {
-  plugin->next = plugin_list;
-  plugin_list = plugin;
-  if (plugin_tail == 0)
-    plugin_tail = plugin;
+  plugin->next = session.plugin_list;
+  session.plugin_list = plugin;
+  if (session.plugin_tail == 0)
+    session.plugin_tail = plugin;
 }
 
 static struct plugin* remove_plugin(const char* name)
@@ -38,16 +33,16 @@ static struct plugin* remove_plugin(const char* name)
   struct plugin* curr;
   struct plugin* prev;
   if (name[0] == '*' && name[1] == 0)
-    plugin_list = plugin_tail = 0;
+    session.plugin_list = session.plugin_tail = 0;
   else {
-    for (prev = 0, curr = plugin_list;
+    for (prev = 0, curr = session.plugin_list;
 	 curr != 0;
 	 prev = curr, curr = curr->next) {
       if (strcmp(curr->name, name) == 0) {
 	if (((prev == 0)
-	     ? (plugin_list = curr->next)
+	     ? (session.plugin_list = curr->next)
 	     : (prev->next = curr->next)) == 0)
-	  plugin_tail = prev;
+	  session.plugin_tail = prev;
 	return curr;
       }
     }
@@ -61,7 +56,7 @@ static void* load_object(const char* type,
   static str tmpstr;
   void* handle;
   void* ptr;
-  str_copyf(&tmpstr, "s{/}s{-}s{.so}", module_path, type, name);
+  str_copyf(&tmpstr, "s{/}s{-}s{.so}", session.module_path, type, name);
   if ((handle = dlopen(tmpstr.s, RTLD_NOW | RTLD_LOCAL)) == 0
       || (ptr = dlsym(handle, type)) == 0) {
     str_copyf(&tmpstr, "{4.3.0 Error loading }s{ }s{: }s",
@@ -107,7 +102,7 @@ static const response* load_plugin(const char* name)
     }
   }
   add(plugin);
-  module_flags |= plugin->flags;
+  session.flags |= plugin->flags;
   return 0;
 }
 
@@ -141,8 +136,8 @@ const response* load_modules(const char* protocol_name,
 {
   const char* env;
   const response* r;
-  if ((module_path = getenv("MODULE_PATH")) == 0)
-    module_path = conf_modules;
+  if ((session.module_path = getenv("MODULE_PATH")) == 0)
+    session.module_path = conf_modules;
   if ((session.protocol = load_object("protocol", protocol_name)) == 0)
     return &resp_load;
   if (session.protocol->version != PROTOCOL_VERSION)
@@ -151,7 +146,7 @@ const response* load_modules(const char* protocol_name,
     return &resp_load;
   if (session.backend->version != PLUGIN_VERSION)
     return &resp_backend_version;
-  module_flags |= session.backend->flags;
+  session.flags |= session.backend->flags;
   while (*plugins != 0)
     if ((r = load_plugins(*plugins++)) != 0)
       return r;

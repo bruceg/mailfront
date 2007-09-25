@@ -26,7 +26,7 @@ static str tmp_prefix;
 #define MODULE_CALL(NAME,PARAMS,SHORT) do{ \
   struct plugin* plugin; \
   const response* tmp; \
-  for (plugin = plugin_list; plugin != 0; plugin = plugin->next) { \
+  for (plugin = session.plugin_list; plugin != 0; plugin = plugin->next) { \
     if (plugin->NAME != 0) { \
       if ((tmp = plugin->NAME PARAMS) != 0) { \
         resp = tmp; \
@@ -112,7 +112,7 @@ const response* handle_data_start(void)
     close(session.fd);
     session.fd = -1;
   }
-  if (module_flags & FLAG_NEED_FILE) {
+  if (session.flags & FLAG_NEED_FILE) {
     if ((session.fd = scratchfile()) == -1)
       return &resp_internal;
   }
@@ -132,7 +132,7 @@ void handle_data_bytes(const char* bytes, unsigned len)
   struct plugin* plugin;
   if (!response_ok(data_response))
     return;
-  for (plugin = plugin_list; plugin != 0; plugin = plugin->next)
+  for (plugin = session.plugin_list; plugin != 0; plugin = plugin->next)
     if (plugin->data_block != 0)
       if ((r = plugin->data_block(bytes, len)) != 0
 	   && !response_ok(r)) {
