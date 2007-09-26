@@ -1,0 +1,219 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">mailfront</a></h2>
+
+<h1>Plugin API</h1>
+
+<hr />
+
+<h2>Overview</h2>
+
+<h2>Plugin Structure</h2>
+
+<p>A mailfront plugin needs to define exactly one public symbol,
+"<tt>plugin</tt>".  All other public symbols are ignored.  That symbol
+is to be defined as follows:</p>
+
+<blockquote><pre>
+struct plugin plugin = {
+  .version = PLUGIN_VERSION,
+  .flags = 0,
+  .init = init,
+  .helo = helo,
+  .reset = reset,
+  .sender = sender,
+  .recipient = recipient,
+  .data_start = data_start,
+  .data_block = data_block,
+  .message_end = message_end,
+};
+</pre></blockquote>
+
+<p>All items in this structure except for <tt>.version</tt> may be
+omitted if they are not needed.  The <tt>.version</tt> field is a
+constant set to prevent loading of plugins that were built for an
+incompatible API.  The <tt>.flags</tt> field controls how certain parts
+of the plugin are called, and may be zero or more flags values (see
+below) ored together.  The remainder of the fields are hook functions
+which, if present, are called at the appropriate times in the message
+handling process.</p>
+
+<p>Note that backend modules have identical structure to plugins
+described here, except that the single required public symbol is named
+<tt>backend</tt> instead of <tt>plugin</tt>.  The backend hook functions
+are also always the last ones called (with the exception of
+<tt>data_start</tt> described below).  Protocol modules have an entirely
+different structure.</p>
+
+<h3>Flags</h3>
+
+<dl>
+
+<dt><tt>FLAG_NEED_FILE</tt></dt> <dd>If set, a temporary file is created
+and all message data is written to it.  The file descriptor for this
+temporary file is passed to the <tt>.data_start</tt> and
+<tt>.message_end</tt> hooks.</dd>
+
+</dl>
+
+<h2>Hook Functions</h2>
+
+<p>All hook functions return a <tt>response</tt> pointer or
+<tt>NULL</tt>.  This structure consists of two elements: an unsigned
+SMTP response code <tt>number</tt> and an ASCII <tt>message</tt>.  If
+the plugin returns a NULL response, processing continues to the next
+plugin in the chain.  If the plugin returns a response and either the
+response number is greater than or equal to 400 (ie an error) or the
+hook is short-circuiting (as indicated below), then no further hooks in
+the chain are called.  If the response was an error, the error is passed
+back through the protocol, otherwise processing continues to the
+backend.  Protocols that do not use the SMTP numbers (such as QMTP) will
+translate the number into something appropriate.</p>
+
+<p>All string parameters are passed as type <tt>str*</tt> and are
+modifiable.  If their value is changed, all subsequent plugins and the
+backend will see the modified form, as will the protocol module.  See
+the <a href="http://untroubled.org/bglibs/docs/group__str.html">bglibs
+str</a> documentation module for functions to use in manipulating these
+objects.</p>
+
+<p>Be aware that the <tt>sender</tt> and <tt>recipient</tt> hooks may be
+called before the message data is handled (as with the SMTP protocol) or
+after (as with the QMQP and QMTP protocol).  In either case, the
+<tt>reset</tt> hook will always be called before the message is started,
+and the <tt>message_end</tt> hook is called after the message has been
+completely transmitted.<p>
+
+<dl>
+
+<dt><tt>const response* init(void)</tt></dt> <dd>This hook is called
+once after all the plugins have been loaded.</dd>
+
+<dt><tt>const response* helo(str* hostname)</tt></dt> <dd>This hook is
+called when the SMTP <tt>HELO</tt> or <tt>EHLO</tt> commands are issued.
+As yet nothing actually uses the <tt>hostname</tt> string.  Other
+protocols will not call this hook.</dd>
+
+<dt><tt>const response* reset(void)</tt></dt> <dd>This hook is called
+when preparing to start a new message, with the intent that all modules
+will flush any data specific to the message.</dd>
+
+<dt><tt>const response* sender(str* address)</tt></dt> <dd>This hook is
+called after a sender email address is transmitted by the client, and is
+called exactly once per message.  This chain short-circuits on non-error
+response.</dd>
+
+<dt><tt>const response* recipient(str* address)</tt></dt> <dd>This hook
+is called after a sender email address is transmitted by the client, and
+may be called zero or more times per message.  This chain short-circuits
+on non-error responses.</dd>
+
+<dt><tt>const response* data_start(int fd)</tt></dt> <dd>This hook is
+called when the sender starts transmitting the message data.  Note that
+the backend is initialized <i>before</i> calling the plugin hooks, in
+order that plugins may send extra header data to the backend in this
+hook.</dd>
+
+<dt><tt>const response* data_block(const char* bytes, unsigned long
+len)</tt></dt> <dd>This hook is called as blocks of data are received
+from the sender.</dd>
+
+<dt><tt>const response* message_end(int fd)</tt></dt> <dd>This hook is
+called when the message has been completely transmitted by the
+sender.</dd>
+
+</dl>
+
+<h2>Session Data</h2>
+
+<p>The <tt>session</tt> structure contains all the current session data,
+including pointers to the protocol module, the backend module,
+environment variables, temporary message file descriptor, and internal
+named strings and numbers.  Plugins may use these internal named data
+items to store information for internal use or to pass to other plugins
+with the following functions.  Note that the string and number tables
+are independent and may contain items with the same names without
+conflicts.  The named strings work like environment variables but are
+not exposed when subprograms are executed.  The numbers work similarly,
+but the data type is <tt>unsigned long</tt> instead of a string
+pointer.</p>
+
+<dl>
+
+<dt><tt>const char* session_protocol(void)</tt></dt> <dd>Returns the
+name of the protocol front end module.</tt>
+
+<dt><tt>void session_delnum(const char* name)</tt></dt> <dd>Delete the
+named number from the session.</dd>
+
+<dt><tt>void session_delstr(const char* name)</tt></dt> <dd>Delete the
+named string from the session.</dd>
+
+<dt><tt>unsigned long session_getnum(const char* name, unsigned long
+dflt)</tt></dt> <dd>Get the named number from the session.  If the name
+is not present, <tt>dflt</tt> is returned.</dd>
+
+<dt><tt>int session_hasnum(const char* name, unsigned long*
+num)</tt></dt> <dd>Returns true if the named number is present in the
+session.</dd>
+
+<dt><tt>const char* session_getstr(const char* name)</tt></dt> <dd>Fetch
+the named string from the session.  If the name is not present,
+<tt>NULL</tt> is returned.</dd>
+
+<dt><tt>void session_setnum(const char* name, unsigned long
+value)</tt></dt> <dd>Set the named number in the session.</dd>
+
+<dt><tt>void session_setstr(const char* name, const char*
+value)</tt></dt> <dd>Set the named string in the session.</dd>
+
+</dl>
+
+<h2>Library Functions</h2>
+
+<dl>
+
+<dt><tt>const response* backend_data_block(const char* data, unsigned
+long len)</tt></dt> <dd>This routine writes a block of data directly to
+the backend.  It takes care of handling both writing to the temporary
+file if it was created or writing directly to the backend module.</dd>
+
+<dt><tt>const char* getprotoenv(const char* name)</tt></dt> <dd>Fetch
+the environment variable with the given name prefixed by the value of
+<tt>$PROTO</tt>.  For example, if <tt>$PROTO</tt> is set to
+"<tt>TCP</tt>" (as with <a
+href="http://cr.yp.to/ucspi-tcp/tcpserver.html">tcpserver</a>), then
+<tt>getprotoenv("LOCALIP")</tt> will get the environment variable named
+"<tt>TCPLOCALIP</tt>".</dd>
+
+<dt><tt>int scratchfile(void)</tt></dt> <dd>Create a new temporary file
+descriptor opened for reading and writing.  The temporary filename is
+unlinked before returning so that the temporary file will be deleted as
+soon as it is closed (by the plugin or when mailfront exits).</dd>
+
+<!-- <dt><tt></tt></dt> <dd></dd> -->
+
+</dl>
+
+<h2>Hints</h2>
+
+<h3>Rewriting the message body</h3>
+
+<p>Plugins that need to rewrite the message of the body should do so in
+the <tt>message_end</tt> hook.  Create a new temporary file descriptor
+with <tt>scratchfile()</tt> and write the complete new message to it.
+Then move the new temporary file over to the existing one with the
+following sequence:</p>
+
+<blockquote><pre>
+dup2(tmpfd, fd);
+close(tmpfd);
+</pre></blockquote>
+
+<p>Be sure to rewind the original file descriptor with
+<tt>lseek(fd,SEEK_SET,0)</tt> before using it, since the file position
+will normally be at the very end of the data.</p>
+
+</body>
+</html>

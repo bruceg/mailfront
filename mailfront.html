@@ -5,6 +5,7 @@
 
 <p><a href="pop3front.html">POP3 Front End</a>
 <br><a href="imapfront.html">IMAP Front End</a>
+<br><a href="plugin-api.html">Plugin API</a>
 </p>
 
 <hr />
@@ -63,9 +64,8 @@ plugins before any of their command line arguments or
 <p>The protocol module is responsible for all interaction at the network
 I/O level with the client.  It links into the system by calling down to
 the handler wrappers provided by mailfront, which in turn dispatches
-calls to the plugins and finally the backend.</p>
-
-<p>The following protocols are available:</p>
+calls to the plugins and finally the backend.  The following protocols
+are available:</p>
 
 <ul>
 
@@ -79,26 +79,10 @@ calls to the plugins and finally the backend.</p>
 
 <h2>Plugins</h2>
 
-<p>Plugins hook into the mail system at 5 main points:</p>
-
-<ol> <li>when the system is started or reset,</li> <li>when the sender
-address is received,</li> <li>when a recipient address is received,</li>
-<li>when data is received, and</li> <li>when the message is
-completed.</li> </ol>
-
-<p>At each of these events, mailfront goes through the list of loaded
-plugins. For each plugin that has a handler for such an event, mailfront
-calls that handler.  If the handler returns no response, control passes
-to the next handler, otherwise no further handlers are called.  If the
-returned code was an error, it is passed back to the protocol
-immediately, which will present it to the client.  If the sender or
-recipient handlers of all the plugins return no response, the address is
-considered rejected, and it is not passed on to the back end. This is
-done to prevent the default configuration from being an open relay.
-Plugins may modify the sender or recipient address, but not the data
-(yet).</p>
-
-<p>The following plugins are included in the main package:</p>
+<p>Plugins are used to enhance or alter the behavior of mailfront.
+Without any plugins loaded, mailfront does not accept any senders or
+recipients.  Plugins may intercept and modify all aspects of a message.
+The following plugins are included in the main package:</p>
 
 <ul>
 
@@ -138,11 +122,8 @@ Plugins may modify the sender or recipient address, but not the data
 
 <p>The backend is the final stage in incoming mail handling, and is
 responsible for passing the message on to the mail system.  It is
-invoked only if no plugin returned an error result.  Other than the
-above two differences, the backend is structured identically to the
-plugins described above.</p>
-
-<p>The following backends are available:</p>
+invoked only if no plugin generated an error.  The following backends
+are available:</p>
 
 <ul>
 
