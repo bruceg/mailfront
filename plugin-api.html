@@ -9,6 +9,25 @@
 
 <h2>Overview</h2>
 
+<p>Plugins hook into the mail system at 5 main points:</p>
+
+<ol> <li>when the system is started or reset,</li> <li>when the sender
+address is received,</li> <li>when a recipient address is received,</li>
+<li>when data is received, and</li> <li>when the message is
+completed.</li> </ol>
+
+<p>At each of these events, mailfront goes through the list of loaded
+plugins. For each plugin that has a handler for such an event, mailfront
+calls that handler.  If the handler returns no response, control passes
+to the next handler, otherwise no further handlers are called.  If the
+returned code was an error, it is passed back to the protocol
+immediately, which will present it to the client.  If the sender or
+recipient handlers of all the plugins return no response, the address is
+considered rejected, and it is not passed on to the back end. This is
+done to prevent the default configuration from being an open relay.
+Plugins may modify the sender or recipient address, as well as the
+message body.</p>
+
 <h2>Plugin Structure</h2>
 
 <p>A mailfront plugin needs to define exactly one public symbol,
