@@ -51,6 +51,29 @@ static const response* data_block(const char* bytes, unsigned long len)
 
 static const response* message_end(int fd)
 {
+  struct stat st;
+  char buf[1024];
+  long rd;
+  char* lf;
+  char* ptr;
+
+  if (fd >= 0) {
+    /* Log the first two lines of the message, usually a Received: header */
+    lseek(fd, 0, SEEK_SET);
+    rd = read(fd, buf, sizeof buf - 1);
+    buf[rd] = 0;
+    if ((lf = strchr(buf, LF)) != 0) {
+      str_copyb(&tmp, buf, lf-buf);
+      ptr = lf + 1;
+      if ((lf = strchr(ptr, LF)) != 0)
+	str_catb(&tmp, ptr, lf-ptr);
+      msg1(tmp.s);
+    }
+
+    fstat(fd, &st);
+    databytes = st.st_size;
+  }
+
   str_copys(&tmp, "Received ");
   str_catu(&tmp, databytes);
   str_cats(&tmp, " bytes.");
