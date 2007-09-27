@@ -1,0 +1,50 @@
+PLUGINS=qmail-validate:accept-sender
+
+QMAILHOME=$tmp/@notthere@
+export QMAILHOME
+sfecho <<EOF
+EOF
+
+QMAILHOME=$tmp/qmail
+export QMAILHOME
+mkdir -p $QMAILHOME/control
+echo badfrom@example.com >$QMAILHOME/control/badmailfrom
+echo @badfrom.com >>$QMAILHOME/control/badmailfrom
+echo rcpthost.com >$QMAILHOME/control/rcpthosts
+echo .subrcpthost.com >>$QMAILHOME/control/rcpthosts
+echo badrcpt@example.com >$QMAILHOME/control/badrcptto
+echo @badrcpt.com >>$QMAILHOME/control/badrcptto
+cdbmake $QMAILHOME/control/morercpthosts.cdb $QMAILHOME/tmp <<EOF
++16,0:morercpthost.com->
++20,0:.submorercpthost.com->
+
+EOF
+
+sfecho <<EOF
+MAIL FROM:<badfrom@example.com>
+MAIL FROM:<somebody@badfrom.com>
+MAIL FROM:<goodfrom@example.com>
+RCPT TO:<badrcpt@example.com>
+RCPT TO:<somebody@badrcpt.com>
+RCPT TO:<nobody@nowhere>
+RCPT TO:<somebody@rcpthost.com>
+RCPT TO:<somebody@else.subrcpthost.com>
+RCPT TO:<somebody@morercpthost.com>
+RCPT TO:<somebody@else.submorercpthost.com>
+EOF
+
+rm -r $QMAILHOME
+unset QMAILHOME
+
+<result>
+451 4.3.0 Could not change to the qmail directory.^M
+553 5.1.0 Sorry, your envelope sender is in my badmailfrom list.^M
+553 5.1.0 Sorry, your envelope sender is in my badmailfrom list.^M
+250 Sender='goodfrom@example.com'.^M
+553 5.1.1 Sorry, that address is in my badrcptto list.^M
+553 5.1.1 Sorry, that address is in my badrcptto list.^M
+550 5.1.0 Mail system is not configured to accept that recipient^M
+250 Recipient='somebody@rcpthost.com'.^M
+250 Recipient='somebody@else.subrcpthost.com'.^M
+250 Recipient='somebody@morercpthost.com'.^M
+250 Recipient='somebody@else.submorercpthost.com'.^M

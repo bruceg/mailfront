@@ -12,8 +12,6 @@ backend early on an error response.
 
 - Tests:
   - Test application of environment variables in mail rules
-  - Test rcpthosts/morercpthosts.cdb normal/wildcard behavior in
-    plugin-qmail-validate
 
 Plugin: clamav
 
