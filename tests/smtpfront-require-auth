@@ -1,4 +1,4 @@
-PLUGINS=require-auth:relayclient:qmail-validate:accept
+PLUGINS=require-auth:relayclient:accept
 
 export CVM_SASL_PLAIN=$tmp/cvm
 

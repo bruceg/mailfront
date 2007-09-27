@@ -1,4 +1,4 @@
-PLUGINS=relayclient:qmail-validate:accept-sender
+PLUGINS=relayclient:accept-sender
 
 sfecho <<EOF
 AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
