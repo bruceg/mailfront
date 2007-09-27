@@ -27,7 +27,7 @@ static const response* reset(void)
 
 /* The sender function is called exactly once per message. The parameter
  * is the sender email addres, and may be modified. */
-static const response* sender(str* sender)
+static const response* sender(str* address)
 {
   return 0;
 }
@@ -35,7 +35,7 @@ static const response* sender(str* sender)
 /* The recipient function is called one or more times per message, once
  * for each recipient.  The parameter is the recipient email address,
  * and may be modified. */
-static const response* recipient(str* recipient)
+static const response* recipient(str* address)
 {
   return 0;
 }
