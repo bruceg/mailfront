@@ -23,15 +23,18 @@ extern void report_io_bytes(void);
 
 static str tmp_prefix;
 
-#define MODULE_CALL(NAME,PARAMS,SHORT) do{ \
+#define MODULE_CALL(NAME,PARAMS,SHORT,RESET) do{ \
   struct plugin* plugin; \
   const response* tmp; \
   for (plugin = session.plugin_list; plugin != 0; plugin = plugin->next) { \
     if (plugin->NAME != 0) { \
       if ((tmp = plugin->NAME PARAMS) != 0) { \
         resp = tmp; \
-        if (!response_ok(resp)) \
+        if (!response_ok(resp)) { \
+          if (RESET) \
+            handle_reset(); \
           return resp; \
+        } \
         else if (SHORT) \
           break; \
       } \
@@ -47,7 +50,7 @@ const response* handle_init(void)
 
   set_timeout();
 
-  MODULE_CALL(init, (), 0);
+  MODULE_CALL(init, (), 0, 0);
 
   if (session.backend->init != 0)
     return session.backend->init();
@@ -57,7 +60,7 @@ const response* handle_init(void)
 const response* handle_helo(str* host)
 {
   const response* resp;
-  MODULE_CALL(helo, (host), 0);
+  MODULE_CALL(helo, (host), 0, 0);
   session_setstr("helo_domain", host->s);
   return 0;
 }
@@ -71,7 +74,7 @@ const response* handle_reset(void)
   }
   if (session.backend->reset != 0)
     session.backend->reset();
-  MODULE_CALL(reset, (), 0);
+  MODULE_CALL(reset, (), 0, 0);
   return resp;
 }
 
@@ -79,7 +82,7 @@ const response* handle_sender(str* sender)
 {
   const response* resp = 0;
   const response* tmpresp = 0;
-  MODULE_CALL(sender, (sender), 1);
+  MODULE_CALL(sender, (sender), 1, 0);
   if (resp == 0)
     return &resp_no_sender;
   if (session.backend->sender != 0)
@@ -93,7 +96,7 @@ const response* handle_recipient(str* recip)
 {
   const response* resp = 0;
   const response* hresp = 0;
-  MODULE_CALL(recipient, (recip), 1);
+  MODULE_CALL(recipient, (recip), 1, 0);
   if (resp == 0)
     return &resp_no_rcpt;
   if (session.backend->recipient != 0)
@@ -116,13 +119,15 @@ const response* handle_data_start(void)
     if ((session.fd = scratchfile()) == -1)
       return &resp_internal;
   }
+  data_response = 0;
   if (session.backend->data_start != 0)
     resp = session.backend->data_start(session.fd);
   if (response_ok(resp))
-    MODULE_CALL(data_start, (session.fd), 0);
-  data_response = response_ok(resp)
-    ? 0
-    : resp;
+    MODULE_CALL(data_start, (session.fd), 0, 1);
+  if (!response_ok(resp)) {
+    handle_reset();
+    data_response = resp;
+  }
   return resp;
 }
 
@@ -136,14 +141,17 @@ void handle_data_bytes(const char* bytes, unsigned len)
     if (plugin->data_block != 0)
       if ((r = plugin->data_block(bytes, len)) != 0
 	   && !response_ok(r)) {
+	handle_reset();
 	data_response = r;
 	return;
       }
   if (session.backend->data_block != 0)
     session.backend->data_block(bytes, len);
   if (session.fd >= 0)
-    if (write(session.fd, bytes, len) != (ssize_t)len)
+    if (write(session.fd, bytes, len) != (ssize_t)len) {
+      handle_reset();
       data_response = &resp_internal;
+    }
 }
 
 const response* handle_message_end(void)
@@ -151,12 +159,14 @@ const response* handle_message_end(void)
   const response* resp = 0;
   if (!response_ok(data_response))
     return data_response;
-  MODULE_CALL(message_end, (session.fd), 0);
+  MODULE_CALL(message_end, (session.fd), 0, 1);
   if (session.backend->message_end != 0)
     resp = session.backend->message_end(session.fd);
   if (session.fd >= 0)
     close(session.fd);
   session.fd = -1;
+  if (!response_ok(resp))
+    handle_reset();
   return resp;
 }
 

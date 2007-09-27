@@ -100,9 +100,9 @@ objects.</p>
 <p>Be aware that the <tt>sender</tt> and <tt>recipient</tt> hooks may be
 called before the message data is handled (as with the SMTP protocol) or
 after (as with the QMQP and QMTP protocol).  In either case, the
-<tt>reset</tt> hook will always be called before the message is started,
-and the <tt>message_end</tt> hook is called after the message has been
-completely transmitted.<p>
+<tt>reset</tt> hook will always be called at least once before the
+message is started, and the <tt>message_end</tt> hook is called after
+the message has been completely transmitted.<p>
 
 <dl>
 
@@ -116,7 +116,8 @@ protocols will not call this hook.</dd>
 
 <dt><tt>const response* reset(void)</tt></dt> <dd>This hook is called
 when preparing to start a new message, with the intent that all modules
-will flush any data specific to the message.</dd>
+will flush any data specific to the message, as well as after error
+responses to the sender address or data.</dd>
 
 <dt><tt>const response* sender(str* address)</tt></dt> <dd>This hook is
 called after a sender email address is transmitted by the client, and is
