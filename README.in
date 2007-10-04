@@ -21,8 +21,8 @@ To subscribe, send an email to:
 A mailing list archive is available at:
 	http://lists.untroubled.org/?list=bgware
 
-Development versions of @PACKAGE@ are available via Subversion at:
-	svn://bruce-guenter.dyndns.org/@PACKAGE@/trunk
+Development versions of @PACKAGE@ are available via git at:
+	http://bruce-guenter.dyndns.org/git/@PACKAGE@.git
 
 Requirements:
 
@@ -31,12 +31,8 @@ Requirements:
 
 Installation:
 
-- Build the sources by running "make"
-- Run the "instshow" command to see what will be installed (optional).
-- After the package has been compiled, run the following commands as root:
-	./installer
-	./instcheck
-  These commands will produce no output if there are no errors.
+- Build the sources by running "make".
+- After the package has been compiled, run "make install" as root.
 
 Configuration:
 
