@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------
 Changes in version 1.15
 
+- Added a SpamAssassin scanning plugin.
+
 - Optimized pop3front-maildir to avoid stat'ing each message twice, and
   to use sizes recorded in the filename to avoid stat'ing entirely.
 
