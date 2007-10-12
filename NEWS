@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+Changes in version 1.12
+
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 1.11
 
 - Fixed the main mailfront program to clean up temporary files properly.
