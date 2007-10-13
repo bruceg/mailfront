@@ -1,0 +1,66 @@
+PLUGINS=mailrules:counters:accept
+DATABYTES=1000
+export DATABYTES
+
+cat >$tmp/rules <<EOF
+ka@example.com:*::123
+EOF
+
+MAILRULES=$tmp/rules
+
+sfecho <<EOF
+EHLO hostname
+MAIL FROM:<a@example.com>
+MAIL FROM:<a@example.com> SIZE
+MAIL FROM:<a@example.com> SIZE=
+MAIL FROM:<a@example.com> SIZE=100
+MAIL FROM:<a@example.com> SIZE=123
+MAIL FROM:<a@example.com> SIZE=124
+RCPT TO:<nobody@example.net>
+MAIL FROM:<a@example.com>
+RCPT TO:<nobody@example.com>
+DATA
+datadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadata
+datadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadata
+datadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadata
+datadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadata
+.
+EHLO hostname
+MAIL FROM:<b@example.com>
+RCPT TO:<nobody@example.com>
+DATA
+datadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadata
+datadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadata
+datadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadata
+datadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadatadata
+.
+EOF
+
+rm -f $tmp/rules
+
+<result>
+250-local.host^M
+250-SIZE 1000^M
+250-8BITMIME^M
+250-ENHANCEDSTATUSCODES^M
+250 PIPELINING^M
+250 OK^M
+250 OK^M
+250 OK^M
+250 OK^M
+250 OK^M
+552 5.2.3 The message would exceed the maximum message size.^M
+503 5.5.1 You must send MAIL FROM: first^M
+250 OK^M
+250 Recipient='nobody@example.com'.^M
+354 End your message with a period on a line by itself.^M
+552 5.2.3 Sorry, that message exceeds the maximum message length.^M
+250-local.host^M
+250-SIZE 1000^M
+250-8BITMIME^M
+250-ENHANCEDSTATUSCODES^M
+250 PIPELINING^M
+250 Sender='b@example.com'.^M
+250 Recipient='nobody@example.com'.^M
+354 End your message with a period on a line by itself.^M
+250 Received 308 bytes.^M

@@ -1,8 +1,8 @@
 PLUGINS=mailrules:counters:accept
 
 cat >$tmp/rules <<EOF
-k*:a@example.com::1
-k*:b@example.com::9999
+k*:a@example.com::9999
+k*:b@example.com::1
 k*:c@example.com::
 EOF
 
@@ -10,7 +10,20 @@ MAILRULES=$tmp/rules
 
 sfecho <<EOF
 EHLO hostname
-MAIL FROM:<somebody@example.net>
+MAIL FROM:<somebody@example.net> SIZE=10000
+RCPT TO:<a@example.com>
+DATA
+testing
+.
+EHLO hostname
+MAIL FROM:<somebody@example.net> SIZE=10000
+RCPT TO:<a@example.com>
+RCPT TO:<b@example.com>
+DATA
+testing
+.
+EHLO hostname
+MAIL FROM:<somebody@example.net> SIZE=10000
 RCPT TO:<a@example.com>
 RCPT TO:<b@example.com>
 RCPT TO:<c@example.com>
@@ -22,6 +35,25 @@ EOF
 rm -f $tmp/rules
 
 <result>
+250-local.host^M
+250-SIZE 0^M
+250-8BITMIME^M
+250-ENHANCEDSTATUSCODES^M
+250 PIPELINING^M
+250 Sender='somebody@example.net'.^M
+250 OK^M
+354 End your message with a period on a line by itself.^M
+250 Received 8 bytes.^M
+250-local.host^M
+250-SIZE 0^M
+250-8BITMIME^M
+250-ENHANCEDSTATUSCODES^M
+250 PIPELINING^M
+250 Sender='somebody@example.net'.^M
+250 OK^M
+250 OK^M
+354 End your message with a period on a line by itself.^M
+552 5.2.3 Sorry, that message exceeds the maximum message length.^M
 250-local.host^M
 250-SIZE 0^M
 250-8BITMIME^M

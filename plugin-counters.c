@@ -37,6 +37,7 @@ static const response* init(void)
 
 static const response* reset(void)
 {
+  minenv("maxdatabytes", "DATABYTES");
   rcpt_count = 0;
   return 0;
 }

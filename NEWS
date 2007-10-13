@@ -3,6 +3,8 @@ Changes in version 1.12
 
 - Fixed problem with overwriting existing session data items.
 
+- Fixed several problems with handling of databytes in rules.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
