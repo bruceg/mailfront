@@ -100,6 +100,8 @@ const char* session_getstr(const char* name)
 
 void session_setstr(const char* name, const char* value)
 {
+  /* FIXME: use _set when bglibs 1.103 is released */
+  session_strs_remove(&session.nums, &name);
   if (session_strs_add(&session.strs, &name, &value) == 0)
     die_oom(111);
 }
@@ -124,6 +126,8 @@ unsigned long session_getnum(const char* name, unsigned long dflt)
 
 void session_setnum(const char* name, unsigned long value)
 {
+  /* FIXME: use _set when bglibs 1.103 is released */
+  session_nums_remove(&session.nums, &name);
   if (session_nums_add(&session.nums, &name, &value) == 0)
     die_oom(111);
 }
