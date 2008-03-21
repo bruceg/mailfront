@@ -5,6 +5,8 @@ Changes in version 1.12
 
 - Fixed several problems with handling of databytes in rules.
 
+- Fixed crash in plugin cvm-validate when the lookup secret was unset.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
