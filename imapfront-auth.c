@@ -71,7 +71,7 @@ void log_start(const char* tagstr)
 void log_str(const char* msg) { obuf_puts(&errbuf, msg); }
 void log_end(void) { obuf_putsflush(&errbuf, "\n"); }
 
-void log(const char* tagstr, const char* msg)
+void logmsg(const char* tagstr, const char* msg)
 {
   log_start(tagstr);
   log_str(msg);

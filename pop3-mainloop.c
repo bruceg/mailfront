@@ -52,7 +52,7 @@ static void dispatch_line(void)
 
   for (c = commands; c->name != 0; ++c) {
     if (str_diffs(&cmd, c->name) == 0) {
-      log(c->sanitized ? c->sanitized : line.s);
+      logmsg(c->sanitized ? c->sanitized : line.s);
       if (arg.len == 0) {
 	if (c->fn0 == 0)
 	  respond(err_syntax);
@@ -68,7 +68,7 @@ static void dispatch_line(void)
       return;
     }
   }
-  log(line.s);
+  logmsg(line.s);
   respond(err_unimpl);
 }
 

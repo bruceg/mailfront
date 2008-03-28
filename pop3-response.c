@@ -35,7 +35,7 @@ const char err_unimpl[] = "-ERR Unimplemented";
 const char ok[] = "+OK ";
 const char err_syntax[] = "-ERR Syntax error";
 
-void log(const char* msg)
+void logmsg(const char* msg)
 {
   obuf_puts(&errbuf, program);
   obuf_putc(&errbuf, '[');
@@ -48,7 +48,7 @@ void log(const char* msg)
 
 void respond(const char* msg)
 {
-  log(msg);
+  logmsg(msg);
   if (!obuf_puts(&outbuf, msg) ||
       !obuf_putsflush(&outbuf, CRLF))
     exit(1);
