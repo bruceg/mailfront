@@ -1,0 +1,29 @@
+pfauth $tmp/cvm <<EOF
+CAPA
+EOF
+
+export CVM_SASL_PLAIN=$tmp/cvm
+pfauth $tmp/cvm <<EOF
+CAPA
+EOF
+
+pfmaildir $maildir <<EOF
+CAPA
+EOF
+
+<result>
++OK ^M
+TOP^M
+UIDL^M
+USER^M
+.^M
++OK ^M
+SASL LOGIN PLAIN^M
+TOP^M
+UIDL^M
+USER^M
+.^M
++OK ^M
+TOP^M
+UIDL^M
+.^M

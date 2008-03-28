@@ -1,5 +1,5 @@
 /* pop3front-maildir.c -- POP3 main program
- * Copyright (C) 2005  Bruce Guenter <bruceg@em.ca> or FutureQuest, Inc.
+ * Copyright (C) 2008  Bruce Guenter <bruceg@em.ca> or FutureQuest, Inc.
  * Development of this program was sponsored by FutureQuest, Inc.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -234,6 +234,16 @@ static int add_flag(str* fn, char flag)
 }
 
 /* Commands ******************************************************************/
+static void cmd_capa(void)
+{
+  respond(ok);
+  obuf_puts(&outbuf, "TOP");
+  obuf_puts(&outbuf, CRLF);
+  obuf_puts(&outbuf, "UIDL");
+  obuf_puts(&outbuf, CRLF);
+  respond(".");
+}
+
 static void cmd_dele(const str* arg)
 {
   long i;
@@ -397,6 +407,7 @@ static void cmd_uidl_one(const str* arg)
 }
 
 command commands[] = {
+  { "CAPA", cmd_capa, 0,            0 },
   { "DELE", 0,        cmd_dele,     0 },
   { "LAST", cmd_last, 0,            0 },
   { "LIST", cmd_list, cmd_list_one, 0 },

@@ -12,6 +12,9 @@ Changes in version 1.12
   http://www.tools.ietf.org/html/draft-myers-sasl-pop3-05
   Thanks Bernhard Graf for the initial patch
 
+- pop3front-auth and -maildir now support the CAPA command.
+  Thanks Bernhard Graf for the initial patch
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
