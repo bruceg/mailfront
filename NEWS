@@ -15,6 +15,9 @@ Changes in version 1.12
 - pop3front-auth and -maildir now support the CAPA command.
   Thanks Bernhard Graf for the initial patch
 
+- Made imapfront-auth more compatible with Courier IMAP by adding extra
+  bits to the CAPABILITY command.  Thanks Bernhard Graf.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

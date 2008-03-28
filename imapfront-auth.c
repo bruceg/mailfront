@@ -225,9 +225,22 @@ void cmd_logout(void)
 
 void cmd_capability(void)
 {
+  const char *p;
+
   respond_start(NOTAG);
-  respond_str("CAPABILITY IMAP4rev1 ");
-  respond_str(capability);
+  respond_str("CAPABILITY IMAP4rev1");
+  if (*capability != 0) {
+    respond_str(" ");
+    respond_str(capability);
+  }
+  if ((p = getenv("IMAP_ACL")) && atoi(p))
+    respond_str(" ACL ACL2=UNION");
+  if ((p = getenv("OUTBOX")) && *p) {
+    respond_str(" XCOURIEROUTBOX=INBOX");
+    respond_str(p);
+  }
+  if ((p = getenv("IMAP_MOVE_EXPUNGE_TO_TRASH")) && atoi(p))
+    respond_str(" XMAGICTRASH");
   respond_end();
   respond(0, "OK CAPABILITY completed");
 }
