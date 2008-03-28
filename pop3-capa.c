@@ -28,6 +28,12 @@
 #include <cvm/sasl.h>
 #include "pop3.h"
 
+static const char caps[] =
+  "PIPELINING\r\n"
+  "TOP\r\n"
+  "UIDL\r\n"
+  "USER\r\n";
+
 static str auth_resp;
 
 void cmd_capa(void)
@@ -45,11 +51,6 @@ void cmd_capa(void)
     obuf_write(&outbuf, auth_resp.s + 5, auth_resp.len - 5);
     obuf_puts(&outbuf, CRLF);
   }
-  obuf_puts(&outbuf, "TOP");
-  obuf_puts(&outbuf, CRLF);
-  obuf_puts(&outbuf, "UIDL");
-  obuf_puts(&outbuf, CRLF);
-  obuf_puts(&outbuf, "USER");
-  obuf_puts(&outbuf, CRLF);
+  obuf_puts(&outbuf, caps);
   respond(".");
 }
