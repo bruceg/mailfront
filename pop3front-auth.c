@@ -1,5 +1,5 @@
 /* pop3front-auth.c -- POP3 authentication front-end
- * Copyright (C) 2005  Bruce Guenter <bruceg@em.ca> or FutureQuest, Inc.
+ * Copyright (C) 2008  Bruce Guenter <bruceg@em.ca> or FutureQuest, Inc.
  * Development of this program was sponsored by FutureQuest, Inc.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -23,9 +23,11 @@
  * ossi@FutureQuest.net
  */
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <cvm/v2client.h>
 #include <iobuf/iobuf.h>
+#include <str/iter.h>
 #include <str/str.h>
 #include <cvm/sasl.h>
 #include "pop3.h"
@@ -51,6 +53,35 @@ static void do_exec(void)
     respond("-ERR Could not execute second stage");
   }
   _exit(1);
+}
+
+static void cmd_auth_none(void)
+{
+  static str auth_resp;
+  striter i;
+
+  switch (sasl_auth_caps(&auth_resp)) {
+  case 0:
+    respond(ok);
+    break;
+  case 1:
+    if (auth_resp.len <= 5) {
+      respond(err_internal);
+      return;
+    }
+    respond(ok);
+    str_lcut(&auth_resp, 5);
+    str_strip(&auth_resp);
+    striter_loop(&i, &auth_resp, ' ') {
+      obuf_write(&outbuf, i.startptr, i.len);
+      obuf_puts(&outbuf, CRLF);
+    }
+    break;
+  default:
+    respond(err_internal);
+    return;
+  }
+  respond(".");
 }
 
 static void cmd_auth(const str* s)
@@ -93,11 +124,11 @@ static void cmd_quit(void)
 }
 
 command commands[] = {
-  { "AUTH", 0,        cmd_auth, 0 },
-  { "PASS", 0,        cmd_pass, "PASS XXXXXXXX" },
-  { "QUIT", cmd_quit, 0,        0 },
-  { "USER", 0,        cmd_user, 0 },
-  { 0,      0,        0,        0 }
+  { "AUTH", cmd_auth_none, cmd_auth, 0 },
+  { "PASS", 0,             cmd_pass, "PASS XXXXXXXX" },
+  { "QUIT", cmd_quit,      0,        0 },
+  { "USER", 0,             cmd_user, 0 },
+  { 0,      0,             0,        0 }
 };
 
 int startup(int argc, char* argv[])

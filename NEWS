@@ -7,6 +7,11 @@ Changes in version 1.12
 
 - Fixed crash in plugin cvm-validate when the lookup secret was unset.
 
+- pop3front-auth now supports a no-argument variant on the AUTH command,
+  used by KMail to test for authentication modes, and documented in
+  http://www.tools.ietf.org/html/draft-myers-sasl-pop3-05
+  Thanks Bernhard Graf for the initial patch
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

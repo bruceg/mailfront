@@ -1,0 +1,18 @@
+pfauth false <<EOF
+AUTH
+EOF
+
+export CVM_SASL_PLAIN=$tmp/cvm
+
+pfauth false <<EOF
+AUTH
+EOF
+
+unset CVM_SASL_PLAIN
+<result>
++OK ^M
+.^M
++OK ^M
+LOGIN^M
+PLAIN^M
+.^M
