@@ -234,16 +234,6 @@ static int add_flag(str* fn, char flag)
 }
 
 /* Commands ******************************************************************/
-static void cmd_capa(void)
-{
-  respond(ok);
-  obuf_puts(&outbuf, "TOP");
-  obuf_puts(&outbuf, CRLF);
-  obuf_puts(&outbuf, "UIDL");
-  obuf_puts(&outbuf, CRLF);
-  respond(".");
-}
-
 static void cmd_dele(const str* arg)
 {
   long i;

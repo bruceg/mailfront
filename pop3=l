@@ -1,4 +1,5 @@
 iobytes.o
 timeout.o
+pop3-capa.o
 pop3-mainloop.o
 pop3-response.o

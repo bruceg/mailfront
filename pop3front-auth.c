@@ -55,31 +55,6 @@ static void do_exec(void)
   _exit(1);
 }
 
-static void cmd_capa(void)
-{
-  static str auth_resp;
-  int sasl;
-
-  if ((sasl = sasl_auth_caps(&auth_resp)) == -1
-      || (sasl == 1 && auth_resp.len <= 5)) {
-    respond(err_internal);
-    return;
-  }
-  respond(ok);
-  if (sasl) {
-    obuf_puts(&outbuf, "SASL ");
-    obuf_write(&outbuf, auth_resp.s + 5, auth_resp.len - 5);
-    obuf_puts(&outbuf, CRLF);
-  }
-  obuf_puts(&outbuf, "TOP");
-  obuf_puts(&outbuf, CRLF);
-  obuf_puts(&outbuf, "UIDL");
-  obuf_puts(&outbuf, CRLF);
-  obuf_puts(&outbuf, "USER");
-  obuf_puts(&outbuf, CRLF);
-  respond(".");
-}
-
 static void cmd_auth_none(void)
 {
   static str auth_resp;
