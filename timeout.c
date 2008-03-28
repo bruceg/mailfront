@@ -35,6 +35,7 @@ extern const int authenticating;
 static void handle_alarm(int unused)
 {
   exit(0);
+  (void)unused;
 }
 
 void set_timeout(void)
