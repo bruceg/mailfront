@@ -1,5 +1,5 @@
 /* pop3-response.c - POP3 responses
- * Copyright (C) 2001  Bruce Guenter <bruceg@em.ca> or FutureQuest, Inc.
+ * Copyright (C) 2008  Bruce Guenter <bruce@untroubled.org> or FutureQuest, Inc.
  * Development of this program was sponsored by FutureQuest, Inc.
  *
  * This program is free software; you can redistribute it and/or modify it

@@ -9,7 +9,7 @@ BuildRoot: %{_tmppath}/@PACKAGE@-buildroot
 BuildRequires: bglibs >= 1.101
 BuildRequires: cvm-devel >= 0.81
 URL: http://untroubled.org/@PACKAGE@/
-Packager: Bruce Guenter <bruceg@em.ca>
+Packager: Bruce Guenter <bruce@untroubled.org>
 
 %description
 This is mailfront, a package containing customizeable network front-ends

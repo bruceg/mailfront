@@ -1,5 +1,5 @@
 /* imapfront-auth.c - IMAP authentication front-end
- * Copyright (C) 2005  Bruce Guenter <bruceg@em.ca> or FutureQuest, Inc.
+ * Copyright (C) 2008  Bruce Guenter <bruce@untroubled.org> or FutureQuest, Inc.
  * Development of this program was sponsored by FutureQuest, Inc.
  *
  * This program is free software; you can redistribute it and/or modify it
