@@ -18,6 +18,9 @@ Changes in version 1.12
 - Made imapfront-auth more compatible with Courier IMAP by adding extra
   bits to the CAPABILITY command.  Thanks Bernhard Graf.
 
+- plugin-cvm-validate handles modules that provide an "out of scope"
+  fact by passing to the next plugin.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

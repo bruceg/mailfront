@@ -42,6 +42,7 @@ static const response* validate_recipient(str* recipient)
 {
   struct cvm_credential creds[3];
   unsigned i;
+  unsigned long u;
   const response* r = &resp_failed;
 
   if (cvm_lookup == 0) return 0;
@@ -56,7 +57,13 @@ static const response* validate_recipient(str* recipient)
       && str_copys(&creds[2].value, lookup_secret)) {
     switch (cvm_authenticate(cvm_lookup, cred_count, creds)) {
     case 0: r = 0; break;
-    case CVME_PERMFAIL: r = &resp_norcpt;
+    case CVME_PERMFAIL:
+      /* Return a "pass" result if the CVM declared the address to be
+       * out of scope. */
+      r = (cvm_client_fact_uint(CVM_FACT_OUTOFSCOPE, &u) == 0
+	   && u == 1)
+	? 0
+	: &resp_norcpt;
     }
   }
   str_free(&creds[0].value);
