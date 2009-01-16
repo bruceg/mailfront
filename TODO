@@ -43,8 +43,6 @@ Protocol: SMTP
 
 - pop3front:
 
-  - Add support for CAPA command (RFC 2449)
-
   - Properly re-parse flags in cmd_quit
 
   - Split the generic protocol handling bits from pop3front-maildir (low
