@@ -85,13 +85,16 @@ temporary file is passed to the <tt>.data_start</tt> and
 <tt>NULL</tt>.  This structure consists of two elements: an unsigned
 SMTP response code <tt>number</tt> and an ASCII <tt>message</tt>.  If
 the plugin returns a NULL response, processing continues to the next
-plugin in the chain.  If the plugin returns a response and either the
-response number is greater than or equal to 400 (ie an error) or the
-hook is short-circuiting (as indicated below), then no further hooks in
-the chain are called.  If the response was an error, the error is passed
-back through the protocol, otherwise processing continues to the
+plugin in the chain (ie pass-through).  If the plugin returns a response
+and either the response number is greater than or equal to 400 (ie an
+error) or the hook is short-circuiting (as indicated below), then no
+further hooks in the chain are called.  Response numbers less than 400
+are treated as acceptance.  If the response was an error, the error is
+passed back through the protocol, otherwise processing continues to the
 backend.  Protocols that do not use the SMTP numbers (such as QMTP) will
-translate the number into something appropriate.</p>
+translate the number into something appropriate.  Error numbers between
+400 and 499 inclusive are considered "temporary" errors.  All others are
+considered "permanent" failures (ie reject).</p>
 
 <p>All string parameters are passed as type <tt>str*</tt> and are
 modifiable.  If their value is changed, all subsequent plugins and the
