@@ -21,6 +21,9 @@ Changes in version 1.12
 - plugin-cvm-validate handles modules that provide an "out of scope"
   fact by passing to the next plugin.
 
+- Fixed handling of addresses without a domain in @file rules.
+  Thanks Jorge Valdes
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

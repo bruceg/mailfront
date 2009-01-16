@@ -10,6 +10,8 @@ EOF
 MAILRULES=$tmp/rules
 
 sfecho <<EOF
+MAIL FROM:<>
+RCPT TO:<a@example.com>
 MAIL FROM:<a@example.net>
 RCPT TO:<a@example.com>
 RCPT TO:<b@example.com>
@@ -21,6 +23,8 @@ EOF
 rm -f $tmp/rules
 
 <result>
+250 Sender=''.^M
+250 Recipient='a@example.com'.^M
 250 Sender='a@example.net'.^M
 250 K1^M
 250 K2^M

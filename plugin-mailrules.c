@@ -311,8 +311,11 @@ static int matches(const struct pattern* pattern,
   static str domain;
   int result;
   if (pattern->cdb != 0) {
-    if (pattern->pattern.s[2] == '@')
-      result = cdb_find(pattern->cdb, atdomain->s+1, atdomain->len-1) != 0;
+    if (pattern->pattern.s[2] == '@') {
+      result = (atdomain->len == 0)
+	? 0
+	: cdb_find(pattern->cdb, atdomain->s+1, atdomain->len-1) != 0;
+    }
     else {
       result = (cdb_find(pattern->cdb, addr->s, addr->len) != 0) ?
 	1 :
@@ -321,8 +324,12 @@ static int matches(const struct pattern* pattern,
   }
   else if (pattern->file != 0) {
     if (pattern->pattern.s[2] == '@') {
-      str_copyb(&domain, atdomain->s+1, atdomain->len-1);
-      result = dict_get(pattern->file, &domain) != 0;
+      if (atdomain->len > 0) {
+	str_copyb(&domain, atdomain->s+1, atdomain->len-1);
+	result = dict_get(pattern->file, &domain) != 0;
+      }
+      else
+	result = 0;
     }
     else {
       result = (dict_get(pattern->file, addr) != 0) ?

@@ -11,6 +11,7 @@ EOF
 MAILRULES=$tmp/rules
 
 sfecho <<EOF
+MAIL FROM:<>
 MAIL FROM:<one@one.example.com>
 MAIL FROM:<two@two.example.com>
 MAIL FROM:<three@three.example.com>
@@ -21,6 +22,7 @@ EOF
 rm -f $tmp/rules
 
 <result>
+250 Sender=''.^M
 250 KK^M
 553 DD^M
 451 ZZ^M

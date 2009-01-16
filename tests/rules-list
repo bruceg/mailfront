@@ -18,6 +18,7 @@ EOF
 MAILRULES=$tmp/rules
 
 sfecho <<EOF
+MAIL FROM:<>
 MAIL FROM:<a@example.net>
 MAIL FROM:<b@example.net>
 MAIL FROM:<a@example.biz>
@@ -30,6 +31,7 @@ EOF
 rm -f $tmp/rules $tmp/list $tmp/atlist
 
 <result>
+553 DD^M
 250 LIST^M
 553 DD^M
 250 ATLIST^M
