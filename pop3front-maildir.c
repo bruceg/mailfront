@@ -104,6 +104,11 @@ static void make_msg(msg* m, const char* filename)
 	m->read = 1;
     m->uid_len = c - base;
   }
+  if ((c = memchr(base, ',', m->uid_len)) != 0
+      && c[1] != 0
+      && c[2] == '=') {
+    m->uid_len = c - base;
+  }
 
   if (stat(filename, &s) == -1)
     m->size = 0, m->deleted = 1;
