@@ -41,6 +41,7 @@ typedef struct
   unsigned long size;
   int read;
   int deleted;
+  int uid_len;
 } msg;
 
 #define MSG_DELETED ((unsigned long)-1)
@@ -92,19 +93,23 @@ static void make_msg(msg* m, const char* filename)
 {
   struct stat s;
   const char* c;
+  const char* base = filename + 4;
 
   m->filename = filename;
+  m->uid_len = strlen(base);
+  m->read = 0;
+  if ((c = memchr(base, ':', m->uid_len)) != 0) {
+    if (c[1] == '2' && c[2] == ',')
+      if (strchr(c+3, 'S') != 0)
+	m->read = 1;
+    m->uid_len = c - base;
+  }
+
   if (stat(filename, &s) == -1)
     m->size = 0, m->deleted = 1;
   else
     m->size = s.st_size, m->deleted = 0;
   msg_bytes += m->size;
-
-  m->read = 0;
-  if ((c = strchr(filename, ':')) != 0)
-    if (c[1] == '2' && c[2] == ',')
-      if (strchr(c+3, 'S') != 0)
-	m->read = 1;
 }
 
 static int fn_compare(const str_sortentry* a, const str_sortentry* b)
@@ -351,18 +356,6 @@ static void cmd_top(const str* arg)
   dump_msg(num, lines);
 }
 
-static unsigned long uidl_len(const char* filename)
-{
-  const char* end;
-  unsigned long len;
-  len = ((end = strchr(filename, ':')) != 0)
-    ? (unsigned long)(end - filename)
-    : strlen(filename);
-  if (len > 70)
-    len = 70;
-  return len;
-}
-
 static void cmd_uidl(void)
 {
   long i;
@@ -373,7 +366,7 @@ static void cmd_uidl(void)
       const char* fn = m->filename + 4;
       obuf_putu(&outbuf, i+1);
       obuf_putc(&outbuf, SPACE);
-      obuf_write(&outbuf, fn, uidl_len(fn));
+      obuf_write(&outbuf, fn, m->uid_len);
       obuf_puts(&outbuf, CRLF);
     }
   }
@@ -385,11 +378,12 @@ static void cmd_uidl_one(const str* arg)
   long i;
   const char* fn;
   if ((i = msgnum(arg)) == 0) return;
-  fn = msgs[i-1].filename + 4;
+  msg* m = &msgs[i-1];
+  fn = m->filename + 4;
   if (!str_copys(&tmp, "+OK ") ||
       !str_catu(&tmp, i) ||
       !str_catc(&tmp, SPACE) ||
-      !str_catb(&tmp, fn, uidl_len(fn)))
+      !str_catb(&tmp, fn, m->uid_len))
     respond(err_internal);
   else
     respond(tmp.s);
