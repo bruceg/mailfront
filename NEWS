@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------
 Changes in version 1.15
 
+- Optimized pop3front-maildir to avoid stat'ing each message twice.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/

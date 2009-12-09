@@ -67,7 +67,6 @@ static long scan_dir(const char* subdir, str* list, long* countptr, long max)
 {
   DIR* dir;
   direntry* entry;
-  struct stat s;
   long count;
   
   if ((dir = opendir(subdir)) == 0) return 0;
@@ -79,11 +78,8 @@ static long scan_dir(const char* subdir, str* list, long* countptr, long max)
     if (!str_copys(&tmp, subdir)) return 0;
     if (!str_catc(&tmp, '/')) return 0;
     if (!str_cats(&tmp, entry->d_name)) return 0;
-    if (stat(tmp.s, &s) == -1) continue;
-    if (!S_ISREG(s.st_mode)) continue;
     if (!str_cat(list, &tmp)) return 0;
     if (!str_catc(list, 0)) return 0;
-    msg_bytes += s.st_size;
     ++count;
     ++msg_count;
   }
@@ -96,11 +92,14 @@ static void make_msg(msg* m, const char* filename)
 {
   struct stat s;
   const char* c;
+
   m->filename = filename;
   if (stat(filename, &s) == -1)
     m->size = 0, m->deleted = 1;
   else
     m->size = s.st_size, m->deleted = 0;
+  msg_bytes += m->size;
+
   m->read = 0;
   if ((c = strchr(filename, ':')) != 0)
     if (c[1] == '2' && c[2] == ',')
