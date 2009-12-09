@@ -1,7 +1,8 @@
 -------------------------------------------------------------------------------
 Changes in version 1.15
 
-- Optimized pop3front-maildir to avoid stat'ing each message twice.
+- Optimized pop3front-maildir to avoid stat'ing each message twice, and
+  to use sizes recorded in the filename to avoid stat'ing entirely.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/

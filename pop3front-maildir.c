@@ -96,24 +96,45 @@ static void make_msg(msg* m, const char* filename)
   const char* base = filename + 4;
 
   m->filename = filename;
-  m->uid_len = strlen(base);
+  m->size = 0;
   m->read = 0;
+  m->deleted = 0;
+  m->uid_len = strlen(base);
+
+  /* Parse out flags */
   if ((c = memchr(base, ':', m->uid_len)) != 0) {
     if (c[1] == '2' && c[2] == ',')
       if (strchr(c+3, 'S') != 0)
 	m->read = 1;
     m->uid_len = c - base;
   }
+
+  /* Parse out Maildir++ message size indicators */
   if ((c = memchr(base, ',', m->uid_len)) != 0
       && c[1] != 0
       && c[2] == '=') {
+    long left = m->uid_len - (c - base);
     m->uid_len = c - base;
+    /* There may be more than one, like "UID,W=###,S=###" */
+    while (c != 0) {
+      const char* end = memchr(c + 1, ',', left - 1);
+      if (c[1] == 'S' && c[2] == '=') {
+	m->size = strtoul(c + 3, 0, 10);
+	break;
+      }
+      left -= end - c;
+      c = end;
+    }
   }
 
-  if (stat(filename, &s) == -1)
-    m->size = 0, m->deleted = 1;
-  else
-    m->size = s.st_size, m->deleted = 0;
+  /* If no size indicator, stat the message to find the size */
+  if (m->size == 0) {
+    if (stat(filename, &s) == -1)
+      m->size = 0, m->deleted = 1;
+    else
+      m->size = s.st_size;
+  }
+
   msg_bytes += m->size;
 }
 
