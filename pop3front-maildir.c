@@ -115,12 +115,14 @@ static void make_msg(msg* m, const char* filename)
       && c[2] == '=') {
     long left = m->uid_len - (c - base);
     m->uid_len = c - base;
-    /* There may be more than one, like "UID,W=###,S=###" */
+    /* There may be more than one size indicator, like "UID,W=###,S=###" */
+    /* Prefer the W (RFC822.SIZE) size over S (raw byte count). */
     while (c != 0) {
       const char* end = memchr(c + 1, ',', left - 1);
-      if (c[1] == 'S' && c[2] == '=') {
+      if ((c[1] == 'W'
+	   || (c[1] == 'S' && m->size == 0))
+	  && c[2] == '=') {
 	m->size = strtoul(c + 3, 0, 10);
-	break;
       }
       left -= end - c;
       c = end;
