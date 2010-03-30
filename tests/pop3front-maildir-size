@@ -1,0 +1,49 @@
+maildir
+tstmsg new/1000000000.12345.here
+tstmsg new/1000000001.12345.here,S=1234
+tstmsg new/1000000002.12345.here,W=1234
+tstmsg new/1000000003.12345.here,S=1234,W=2345
+
+echo UIDL | pfmaildir $maildir
+echo LIST | pfmaildir $maildir
+(
+  echo RETR 1
+  echo RETR 2
+  echo RETR 3
+  echo RETR 4
+  echo QUIT
+) | pfmaildir $maildir >/dev/null
+
+ls $maildir/cur
+ls $maildir/new
+echo UIDL | pfmaildir $maildir
+echo LIST | pfmaildir $maildir
+<result>
++OK ^M
+1 1000000000.12345.here^M
+2 1000000001.12345.here^M
+3 1000000002.12345.here^M
+4 1000000003.12345.here^M
+.^M
++OK ^M
+1 18^M
+2 1234^M
+3 1234^M
+4 2345^M
+.^M
+1000000000.12345.here:2,S
+1000000001.12345.here,S=1234:2,S
+1000000002.12345.here,W=1234:2,S
+1000000003.12345.here,S=1234,W=2345:2,S
++OK ^M
+1 1000000000.12345.here^M
+2 1000000001.12345.here^M
+3 1000000002.12345.here^M
+4 1000000003.12345.here^M
+.^M
++OK ^M
+1 18^M
+2 1234^M
+3 1234^M
+4 2345^M
+.^M
