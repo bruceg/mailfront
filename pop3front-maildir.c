@@ -129,6 +129,10 @@ static void make_msg(msg* m, const char* filename)
     }
   }
 
+  /* The UID length is limited to 70 characters RFC 1939 section 7 */
+  if (m->uid_len > 70)
+    m->uid_len = 70;
+
   /* If no size indicator, stat the message to find the size */
   if (m->size == 0) {
     if (stat(filename, &s) == -1)
