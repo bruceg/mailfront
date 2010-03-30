@@ -43,5 +43,13 @@ are set, the total number of accessable messages in the <tt>cur</tt>
 and <tt>new</tt> subdirectories respectively will each be limited to
 that number.</p>
 
+<p>If the filenames in the maildir contain a size indicator, as
+specified <a href="http://www.courier-mta.org/imap/README.maildirquota.html">here
+for Courier IMAP</a>
+and <a href="http://wiki.dovecot.org/MailboxFormat/Maildir">here for
+Dovecot</a>, this program will avoid using stat to calculate the file
+size.  This is a significant performance optimization on systems with
+either very large or very many mailboxes.</p>
+
 </body>
 </html>
