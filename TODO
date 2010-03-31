@@ -22,10 +22,6 @@ Plugin: mailrules
 
   - Allow selecting based on authentication state.
 
-Plugin: spamassassin
-
-  - Add support for rejecting based on the SA score.
-
 Protocol: SMTP
 
   - Build a shared routine for breaking out the domain name.

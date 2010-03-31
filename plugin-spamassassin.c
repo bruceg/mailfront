@@ -11,7 +11,7 @@
 
 static RESPONSE(no_hostname,451,"4.3.0 Could not resolve SpamAssassin hostname");
 static RESPONSE(no_scan,451,"4.3.0 Could not SpamAssassin scan message");
-static response resp_spam = { 554, 0 };
+static response resp_isspam = { 554, "5.3.0 Spam detected, message refused" };
 
 #define MAX_IPS 16
 
@@ -45,6 +45,26 @@ static unsigned long connect_timeout;
 static unsigned long send_timeout;
 static unsigned long maxsize;
 static const char* user;
+static int reject_spam;
+static int isspam;
+
+static int copyit(ibuf* netin, int fdout)
+{
+  unsigned i;
+  while (ibuf_getstr(netin, &line, LF)) {
+    if (write(fdout, line.s, line.len) != line.len)
+      return 0;
+    if (str_case_starts(&line, "X-Spam-Status:")) {
+      for (i = 14; i < line.len && line.s[i] == ' '; ++i)
+	;
+      isspam = line.s[i] == 'Y' || line.s[i] == 'y';
+      break;
+    }
+    if (line.s[0] == LF)
+      break;
+  }
+  return ibuf_copytofd(netin, fdout);
+}
 
 static int scanit(int fd, int fdout, int sock,
 		  const struct stat* st)
@@ -72,7 +92,7 @@ static int scanit(int fd, int fdout, int sock,
 	      while (ibuf_getstr(&netin, &line, LF)) {
 		str_rstrip(&line);
 		if (line.len == 0) {
-		  if (ibuf_copytofd(&netin, fdout)) {
+		  if (copyit(&netin, fdout)) {
 		    dup2(fdout, fd);
 		    close(fdout);
 		    obuf_close(&netout);
@@ -139,6 +159,14 @@ static const response* message_end(int fd)
 	|| *tmp != 0)
       send_timeout = timeout;
     user = session_getenv("SPAMD_USER");
+    if ((tmp = session_getenv("SPAMD_REJECT")) != 0) {
+      reject_spam = 1;
+      if (tmp[0] != 0)
+	resp_isspam.message = tmp;
+    }
+    else
+      reject_spam = 0;
+    isspam = 0;
     if ((ip_count = resolve_ipv4name_n(hostname, ips, MAX_IPS)) <= 0)
       return &resp_no_hostname;
 
@@ -149,8 +177,11 @@ static const response* message_end(int fd)
       if (lseek(fd, 0, SEEK_SET) != 0)
 	return &resp_internal;
       if ((sock = try_connect_unix(path, connect_timeout)) >= 0)
-	if (scanit(fd, fdout, sock, &st))
-	  return 0;
+	if (scanit(fd, fdout, sock, &st)) {
+	  return (reject_spam && isspam)
+	    ? &resp_isspam
+	    : 0;
+	}
     }
     else {
       gettimeofday(&tv, 0);
@@ -161,8 +192,11 @@ static const response* message_end(int fd)
 	  return &resp_internal;
 	if ((sock = try_connect(addr, port, connect_timeout)) < 0)
 	  continue;
-	if (scanit(fd, fdout, sock, &st))
-	  return 0;
+	if (scanit(fd, fdout, sock, &st)) {
+	  return (reject_spam && isspam)
+	    ? &resp_isspam
+	    : 0;
+	}
       }
     }
   }

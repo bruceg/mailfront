@@ -43,6 +43,11 @@ of <tt>$SPAMD_HOST</tt>.</dd>
 <dt><tt>$SPAMD_PORT</tt></dt> <dd>Use this TCP port number for the
 command/response data. (defaults to 783)</dd>
 
+<dt><tt>$SPAMD_REJECT</tt></dt> <dd>If this is set, the plugin will
+reject all messages that are flagged as spam.  If <tt>$SPAMD_REJECT</tt>
+is not an empty string, that string will be used as the reject
+message.</dd>
+
 <dt><tt>$SPAMD_SEND_TIMEOUT</tt></dt> <dd>The maximum amount of time to
 wait for the output buffer to clear when sending data to a SpamAssassin
 scanner, in milliseconds. (defaults to $SPAMD_TIMEOUT below)</dd>
