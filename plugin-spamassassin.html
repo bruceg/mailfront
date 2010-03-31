@@ -3,46 +3,52 @@
 
 <h2><a href="mailfront.html">mailfront</a></h2>
 
-<h1>Plugin: clamav</h1>
+<h1>Plugin: spamassassin</h1>
 
 <hr />
 
-<p>This plugin scans messages against a <a
-href="http://www.clamav.net/">ClamAV</a> server.  If the message data is
-detected as having a virus, the message is rejected, and the error
-response contains the virus name as detected by ClamAV.  This scanner
-only operates over TCP/IP sockets (either remotely or locally).</p>
+<p>This plugin scans messages against a
+<a href="http://spamassassin.apache.org/">SpamAssassin</a> server.  The
+original message is replaced with the rewritten message sent by the
+scanner, which will contain the results of the SpamAssassin scan in the
+headers.  This plugin can communicate with a scanner over TCP/IP or
+local UNIX domain sockets.</p>
 
-<p><b>Note:</b> This file causes mailfront to save messages to temporary
+<p><b>Note:</b> This plugin causes mailfront to save messages to temporary
 files.</p>
 
 <h2>Configuration</h2>
 
 <dl>
 
-<dt><tt>$CLAMD_CONNECT_TIMEOUT</tt></dt> <dd>The maximum amount of time
-to wait for a response when connecting to a ClamAV scanner, in
-milliseconds. (defaults to $CLAMD_TIMEOUT below)</dd>
+<dt><tt>$SPAMD_CONNECT_TIMEOUT</tt></dt> <dd>The maximum amount of time
+to wait for a response when connecting to a SpamAssassin scanner, in
+milliseconds. (defaults to $SPAMD_TIMEOUT below)</dd>
 
-<dt><tt>$CLAMD_MAXSIZE</tt></dt> <dd>The maximum message size to be
+<dt><tt>$SPAMD_MAXSIZE</tt></dt> <dd>The maximum message size to be
 scanned, in bytes.  This limit is useful for avoiding overloading the
 scanning system(s).  If the incoming message is larger than this
 threshold, a warning is printed and no scanning is done.  If unset or
 set to "<tt>0</tt>", there is no limit.</dd>
 
-<dt><tt>$CLAMD_HOST</tt></dt> <dd>The hostname of the ClamAV scanner.
+<dt><tt>$SPAMD_HOST</tt></dt> <dd>The hostname of the SpamAssassin
+scanner.  This setting only applies if <tt>$SPAMD_PATH</tt> is not set.
 If this name resolves to multiple IP addresses, all of them are tried in
 sequence (starting at a random point) until one scans the message.</dd>
 
-<dt><tt>$CLAMD_PORT</tt></dt> <dd>Use this port number for the
-command/response data. (defaults to 3310)</dd>
+<dt><tt>$SPAMD_PATH</tt></dt> <dd>The file path to the local
+SpamAssassin server socket.  Overrides the setting
+of <tt>$SPAMD_HOST</tt>.</dd>
 
-<dt><tt>$CLAMD_SEND_TIMEOUT</tt></dt> <dd>The maximum amount of time to
-wait for the output buffer to clear when sending data to a ClamAV
-scanner, in milliseconds. (defaults to $CLAMD_TIMEOUT below)</dd>
+<dt><tt>$SPAMD_PORT</tt></dt> <dd>Use this TCP port number for the
+command/response data. (defaults to 783)</dd>
 
-<dt><tt>$CLAMD_TIMEOUT</tt></dt> <dd>The maximum amount of time to wait
-for a response from the ClamAV scanner, in milliseconds. (defaults to
+<dt><tt>$SPAMD_SEND_TIMEOUT</tt></dt> <dd>The maximum amount of time to
+wait for the output buffer to clear when sending data to a SpamAssassin
+scanner, in milliseconds. (defaults to $SPAMD_TIMEOUT below)</dd>
+
+<dt><tt>$SPAMD_TIMEOUT</tt></dt> <dd>The maximum amount of time to wait
+for a response from the SpamAssassin scanner, in milliseconds. (defaults to
 5000)</dd>
 
 </dl>
@@ -62,7 +68,8 @@ for a response from the ClamAV scanner, in milliseconds. (defaults to
 <h2>Message Action</h2>
 
 <p>The message is scanned when all the data has been completely
-transmitted (to prevent timeout issues with the ClamAV server).</p>
+transmitted (to prevent timeout issues with sending data to the
+SpamAssassin server).</p>
 
 </body>
 </html>

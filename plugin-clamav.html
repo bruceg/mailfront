@@ -13,7 +13,7 @@ detected as having a virus, the message is rejected, and the error
 response contains the virus name as detected by ClamAV.  This scanner
 only operates over TCP/IP sockets (either remotely or locally).</p>
 
-<p><b>Note:</b> This file causes mailfront to save messages to temporary
+<p><b>Note:</b> This plugin causes mailfront to save messages to temporary
 files.</p>
 
 <h2>Configuration</h2>
@@ -34,7 +34,7 @@ set to "<tt>0</tt>", there is no limit.</dd>
 If this name resolves to multiple IP addresses, all of them are tried in
 sequence (starting at a random point) until one scans the message.</dd>
 
-<dt><tt>$CLAMAV_PORT</tt></dt> <dd>Use this port number for the
+<dt><tt>$CLAMAV_PORT</tt></dt> <dd>Use this TCP port number for the
 command/response data. (defaults to 3310)</dd>
 
 <dt><tt>$CLAMAV_SEND_TIMEOUT</tt></dt> <dd>The maximum amount of time to
@@ -72,7 +72,8 @@ for a response from the ClamAV scanner, in milliseconds. (defaults to
 <h2>Message Action</h2>
 
 <p>The message is scanned when all the data has been completely
-transmitted (to prevent timeout issues with the ClamAV server).</p>
+transmitted (to prevent timeout issues with sending data to the ClamAV
+server).</p>
 
 </body>
 </html>
