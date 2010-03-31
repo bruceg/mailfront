@@ -24,8 +24,6 @@ Plugin: mailrules
 
 Plugin: spamassassin
 
-  - Add support for sending a user name.
-
   - Add support for rejecting based on the SA score.
 
 Protocol: SMTP

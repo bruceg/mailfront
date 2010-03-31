@@ -44,6 +44,7 @@ static unsigned long timeout;
 static unsigned long connect_timeout;
 static unsigned long send_timeout;
 static unsigned long maxsize;
+static const char* user;
 
 static int scanit(int fd, int fdout, int sock,
 		  const struct stat* st)
@@ -57,9 +58,11 @@ static int scanit(int fd, int fdout, int sock,
       netout.io.timeout = send_timeout;
       obuf_putf(&netout,
 		"{PROCESS SPAMC/1.2\r\n}"
-		"{Content-Length: }lu{\r\n}"
-		"{\r\n}",
+		"{Content-Length: }lu{\r\n}",
 		st->st_size);
+      if (user)
+	obuf_putf(&netout, "{User: }s{\r\n}", user);
+      obuf_puts(&netout, "\r\n");
       obuf_copyfromfd(fd, &netout);
       if (obuf_flush(&netout)) {
 	if (socket_shutdown(sock, 0, 1)) {
@@ -135,6 +138,7 @@ static const response* message_end(int fd)
 	|| (send_timeout = strtoul(tmp, (char**)&tmp, 10)) == 0
 	|| *tmp != 0)
       send_timeout = timeout;
+    user = session_getenv("SPAMD_USER");
     if ((ip_count = resolve_ipv4name_n(hostname, ips, MAX_IPS)) <= 0)
       return &resp_no_hostname;
 
