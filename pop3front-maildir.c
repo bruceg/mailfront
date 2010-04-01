@@ -408,17 +408,17 @@ static void cmd_uidl(void)
 static void cmd_uidl_one(const str* arg)
 {
   long i;
-  const char* fn;
-  if ((i = msgnum(arg)) == 0) return;
-  msg* m = &msgs[i-1];
-  fn = m->filename + 4;
-  if (!str_copys(&tmp, "+OK ") ||
-      !str_catu(&tmp, i) ||
-      !str_catc(&tmp, SPACE) ||
-      !str_catb(&tmp, fn, m->uid_len))
-    respond(err_internal);
-  else
-    respond(tmp.s);
+  if ((i = msgnum(arg)) != 0) {
+    msg* m = &msgs[i-1];
+    const char* fn = m->filename + 4;
+    if (!str_copys(&tmp, "+OK ") ||
+	!str_catu(&tmp, i) ||
+	!str_catc(&tmp, SPACE) ||
+	!str_catb(&tmp, fn, m->uid_len))
+      respond(err_internal);
+    else
+      respond(tmp.s);
+  }
 }
 
 command commands[] = {
