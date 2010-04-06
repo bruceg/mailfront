@@ -185,7 +185,7 @@ static int scan_maildir(void)
 
 static int msgnum_check(long i)
 {
-  if (i > msg_count)
+  if (i <= 0 || i > msg_count)
     respond("-ERR Message number out of range");
   else if (msgs[i-1].deleted)
     respond("-ERR Message was deleted");
@@ -198,7 +198,7 @@ static long msgnum(const str* arg)
 {
   long i;
   char* end;
-  if ((i = strtol(arg->s, &end, 10)) <= 0 || *end != 0)
+  if ((i = strtol(arg->s, &end, 10)) < 0 || *end != 0)
     respond(err_syntax);
   else if (msgnum_check(i))
     return i;
@@ -212,8 +212,6 @@ static void dump_msg(long num, long bodylines)
   int in_header;		/* True until a blank line is seen */
   int sol;			/* True if at start of line */
   
-  if (!msgnum_check(num)) return;
-
   if (!ibuf_open(&in, msgs[num-1].filename, 0))
     return respond("-ERR Could not open that message");
   respond(ok);
@@ -377,7 +375,8 @@ static void cmd_top(const str* arg)
   long lines;
   char* end;
 
-  if ((num = strtol(arg->s, &end, 10)) <= 0) return respond(err_syntax);
+  if ((num = strtol(arg->s, &end, 10)) < 0) return respond(err_syntax);
+  if (!msgnum_check(num)) return;
   while (*end == SPACE) ++end;
   if (*end == 0) {
     msgs[num-1].read = 1;

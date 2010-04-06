@@ -3,6 +3,9 @@ Changes in version 1.16
 
 - Added missing plugin-spamassassin.so to installation.
 
+- Fix bug in handling invalid message numbers in retrieving messages in
+  pop3front-maildir.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

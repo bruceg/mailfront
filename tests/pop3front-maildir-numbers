@@ -1,0 +1,65 @@
+maildir
+cat > $maildir/new/1.2.3 <<EOF
+header
+
+body
+EOF
+
+pfmaildir $maildir <<EOF
+RETR -1
+RETR 0
+RETR 1
+RETR 2
+TOP 1 -1
+TOP 1 0
+TOP 1 1
+UIDL -1
+UIDL 0
+UIDL 1
+UIDL 2
+LIST -1
+LIST 0
+LIST 1
+LIST 2
+DELE -1
+DELE 0
+DELE 1
+DELE 2
+DELE 1
+EOF
+
+<result>
+-ERR Syntax error^M
+-ERR Message number out of range^M
++OK ^M
+header^M
+^M
+body^M
+^M
+.^M
+-ERR Message number out of range^M
+-ERR Syntax error^M
++OK ^M
+header^M
+^M
+^M
+.^M
++OK ^M
+header^M
+^M
+body^M
+^M
+.^M
+-ERR Syntax error^M
+-ERR Message number out of range^M
++OK 1 1.2.3^M
+-ERR Message number out of range^M
+-ERR Syntax error^M
+-ERR Message number out of range^M
++OK 1 13^M
+-ERR Message number out of range^M
+-ERR Syntax error^M
+-ERR Message number out of range^M
++OK ^M
+-ERR Message number out of range^M
+-ERR Message was deleted^M
