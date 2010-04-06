@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------
 Changes in version 1.16
 
+- Added missing plugin-spamassassin.so to installation.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
