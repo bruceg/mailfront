@@ -6,6 +6,8 @@ Changes in version 1.17
 
 - Made the check-fqdn plugin explicitly reject empty recipients.
 
+- Added a sender domain restriction to the check-fqdn plugin.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

@@ -1,0 +1,25 @@
+PLUGINS=check-fqdn:accept
+
+SENDER_DOMAINS=example1.com:example2.com
+export SENDER_DOMAINS
+
+sfecho <<EOF
+MAIL FROM:<>
+MAIL FROM:<foo@example1.co>
+MAIL FROM:<foo@example1.com>
+MAIL FROM:<foo@example1.comm>
+MAIL FROM:<foo@example2.co>
+MAIL FROM:<foo@example2.com>
+MAIL FROM:<foo@example2.comm>
+EOF
+
+unset SENDER_DOMAINS
+
+<result>
+554 5.1.2 Empty sender address prohibited^M
+554 5.1.2 Sender contains a disallowed domain^M
+250 Sender='foo@example1.com'.^M
+554 5.1.2 Sender contains a disallowed domain^M
+554 5.1.2 Sender contains a disallowed domain^M
+250 Sender='foo@example2.com'.^M
+554 5.1.2 Sender contains a disallowed domain^M
