@@ -66,6 +66,11 @@ static const response* recipient(str* r)
 static const response* start(int fd)
 {
   unsigned long maxhops;
+  if (session_getenv("MAXRCPTS_REJECT")){
+    unsigned long maxrcpts = minenv("maxrcpts", "MAXRCPTS");
+    if (maxrcpts > 0 && rcpt_count > maxrcpts)
+      return &resp_manyrcpt;
+  }
   minenv("maxdatabytes", "DATABYTES");
   if ((maxhops = session_getenvu("MAXHOPS")) == 0)
     maxhops = 100;
@@ -126,6 +131,17 @@ static const response* block(const char* bytes, unsigned long len)
   return 0;
 }
 
+static const response* end(int fd)
+{
+  if (session_getenv("MAXRCPTS_REJECT")){
+    unsigned long maxrcpts = minenv("maxrcpts", "MAXRCPTS");
+    if (maxrcpts > 0 && rcpt_count > maxrcpts)
+      return &resp_manyrcpt;
+  }
+  return 0;
+  (void)fd;
+}
+
 struct plugin plugin = {
   .version = PLUGIN_VERSION,
   .init = init,
@@ -134,4 +150,5 @@ struct plugin plugin = {
   .recipient = recipient,
   .data_start = start,
   .data_block = block,
+  .message_end = end,
 };

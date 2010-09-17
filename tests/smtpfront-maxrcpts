@@ -9,12 +9,37 @@ RCPT TO:<addr1@example.net>
 RCPT TO:<addr2@example.net>
 RCPT TO:<addr3@example.net>
 RCPT TO:<addr4@example.net>
+DATA
+.
+EOF
+
+MAXRCPTS_REJECT=1
+export MAXRCPTS_REJECT
+
+sfecho <<EOF
+MAIL FROM:<notbounce@example.com>
+RCPT TO:<addr1@example.net>
+RCPT TO:<addr2@example.net>
+RCPT TO:<addr3@example.net>
+RCPT TO:<addr4@example.net>
+DATA
+.
 EOF
 
 unset MAXRCPTS
+unset MAXRCPTS_REJECT
 <result>
 250 Sender='notbounce@example.com'.^M
 250 Recipient='addr1@example.net'.^M
 250 Recipient='addr2@example.net'.^M
 550 5.5.3 Too many recipients^M
 550 5.5.3 Too many recipients^M
+354 End your message with a period on a line by itself.^M
+250 Received 0 bytes.^M
+250 Sender='notbounce@example.com'.^M
+250 Recipient='addr1@example.net'.^M
+250 Recipient='addr2@example.net'.^M
+550 5.5.3 Too many recipients^M
+550 5.5.3 Too many recipients^M
+550 5.5.3 Too many recipients^M
+500 5.5.1 Not implemented.^M

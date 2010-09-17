@@ -15,6 +15,10 @@
 
 <dt><tt>$MAXRCPTS</tt></dt> <dd>The maximum recipient limit</dd>
 
+<dt><tt>$MAXRCPTS_REJECT</tt></dt> <dd>If set (to anything), messages
+that have more than <tt>$MAXRCPTS</tt> recipients will have the message
+rejected rather than just the excess recipients.</dd>
+
 <dt><tt>$MAXHOPS</tt></dt> <dd>The maximum hop limit (defaults to
 100)</dd>
 
@@ -28,19 +32,22 @@
 
 <h2>Recipient Action</h2>
 
-<p>If at least the maximum recipient limit has been reached for the
-current message, this recipient is rejected.  Otherwise no action.</p>
+<p>If the maximum recipient limit has been exceeded for the current
+message, this recipient is rejected.  Otherwise no action.</p>
 
 <h2>Data Action</h2>
 
-<p>If the message is larger than the maximum message size, it is
-rejected.  If more than the maximum hop limit of either "<tt>Received:</tt>"
-or "<tt>Delivered-To:</tt>" headers are present in the message, it is
+<p>If the maximum recipient limit has been exceeded
+and <tt>$MAXRCPTS_REJECT</tt> is set, the message is rejected.  If the
+message is larger than the maximum message size, it is rejected.  If
+more than the maximum hop limit of either "<tt>Received:</tt>" or
+"<tt>Delivered-To:</tt>" headers are present in the message, it is
 rejected.  Otherwise no action.</p>
 
 <h2>Message Action</h2>
 
-<p>None</p>
+<p>If the maximum recipient limit has been exceeded
+and <tt>$MAXRCPTS_REJECT</tt> is set, the message is rejected.</p>
 
 </body>
 </html>
