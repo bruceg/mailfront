@@ -4,6 +4,8 @@ Changes in version 1.17
 - Added support for rejecting whole messages when the recipient count is
   exceeded in plugin-counters.
 
+- Made the check-fqdn plugin explicitly reject empty recipients.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

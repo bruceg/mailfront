@@ -1,0 +1,65 @@
+<loop defaultdomain "" example.com>
+<loop defaulthost "" local.example.com>
+
+PLUGINS=check-fqdn:accept
+if [ -n "$defaultdomain" ]; then
+  DEFAULTDOMAIN=$defaultdomain
+  export DEFAULTDOMAIN
+fi
+if [ -n "$defaulthost" ]; then
+  DEFAULTHOST=$defaulthost
+  export DEFAULTHOST
+fi
+
+sfecho <<EOF
+MAIL FROM:<>
+MAIL FROM:<foo>
+MAIL FROM:<foo@bar>
+MAIL FROM:<foo@bar.baz>
+RCPT TO:<>
+RCPT TO:<foo>
+RCPT TO:<foo@bar>
+RCPT TO:<foo@bar.baz>
+EOF
+
+unset DEFAULTDOMAIN DEFAULTHOST
+
+<result "" "">
+250 Sender=''.^M
+554 5.1.2 Address is missing a domain name^M
+554 5.1.2 Address does not contain a fully qualified domain name^M
+250 Sender='foo@bar.baz'.^M
+554 5.1.2 Recipient address may not be empty^M
+554 5.1.2 Address is missing a domain name^M
+554 5.1.2 Address does not contain a fully qualified domain name^M
+250 Recipient='foo@bar.baz'.^M
+
+<result "" local.example.com>
+250 Sender=''.^M
+250 Sender='foo@local.example.com'.^M
+554 5.1.2 Address does not contain a fully qualified domain name^M
+250 Sender='foo@bar.baz'.^M
+554 5.1.2 Recipient address may not be empty^M
+250 Recipient='foo@local.example.com'.^M
+554 5.1.2 Address does not contain a fully qualified domain name^M
+250 Recipient='foo@bar.baz'.^M
+
+<result example.com "">
+250 Sender=''.^M
+554 5.1.2 Address is missing a domain name^M
+250 Sender='foo@bar.example.com'.^M
+250 Sender='foo@bar.baz'.^M
+554 5.1.2 Recipient address may not be empty^M
+554 5.1.2 Address is missing a domain name^M
+250 Recipient='foo@bar.example.com'.^M
+250 Recipient='foo@bar.baz'.^M
+
+<result example.com local.example.com>
+250 Sender=''.^M
+250 Sender='foo@local.example.com'.^M
+250 Sender='foo@bar.example.com'.^M
+250 Sender='foo@bar.baz'.^M
+554 5.1.2 Recipient address may not be empty^M
+250 Recipient='foo@local.example.com'.^M
+250 Recipient='foo@bar.example.com'.^M
+250 Recipient='foo@bar.baz'.^M
