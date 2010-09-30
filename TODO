@@ -30,8 +30,6 @@ Protocol: SMTP
 
   - Add support for RFC 2487 STARTTLS
 
-  - Segment the SMTP code into seperate files
-
   - Add some information about authentication into the headers (?)
 
   - Handle $LOCALIPHOST (all back-ends): rewrite envelope recipient
