@@ -27,7 +27,7 @@ Development versions of @PACKAGE@ are available via git at:
 Requirements:
 
 - bglibs version 1.101
-- cvm version 0.81
+- cvm version 0.82
 
 Installation:
 

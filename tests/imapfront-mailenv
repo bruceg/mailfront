@@ -1,0 +1,28 @@
+CVM_SASL_PLAIN=$src/testcvm
+export CVM_SASL_PLAIN
+
+$src/imapfront-auth sh -c 'echo MAIL=$MAIL MAILBOX=$MAILBOX MAILDIR=$MAILDIR' 2>/dev/null << EOF \
+| grep -v '^\* OK imapfront ready.'
+1 login testuser testpass
+EOF
+
+env SETUP_ENV=dovecot \
+$src/imapfront-auth sh -c 'echo MAIL=$MAIL' 2>/dev/null << EOF \
+| grep -v '^\* OK imapfront ready.'
+1 login testuser testpass
+EOF
+
+mkdir "$tmp"/mail:box
+
+env SETUP_ENV=dovecot \
+$src/imapfront-auth sh -c 'echo MAIL=$MAIL' 2>/dev/null << EOF \
+| grep -v '^\* OK imapfront ready.'
+1 login testuser testpass
+EOF
+
+rmdir "$tmp"/mail:box
+
+<result>
+MAIL=@TMPDIR@/mail:box MAILBOX=@TMPDIR@/mail:box MAILDIR=@TMPDIR@/mail:box
+MAIL=mbox:@TMPDIR@/mail::box
+MAIL=maildir:@TMPDIR@/mail::box

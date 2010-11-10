@@ -22,11 +22,12 @@
  * http://www.FutureQuest.net/
  * ossi@FutureQuest.net
  */
+#include <sysdeps.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sysdeps.h>
+#include <sys/stat.h>
 #include <cvm/sasl.h>
 #include <cvm/v2client.h>
 #include <iobuf/iobuf.h>
@@ -245,15 +246,45 @@ void cmd_capability(void)
   respond(0, "OK CAPABILITY completed");
 }
 
+static int setup_env(void)
+{
+  const char* s;
+  const char* colon;
+  struct stat st;
+
+  if (cvm_fact_mailbox != 0
+      && (s = getenv("SETUP_ENV")) != 0
+      && strcmp(s, "dovecot") == 0) {
+    /* Use the file type to set the prefix to mbox: or maildir:
+     * Assume missing files are mboxes. */
+    s = (stat(cvm_fact_mailbox, &st) == 0
+	 && S_ISDIR(st.st_mode))
+      ? "maildir:"
+      : "mbox:";
+    /* Use cmd for temporary storage of the substituted mailbox name */
+    if (!str_copys(&cmd, s))
+      return 0;
+    s = cvm_fact_mailbox;
+    while ((colon = strchr(s, ':')) != 0) {
+      if (!str_catb(&cmd, s, colon-s)
+	  || !str_catb(&cmd, "::", 2))
+	return 0;
+      s = colon + 1;
+    }
+    if (!str_cats(&cmd, s))
+      return 0;
+    cvm_fact_mailbox = cmd.s;
+  }
+  return cvm_setenv()
+    && setenv("IMAPLOGINTAG", tag.s, 1) == 0
+    && setenv("AUTHENTICATED", cvm_fact_username, 1) == 0;
+}
+
 void do_exec(void)
 {
   if (!cvm_setugid())
     respond(0, "NO Internal error: could not set UID/GID");
-  else if (!cvm_setenv() ||
-	   (cvm_fact_mailbox != 0 &&
-	    setenv("MAILDIR", cvm_fact_mailbox, 1) == -1) ||
-	   setenv("IMAPLOGINTAG", tag.s, 1) == -1 ||
-	   setenv("AUTHENTICATED", cvm_fact_username, 1) == -1)
+  else if (!setup_env())
     respond(0, "NO Internal error: could not set environment");
   else {
     alarm(0);

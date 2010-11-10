@@ -1,6 +1,9 @@
 -------------------------------------------------------------------------------
 Changes in version 1.18
 
+- Added support for running Dovecot IMAP from imapfront-auth.
+  See imapfront.html for details on how to set this up.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
