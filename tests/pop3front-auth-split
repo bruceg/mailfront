@@ -1,8 +1,8 @@
-pfauth $tmp/cvm <<EOF
+pfauth $src/testcvm <<EOF
 USER testuser@adomain
 PASS testpass
 EOF
-pfauth $tmp/cvm <<EOF
+pfauth $src/testcvm <<EOF
 USER testuser@adomain
 PASS testpasx
 EOF

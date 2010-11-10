@@ -1,0 +1,4 @@
+:
+echo \#define TESTCVM_UID $$(id -u) > $@
+echo \#define TESTCVM_GID $$(id -g) >> $@
+echo \#define TESTCVM_PWD \"$$(pwd)\" >> $@

@@ -1,6 +1,6 @@
 PLUGINS=require-auth:relayclient:accept
 
-export CVM_SASL_PLAIN=$tmp/cvm
+export CVM_SASL_PLAIN=$src/testcvm
 
 sfecho <<EOF
 MAIL FROM: <user@example.net>

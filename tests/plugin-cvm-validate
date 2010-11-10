@@ -1,5 +1,5 @@
 PLUGINS=cvm-validate:accept
-CVM_LOOKUP=$tmp/cvm
+CVM_LOOKUP=$src/testcvm
 export CVM_LOOKUP
 
 sfecho <<EOF

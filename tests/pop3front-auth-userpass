@@ -1,9 +1,9 @@
 # Should fix this and the others to actually check the stderr output too.
-pfauth $tmp/cvm <<EOF 2>/dev/null
+pfauth $src/testcvm <<EOF 2>/dev/null
 USER testuser
 PASS testpass
 EOF
-pfauth $tmp/cvm <<EOF 2>/dev/null
+pfauth $src/testcvm <<EOF 2>/dev/null
 USER testuser
 PASS testpasx
 EOF

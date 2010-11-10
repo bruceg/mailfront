@@ -2,7 +2,7 @@ pfauth false <<EOF
 AUTH
 EOF
 
-export CVM_SASL_PLAIN=$tmp/cvm
+export CVM_SASL_PLAIN=$src/testcvm
 
 pfauth false <<EOF
 AUTH

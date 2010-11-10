@@ -1,4 +1,4 @@
-export CVM_SASL_PLAIN=$tmp/cvm
+export CVM_SASL_PLAIN=$src/testcvm
 
 ifauth false <<EOF
 1 AUTHENTICATE LOGIN

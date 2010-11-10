@@ -5,4 +5,5 @@ Makefile
 README
 SRCFILES
 TARGETS
+auto_testcvm.c
 tests.sh

@@ -1,9 +1,9 @@
-pfauth $tmp/cvm <<EOF
+pfauth $src/testcvm <<EOF
 CAPA
 EOF
 
-export CVM_SASL_PLAIN=$tmp/cvm
-pfauth $tmp/cvm <<EOF
+export CVM_SASL_PLAIN=$src/testcvm
+pfauth $src/testcvm <<EOF
 CAPA
 EOF
 
@@ -12,8 +12,8 @@ pfmaildir $maildir <<EOF
 CAPA
 EOF
 
-export CVM_SASL_PLAIN=$tmp/cvm
-pfauth $tmp/cvm <<EOF
+export CVM_SASL_PLAIN=$src/testcvm
+pfauth $src/testcvm <<EOF
 CAPA
 EOF
 

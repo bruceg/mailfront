@@ -4,7 +4,7 @@ sfecho <<EOF
 AUTH LOGIN
 EOF
 
-export CVM_SASL_LOGIN=$tmp/cvm
+export CVM_SASL_LOGIN=$src/testcvm
 
 sfecho <<EOF
 MAIL FROM: <user@example.com>
