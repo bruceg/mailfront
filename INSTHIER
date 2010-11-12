@@ -21,9 +21,6 @@ c:::755::plugin-cvm-validate.so
 c:::755::plugin-mailrules.so
 c:::755::plugin-patterns.so
 c:::755::plugin-qmail-validate.so
-c:::755::plugin-reject.so
-c:::755::plugin-relayclient.so
-c:::755::plugin-require-auth.so
 c:::755::plugin-spamassassin.so
 c:::755::protocol-qmqp.so
 c:::755::protocol-qmtp.so
