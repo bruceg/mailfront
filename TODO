@@ -7,6 +7,9 @@
 - Tests:
   - Test application of environment variables in mail rules
 
+- Add hooks for plugins to load or (temporarily) disable the operation
+  of other plugins?
+
 Plugin: clamav
 
   - Add tests (not sure how to emulate the daemon properly)
