@@ -56,11 +56,20 @@ static const response* do_recipient(str* recipient)
   return 0;
 }
 
-static int start_qq(int msgfd, int envfd)
+static const response *start_qq(int msgfd, int envfd)
 {
+  const char* qh;
+
+  qqargs[0] = session_getenv("QMAILQUEUE");
+  if (qqargs[0] == 0) qqargs[0] = "bin/qmail-queue";
+
+  if ((qh = session_getenv("QMAILHOME")) == 0)
+    qh = conf_qmail;
+  if (chdir(qh) == -1) return &resp_no_chdir;
+
   if ((qqpid = fork()) == -1) {
     close_qqpipe();
-    return -1;
+    return &resp_no_fork;
   }
 
   if (qqpid == 0) {
@@ -76,15 +85,6 @@ static int start_qq(int msgfd, int envfd)
 
 static const response* data_start(int fd)
 {
-  const char* qh;
-
-  qqargs[0] = session_getenv("QMAILQUEUE");
-  if (qqargs[0] == 0) qqargs[0] = "bin/qmail-queue";
-
-  if ((qh = session_getenv("QMAILHOME")) == 0)
-    qh = conf_qmail;
-  if (chdir(qh) == -1) return &resp_no_chdir;
-
   sig_pipe_block();
 
   if (pipe(qqepipe) == -1) return &resp_no_pipe;
@@ -94,9 +94,10 @@ static const response* data_start(int fd)
       close_qqpipe();
       return &resp_no_pipe;
     }
-
-    if (start_qq(qqmpipe[0], qqepipe[0]) == -1)
-      return &resp_no_fork;
+    const response *resp_qq = start_qq(qqmpipe[0], qqepipe[0]);
+    if (resp_qq != 0) {
+      return resp_qq;
+    }
   }
 
   databytes = 0;
@@ -180,8 +181,10 @@ static const response* message_end(int fd)
     if (fstat(fd, &st) != 0)
       return &resp_internal;
     databytes = st.st_size;
-    if (start_qq(fd, qqepipe[0]) == -1)
-      return &resp_no_fork;
+    const response *resp_qq = start_qq(fd, qqepipe[0]);
+    if (resp_qq != 0) {
+      return resp_qq;
+    }
   }
   if (!retry_write(qqepipe[1], buffer.s, buffer.len+1)) return &resp_no_write;
   close_qqpipe();

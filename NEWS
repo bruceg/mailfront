@@ -1,6 +1,9 @@
 -------------------------------------------------------------------------------
 Changes in version 1.19
 
+- Modified the qmail backend to evaluate $QMAILQUEUE as late as possible.
+  This allows more options for changing $QMAILQUEUE in plugins.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
