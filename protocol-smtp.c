@@ -269,7 +269,7 @@ static int DATA(void)
   
   if (!saw_mail) return respond(&resp_no_mail);
   if (!saw_rcpt) return respond(&resp_no_rcpt);
-  if ((resp = handle_data_start()) != 0)
+  if (!response_ok(resp = handle_data_start()))
     return respond(resp);
   if (!respond(&resp_data_ok)) return 0;
 
