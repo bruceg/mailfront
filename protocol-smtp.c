@@ -125,10 +125,10 @@ static int HELP(void)
 static int HELO(void)
 {
   const response* resp;
-  if ((resp = handle_reset()) != 0
-      || (resp = handle_helo(&arg)) != 0)
-    return respond(resp);
-  return respond_line(250, 1, domain_name.s, domain_name.len);
+  if (response_ok(resp = handle_reset()))
+    resp = handle_helo(&arg);
+  return (resp != 0) ? respond(resp)
+    : respond_line(250, 1, domain_name.s, domain_name.len);
 }
 
 static int EHLO(void)
@@ -136,8 +136,8 @@ static int EHLO(void)
   static str auth_resp;
   const response* resp;
   protocol.name = "ESMTP";
-  if ((resp = handle_reset()) != 0
-      || (resp = handle_helo(&arg)) != 0)
+  if (!response_ok(resp = handle_reset())
+      || !response_ok(resp = handle_helo(&arg)))
     return respond(resp);
 
   if (!respond_line(250, 0, domain_name.s, domain_name.len)) return 0;
@@ -157,7 +157,7 @@ static int EHLO(void)
 static void do_reset(void)
 {
   const response* resp;
-  if ((resp = handle_reset()) != 0) {
+  if (!response_ok(resp = handle_reset())) {
     respond(resp);
     exit(0);
   }
