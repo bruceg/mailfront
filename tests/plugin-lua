@@ -2,9 +2,9 @@ export LUA_SCRIPT=script.lua
 doit() {
     cat > script.lua
     echo
-    sfecho lua <<EOF
+    sfecho lua add-received counters <<EOF
 HELO helohost
-MAIL FROM:<sender>
+MAIL FROM:<sender> SIZE=13
 RCPT TO:<recip1>
 RCPT TO:<recip2>
 DATA
@@ -41,6 +41,36 @@ function data_start(fd)
 end
 EOF
 
+doit <<EOF
+setstr('helo_domain', '01234567890123456789012345678901234567890123456789')
+EOF
+
+doit <<EOF
+setnum('maxdatabytes', 1)
+EOF
+
+doit <<EOF
+function recipient(s)
+  setnum('maxdatabytes', 1)
+end
+EOF
+
+doit <<EOF
+count=0
+function recipient(s)
+  count = count + 1
+  return 252,'recipient #'..count
+end
+function data_start(fd)
+  bytes = 0
+end
+function data_block(s)
+  bytes = bytes + ( # s )
+end
+function message_end(fd)
+  return 450,bytes .. ' bytes, ' .. count .. ' recipients, ' .. (bytes*count) .. ' total'
+end
+EOF
 rm -f $LUA_SCRIPT
 unset LUA_SCRIPT
 
@@ -53,7 +83,7 @@ unset LUA_SCRIPT
 252 Lua recip=recip1^M
 252 Lua recip=recip2^M
 354 End your message with a period on a line by itself.^M
-250 Received 12 bytes.^M
+250 Received 137 bytes.^M
 
 250 local.host^M
 250 Sender='sender'.^M
@@ -62,3 +92,32 @@ unset LUA_SCRIPT
 421 start fd=-1^M
 500 5.5.1 Not implemented.^M
 500 5.5.1 Not implemented.^M
+
+250 local.host^M
+250 Sender='sender'.^M
+250 Recipient='recip1'.^M
+250 Recipient='recip2'.^M
+354 End your message with a period on a line by itself.^M
+250 Received 179 bytes.^M
+
+250 local.host^M
+552 5.2.3 The message would exceed the maximum message size.^M
+503 5.5.1 You must send MAIL FROM: first^M
+503 5.5.1 You must send MAIL FROM: first^M
+503 5.5.1 You must send MAIL FROM: first^M
+500 5.5.1 Not implemented.^M
+500 5.5.1 Not implemented.^M
+
+250 local.host^M
+250 Sender='sender'.^M
+250 Recipient='recip1'.^M
+250 Recipient='recip2'.^M
+354 End your message with a period on a line by itself.^M
+552 5.2.3 Sorry, that message exceeds the maximum message length.^M
+
+250 local.host^M
+250 Sender='sender'.^M
+252 recipient #1^M
+252 recipient #2^M
+354 End your message with a period on a line by itself.^M
+450 12 bytes, 2 recipients, 24 total^M

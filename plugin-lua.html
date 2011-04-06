@@ -28,5 +28,49 @@ load.  If not set, this plugin does nothing.</dd>
 
 </dl>
 
+<h2>Library</h2>
+
+<p>The plugin registers some mailfront functions for script use:</p>
+
+<dl>
+
+<dt><tt>getenv(...)</tt></dt>
+<dd>Returns the (string) value of each of the named session environment
+variables.</dd>
+
+<dt><tt>getnum(name, default)</tt></dt>
+<dd>Returns the named session number, or <tt>default</tt> if it is not set.</dd>
+
+<dt><tt>getstr(...)</tt></dt>
+<dd>Returns the (string) value of each of the named session strings.</dd>
+
+<dt><tt>msg(...)</tt></dt>
+<dd>Outputs one message line (into the logs) for each parameter.  The
+script is responsible for formatting.</dd>
+
+<dt><tt>putenv(...)</tt></dt>
+<dd>Puts the given environment strings into the session environment.
+The strings must be in the form "<tt>NAME=VALUE</tt>"</dd>
+
+<dt><tt>setenv(name, value, overwrite)</tt></dt>
+<dd>Sets a session environment variable which may be used by other
+plugins to modify their behavior.  Does not return any values.  Raises
+an error if any problems occur.</dd>
+
+<dt><tt>setnum(name, value)</tt></dt>
+<dd>Sets the named session number.  These numbers may be used by other
+plugins to modify their behavior.  For example,
+the <a href="plugin-counters.html">counters plugin</a> uses the minimum
+value of the session environment variable <tt>$DATABYTES</tt> and the
+session number <tt>maxdatabytes</tt> for the maximum message size.</dd>
+
+<dt><tt>setstr(name, value)</tt></dt>
+<dd>Sets the named session string.  These strings may be used by other
+plugins to modify their behavior.  For example,
+the <a href="plugin-add-received.html">add-received plugin</a> uses
+the <tt>helo_domain</tt> string in the header(s) it generates.</dd>
+
+</dl>
+
 </body>
 </html>

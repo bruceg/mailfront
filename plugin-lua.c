@@ -1,8 +1,145 @@
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
-#include "mailfront.h"
 #include <msg/msg.h>
+#include "mailfront.h"
+
+static int l_msg(lua_State *L)
+{
+  int i;
+  for (i = 1; i <= lua_gettop(L); i++)
+    msg1(lua_tostring(L, i));
+  return 0;
+}
+
+static int l_getenv(lua_State *L)
+{
+  int i;
+  const int nparams = lua_gettop(L);
+  for (i = 1; i < nparams; i++) {
+    const char* name = lua_tostring(L, i);
+    const char* value = session_getenv(name);
+    if (value == 0)
+      lua_pushnil(L);
+    else
+      lua_pushstring(L, value);
+  }
+  return nparams;
+}
+
+static int l_putenv(lua_State *L)
+{
+  const int nparams = lua_gettop(L);
+  int i;
+  for (i = 1; i < nparams; i++) {
+    if (!session_putenv(lua_tostring(L, i))) {
+      lua_pushstring(L, "Out of memory");
+      lua_error(L);
+    }
+  }
+  return 0;
+}
+
+static int l_setenv(lua_State *L)
+{
+  if (lua_gettop(L) != 3) {
+    lua_pushstring(L, "Incorrect number of parameters to setenv");
+    lua_error(L);
+  }
+  const char* name = lua_tostring(L, 1);
+  const char* value = lua_tostring(L, 2);
+  int overwrite = lua_tointeger(L, 3);
+  if (!session_setenv(name, value, overwrite)) {
+    lua_pushstring(L, "setenv failed");
+    lua_error(L);
+  }
+  return 0;
+}
+
+static int l_delnum(lua_State *L)
+{
+  const int nparams = lua_gettop(L);
+  int i;
+  for (i = 1; i < nparams; i++)
+    session_delnum(lua_tostring(L, i));
+  return 0;
+}
+
+static int l_delstr(lua_State *L)
+{
+  const int nparams = lua_gettop(L);
+  int i;
+  for (i = 1; i < nparams; i++)
+    session_delstr(lua_tostring(L, i));
+  return 0;
+}
+
+static int l_getnum(lua_State *L)
+{
+  if (lua_gettop(L) != 2) {
+    lua_pushstring(L, "Incorrect number of parameters to getnum");
+    lua_error(L);
+  }
+  const char* name = lua_tostring(L, 1);
+  unsigned long dflt = lua_tonumber(L, 2);
+  lua_pushnumber(L, session_getnum(name, dflt));
+  return 1;
+}
+
+static int l_getstr(lua_State *L)
+{
+  const int nparams = lua_gettop(L);
+  int i;
+  for (i = 1; i < nparams; i++) {
+    const char* s = session_getstr(lua_tostring(L, i));
+    if (s != 0)
+      lua_pushstring(L, s);
+    else
+      lua_pushnil(L);
+  }
+  return nparams;
+}
+
+static int l_setnum(lua_State *L)
+{
+  if (lua_gettop(L) != 2) {
+    lua_pushstring(L, "Incorrect number of parameters to setnum");
+    lua_error(L);
+  }
+  const char* name = lua_tostring(L, 1);
+  unsigned long value = lua_tonumber(L, 2);
+  session_setnum(name, value);
+  return 0;
+}
+
+static int l_setstr(lua_State *L)
+{
+  if (lua_gettop(L) != 2) {
+    lua_pushstring(L, "Incorrect number of parameters to setstr");
+    lua_error(L);
+  }
+  const char* name = lua_tostring(L, 1);
+  const char* value = lua_tostring(L, 2);
+  session_setstr(name, value);
+  return 0;
+}
+
+static const luaL_Reg library[] = {
+  { "msg", l_msg },
+
+  { "getenv", l_getenv },
+  { "putenv", l_putenv },
+  { "setenv", l_setenv },
+
+  { "delnum", l_delnum },
+  { "delstr", l_delstr },
+  { "getnum", l_getnum },
+  { "getstr", l_getstr },
+  { "setnum", l_setnum },
+  { "setstr", l_setstr },
+
+  { NULL, NULL }
+};
 
 static lua_State* L = 0;
 
@@ -53,6 +190,7 @@ static const response* callit(int nparams)
 static const response* init(void)
 {
   const char* env;
+  const luaL_Reg *lp;
 
   env = session_getenv("LUA_SCRIPT");
   if (env != 0) {
@@ -73,6 +211,8 @@ static const response* init(void)
     default:
       return &resp_internal;
     }
+    for (lp = library; lp->name != 0; lp++)
+      lua_register(L, lp->name, lp->func);
     return callit(0);
   }
   return 0;
