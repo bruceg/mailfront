@@ -1,0 +1,32 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">mailfront</a></h2>
+
+<h1>Plugin: lua</h1>
+
+<hr />
+
+<p>This plugin allows for extending mailfront
+  using <a href="http://www.lua.org/">Lua</a>.  All actions in
+  the <a href="plugin-api.html">mailfront plugin API</a> are exposed
+  through calls to functions of the same name in the script, with the
+  exception of the "<tt>init</tt>" function.  For this function, the
+  return from the script itself is used.  The functions are passed the
+  same parameters as described in the API.  The return value from these
+  functions is a numeric SMTP response code followed by a message.  If
+  the number is zero or <tt>nil</tt>, it is treated as an NULL response.
+  If the message is missing, the script wrapper provides a simple one
+  based on the response code.</p>
+
+<h2>Configuration</h2>
+
+<dl>
+
+<dt><tt>$LUA_SCRIPT</tt></dt> <dd>The file name of the Lua script to
+load.  If not set, this plugin does nothing.</dd>
+
+</dl>
+
+</body>
+</html>

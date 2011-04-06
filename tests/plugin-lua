@@ -1,0 +1,64 @@
+export LUA_SCRIPT=script.lua
+doit() {
+    cat > script.lua
+    echo
+    sfecho lua <<EOF
+HELO helohost
+MAIL FROM:<sender>
+RCPT TO:<recip1>
+RCPT TO:<recip2>
+DATA
+Header: one
+.
+EOF
+}
+
+doit <<EOF
+return 555,"init failed"
+EOF
+
+doit <<EOF
+function reset()
+  return 253,'reset'
+end
+
+function sender(a)
+  return 251,'Lua sender='..a
+end
+
+function recipient(a)
+  return 252,'Lua recip='..a
+end
+
+function data_start(fd)
+  return 354
+end
+EOF
+
+doit <<EOF
+function data_start(fd)
+  return 421,'start fd='..fd
+end
+EOF
+
+rm -f $LUA_SCRIPT
+unset LUA_SCRIPT
+
+<result>
+
+555 init failed^M
+
+250 local.host^M
+251 Lua sender=sender^M
+252 Lua recip=recip1^M
+252 Lua recip=recip2^M
+354 End your message with a period on a line by itself.^M
+250 Received 12 bytes.^M
+
+250 local.host^M
+250 Sender='sender'.^M
+250 Recipient='recip1'.^M
+250 Recipient='recip2'.^M
+421 start fd=-1^M
+500 5.5.1 Not implemented.^M
+500 5.5.1 Not implemented.^M

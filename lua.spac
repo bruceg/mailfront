@@ -1,0 +1,1 @@
+dependon(['plugin-lua.so'])

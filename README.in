@@ -28,10 +28,12 @@ Requirements:
 
 - bglibs version 1.101
 - cvm version 0.82
+- Lua version 5 or later (optional)
 
 Installation:
 
 - Build the sources by running "make".
+- To build the Lua plugin, run "make lua".
 - After the package has been compiled, run "make install" as root.
 
 Configuration:

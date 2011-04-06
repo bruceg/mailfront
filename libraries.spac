@@ -1,0 +1,5 @@
+dependon([ fn[:-2]+'.a' for fn in glob('*=l')
+	if fn[:3] <> 'lib'])
+dependon([ fn[:-2]+'.la' for fn in glob('lib*=l')])
+dependon([ fn[:-3]+'.so' for fn in glob('*=so')
+	if fn[:-3] != 'plugin-lua'])
