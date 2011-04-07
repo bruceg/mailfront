@@ -105,6 +105,7 @@ static int mainloop(void)
   alarm(3600);
   for (;;)
     get_package(&inbuf);
+  return 0;
 }
 
 struct protocol protocol = {
