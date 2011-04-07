@@ -85,6 +85,8 @@ static const response *start_qq(int msgfd, int envfd)
 
 static const response* data_start(int fd)
 {
+  const response* resp_qq;
+
   sig_pipe_block();
 
   if (pipe(qqepipe) == -1) return &resp_no_pipe;
@@ -94,7 +96,7 @@ static const response* data_start(int fd)
       close_qqpipe();
       return &resp_no_pipe;
     }
-    const response *resp_qq = start_qq(qqmpipe[0], qqepipe[0]);
+    resp_qq = start_qq(qqmpipe[0], qqepipe[0]);
     if (resp_qq != 0) {
       return resp_qq;
     }
@@ -167,6 +169,7 @@ static void parse_status(int status, response* resp)
 static const response* message_end(int fd)
 {
   static response resp;
+  const response* resp_qq;
 
   int status;
   struct stat st;
@@ -181,7 +184,7 @@ static const response* message_end(int fd)
     if (fstat(fd, &st) != 0)
       return &resp_internal;
     databytes = st.st_size;
-    const response *resp_qq = start_qq(fd, qqepipe[0]);
+    resp_qq = start_qq(fd, qqepipe[0]);
     if (resp_qq != 0) {
       return resp_qq;
     }
