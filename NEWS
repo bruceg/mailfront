@@ -1,6 +1,9 @@
 -------------------------------------------------------------------------------
 Changes in version 1.21
 
+- Added controls for pop3front-auth to limit the number of USER commands
+  and authentication failures allowed per session.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

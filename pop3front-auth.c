@@ -41,6 +41,11 @@ static const char* domain;
 
 static str user;
 
+static unsigned user_count;
+static unsigned user_max;
+static unsigned auth_count;
+static unsigned auth_max;
+
 static struct sasl_auth saslauth = { .prefix = "+ " };
 
 static void do_exec(void)
@@ -91,10 +96,18 @@ static void cmd_auth(const str* s)
     do_exec();
   obuf_write(&outbuf, "-ERR ", 5);
   respond(sasl_auth_msg(&i));
+  ++auth_count;
+  if (auth_max > 0 && auth_count >= auth_max)
+    exit(0);
 }
 
 static void cmd_user(const str* s)
 {
+  ++user_count;
+  if (user_max > 0 && user_count > user_max) {
+    respond("-ERR Too many USER commands issued");
+    exit(0);
+  }
   if (!str_copy(&user, s))
     respond(err_internal);
   else
@@ -114,6 +127,9 @@ static void cmd_pass(const str* s)
       respond("-ERR Authentication failed");
     else
       respond(err_internal);
+    ++auth_count;
+    if (auth_max > 0 && auth_count >= auth_max)
+      exit(0);
   }
 }
 
@@ -135,6 +151,11 @@ command commands[] = {
 int startup(int argc, char* argv[])
 {
   static const char usage[] = "usage: pop3front-auth cvm program [args...]\n";
+  const char* tmp;
+  if ((tmp = getenv("MAXUSERCMD")) != 0)
+    user_max = strtoul(tmp, 0, 10);
+  if ((tmp = getenv("MAXAUTHFAIL")) != 0)
+    auth_max = strtoul(tmp, 0, 10);
   if ((domain = cvm_ucspi_domain()) == 0)
     domain = "unknown";
   if (argc < 3) {

@@ -1,0 +1,67 @@
+<loop limit 0 2>
+export MAXUSERCMD=$limit
+export MAXAUTHFAIL=$limit
+
+pfauth $src/testcvm <<EOF
+USER a
+USER b
+USER c
+USER d
+EOF
+
+echo
+pfauth $src/testcvm <<EOF
+USER a
+PASS a
+USER b
+PASS b
+USER c
+PASS c
+USER d
+PASS d
+EOF
+
+export CVM_SASL_PLAIN=$src/testcvm
+
+echo
+pfauth $src/testcvm <<EOF
+AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBxc3M=
+AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBxc3M=
+AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBxc3M=
+AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBxc3M=
+EOF
+
+unset MAXUSERCMD MAXAUTHFAIL CVM_SASL_PLAIN
+
+<result 0>
++OK ^M
++OK ^M
++OK ^M
++OK ^M
+
++OK ^M
+-ERR Authentication failed^M
++OK ^M
+-ERR Authentication failed^M
++OK ^M
+-ERR Authentication failed^M
++OK ^M
+-ERR Authentication failed^M
+
+-ERR Authentication failed.^M
+-ERR Authentication failed.^M
+-ERR Authentication failed.^M
+-ERR Authentication failed.^M
+
+<result 2>
++OK ^M
++OK ^M
+-ERR Too many USER commands issued^M
+
++OK ^M
+-ERR Authentication failed^M
++OK ^M
+-ERR Authentication failed^M
+
+-ERR Authentication failed.^M
+-ERR Authentication failed.^M

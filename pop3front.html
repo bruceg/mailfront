@@ -29,6 +29,11 @@ support through <a href="cvm-sasl.html">cvm-sasl</a>.</p>
 they override <tt>$TIMEOUT</tt> and <tt>$SESSION_TIMEOUT</tt>
 respectively.</p>
 
+<p>If <tt>$MAXUSERCMD</tt> is set, no more than the specified number of
+the <tt>USER</tt> command may be issued.  If <tt>$MAXAUTHFAIL</tt> is
+set, no more than the specified number of authentication failures may
+occur.  After these limits are reached, the client is disconnected.</p>
+
 <h2>pop3front-maildir</h2>
 
 <p>Usage: <tt>pop3front-maildir [ DEFAULT-MAILDIR ]</tt></p>
