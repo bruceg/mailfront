@@ -1,0 +1,39 @@
+<loop limit 0 2>
+export MAXAUTHFAIL=$limit
+export CVM_SASL_PLAIN=$src/testcvm
+
+ifauth <<EOF
+1 AUTHENTICATE PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3x=
+2 AUTHENTICATE PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3x=
+3 AUTHENTICATE PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3x=
+4 AUTHENTICATE PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3x=
+EOF
+
+echo
+
+ifauth <<EOF
+1 LOGIN A B
+2 LOGIN A B
+3 LOGIN A B
+4 LOGIN A B
+EOF
+unset CVM_SASL_PLAIN
+unset MAXAUTHFAIL
+
+<result 0>
+1 NO AUTHENTICATE failed: Authentication failed.^M
+2 NO AUTHENTICATE failed: Authentication failed.^M
+3 NO AUTHENTICATE failed: Authentication failed.^M
+4 NO AUTHENTICATE failed: Authentication failed.^M
+
+1 NO LOGIN failed^M
+2 NO LOGIN failed^M
+3 NO LOGIN failed^M
+4 NO LOGIN failed^M
+
+<result 2>
+1 NO AUTHENTICATE failed: Authentication failed.^M
+2 NO AUTHENTICATE failed: Authentication failed.^M
+
+1 NO LOGIN failed^M
+2 NO LOGIN failed^M

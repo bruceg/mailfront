@@ -24,6 +24,10 @@ support through <a href="cvm-sasl.html">cvm-sasl</a>.</p>
 <tt>$SESSION_TIMEOUT</tt> if that is not set) seconds after the
 connection was established (defaults to 86400 seconds or 24 hours).</p>
 
+<p>If <tt>$MAXAUTHFAIL</tt> is set, no more than the specified number of
+authentication failures may occur.  After this limits are reached, the
+client is disconnected.</p>
+
 <p>By default, the environment for the executed <tt>PROGRAM</tt> is set
 up for use with Courier IMAP.  If <tt>$SETUP_ENV</tt> is set
 to <tt>dovecot</tt>, <tt>imapfront-auth</tt> will try to detect the type

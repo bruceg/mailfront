@@ -55,6 +55,9 @@ static str cmd;
 static str line_args[MAX_ARGC];
 static int line_argc;
 
+static int auth_count;
+static int auth_max;
+
 static struct sasl_auth saslauth = { .prefix = "+ " };
 
 void log_start(const char* tagstr)
@@ -305,6 +308,9 @@ void cmd_login(int argc, str* argv)
       do_exec();
     else
       respond(0, "NO LOGIN failed");
+    ++auth_count;
+    if (auth_max > 0 && auth_count >= auth_max)
+      exit(0);
   }
 }
 
@@ -325,6 +331,9 @@ void cmd_authenticate(int argc, str* argv)
   respond_str("NO AUTHENTICATE failed: ");
   respond_str(sasl_auth_msg(&i));
   respond_end();
+    ++auth_count;
+    if (auth_max > 0 && auth_count >= auth_max)
+      exit(0);
 }
 
 struct command
@@ -369,10 +378,13 @@ static void dispatch_line(void)
 
 static int startup(int argc, char* argv[])
 {
+  const char* tmp;
   if (argc < 2) {
     respond(NOTAG, "NO Usage: imapfront-auth imapd [args ...]");
     return 0;
   }
+  if ((tmp = getenv("MAXAUTHFAIL")) != 0)
+    auth_max = strtoul(tmp, 0, 10);
   if ((domain = cvm_ucspi_domain()) == 0)
     domain = "unknown";
   nextcmd = argv + 1;
