@@ -1,4 +1,9 @@
 -------------------------------------------------------------------------------
+Changes in version 1.21
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
+-------------------------------------------------------------------------------
 Changes in version 1.20
 
 - Added Lua scripting plugin (optional, build with 'make lua').
