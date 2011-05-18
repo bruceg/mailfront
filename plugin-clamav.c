@@ -8,12 +8,14 @@
 #include <msg/msg.h>
 #include <net/resolve.h>
 #include <net/socket.h>
+#include <uint32.h>
 
 static RESPONSE(no_hostname,451,"4.3.0 Could not resolve virus scanner hostname");
 static RESPONSE(no_scan,451,"4.3.0 Could not virus scan message");
 static response resp_virus = { 554, 0 };
 
 #define MAX_IPS 16
+#define MAX_CHUNK_SIZE 0xffffffffUL
 
 static str line;
 
@@ -29,16 +31,26 @@ static int try_connect(const ipv4addr* ip, ipv4port port,
   return -1;
 }
 
+static int copystream(int fd, size_t size, obuf* out)
+{
+  unsigned char prefix[4];
+  uint32_pack_msb(size, prefix);
+  if (!obuf_write(out, (char*)prefix, 4)) return 0;
+  if (!obuf_copyfromfd(fd, out)) return 0;
+  memset(prefix, 0, 4);
+  return obuf_write(out, (char*)prefix, 4);
+}
+
 static const response* message_end(int fd)
 {
   const char* hostname;
   const char* tmp;
   ipv4port cmdport;
-  ipv4port dataport;
   ipv4addr ips[MAX_IPS];
   int ip_count;
   int i;
   int offset;
+  int result;
   struct timeval tv;
   int sock;
   unsigned long timeout;
@@ -52,11 +64,17 @@ static const response* message_end(int fd)
   if ((hostname = session_getenv("CLAMAV_HOST")) != 0
       || (hostname = session_getenv("CLAMD_HOST")) != 0) {
 
+    if (fstat(fd, &st) != 0)
+      return &resp_internal;
+    /* For simplicity, this plugin just sends a single chunk, but each
+     * chunk is limited to 2^32 bytes by the protocol. */
+    if (st.st_size > 0xffffffffLL) {
+      warn1("ClamAV scanning skipped: message larger than chunk size");
+      return 0;
+    }
     if ((tmp = session_getenv("CLAMAV_MAXSIZE")) != 0
 	&& (maxsize = strtoul(tmp, (char**)&tmp, 10)) != 0
 	&& *tmp == 0) {
-      if (fstat(fd, &st) != 0)
-	return &resp_internal;
       if (st.st_size > (ssize_t)maxsize){
 	warn1("ClamAV scanning skipped: message larger than maximum");
 	return 0;
@@ -93,36 +111,31 @@ static const response* message_end(int fd)
       if ((sock = try_connect(addr, cmdport, connect_timeout)) < 0)
 	continue;
 
-      if (ibuf_init(&netin, sock, 0, IOBUF_NEEDSCLOSE, 0)) {
-	netin.io.timeout = timeout;
-	if (write(sock, "STREAM\n", 7) == 7
-	    && ibuf_getstr(&netin, &line, LF)
-	    && memcmp(line.s, "PORT ", 5) == 0
-	    && (dataport = strtoul(line.s+5, 0, 10)) > 0) {
-	  if ((sock = try_connect(addr, dataport, connect_timeout)) >= 0) {
-	    if (obuf_init(&netout, sock, 0, IOBUF_NEEDSCLOSE, 0)) {
-	      netout.io.timeout = send_timeout;
-	      if (obuf_copyfromfd(fd, &netout)
-		  && obuf_close(&netout)
-		  && ibuf_getstr(&netin, &line, LF)) {
-		ibuf_close(&netin);
-		if (memcmp(line.s, "stream: ", 8) == 0) {
-		  str_lcut(&line, 8);
-		  str_rstrip(&line);
-		  if (str_diffs(&line, "OK") == 0)
-		    return 0;
-		  str_splices(&line, 0, 0, "5.7.0 Virus scan failed: ");
-		  resp_virus.message = line.s;
-		  return &resp_virus;
-		}
+      if (obuf_init(&netout, sock, 0, 0, 0)) {
+	netout.io.timeout = send_timeout;
+	result = obuf_puts(&netout, "nINSTREAM\n")
+	  && copystream(fd, st.st_size, &netout)
+	  && obuf_close(&netout);
+	obuf_close(&netout);
+	if (result) {
+	  if (ibuf_init(&netin, sock, 0, IOBUF_NEEDSCLOSE, 0)) {
+	    netin.io.timeout = timeout;
+	    result = ibuf_getstr(&netin, &line, LF);
+	    ibuf_close(&netin);
+	    sock = -1;
+	    if (result) {
+	      if (memcmp(line.s, "stream: ", 8) == 0) {
+		str_lcut(&line, 8);
+		str_rstrip(&line);
+		if (str_diffs(&line, "OK") == 0)
+		  return 0;
+		str_splices(&line, 0, 0, "5.7.0 Virus scan failed: ");
+		resp_virus.message = line.s;
+		return &resp_virus;
 	      }
-	      obuf_close(&netout);
 	    }
-	    if (sock >= 0)
-	      close(sock);
 	  }
 	}
-	ibuf_close(&netin);
       }
       if (sock >= 0)
 	close(sock);

@@ -13,7 +13,9 @@ detected as having a virus, the message is rejected, and the error
 response contains the virus name as detected by ClamAV.  This scanner
 only operates over TCP/IP sockets (either remotely or locally).</p>
 
-<p><b>Note:</b> This plugin causes mailfront to save messages to temporary
+<p><b>Notes:</b> This plugin requires ClamAV version 0.95 or later, and
+will only scan messages 4GB or smaller due to implementation
+limitations.  It also causes mailfront to save messages to temporary
 files.</p>
 
 <h2>Configuration</h2>

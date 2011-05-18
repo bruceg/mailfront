@@ -7,6 +7,8 @@ Changes in version 1.21
 - Added control to imapfront-auth to limit the number of authentication
   failures allowed per session.
 
+- Modified the clamav plugin to use the newer INSTREAM protocol.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
