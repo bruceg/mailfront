@@ -9,6 +9,9 @@ Changes in version 1.21
 
 - Modified the clamav plugin to use the newer INSTREAM protocol.
 
+- imapfront-auth now sets $DOVECONF_ENV in Dovecot mode in order to
+  avoid having Dovecot imapd reset it through doveconf.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

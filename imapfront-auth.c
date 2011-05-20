@@ -258,6 +258,9 @@ static int setup_env(void)
   if (cvm_fact_mailbox != 0
       && (s = getenv("SETUP_ENV")) != 0
       && strcmp(s, "dovecot") == 0) {
+    /* This tells Dovecot that its environment has already been set up. */
+    if (putenv("DOVECONF_ENV=1") != 0)
+      return 0;
     /* Use the file type to set the prefix to mbox: or maildir:
      * Assume missing files are mboxes. */
     s = (stat(cvm_fact_mailbox, &st) == 0
