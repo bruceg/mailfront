@@ -1,5 +1,9 @@
 #include "mailfront.h"
+#include <stdlib.h>
+#include <string.h>
+#include <str/iter.h>
 
+static RESPONSE(too_big, 552, "5.2.3 The message would exceed the maximum message size.");
 static RESPONSE(too_long, 552, "5.2.3 Sorry, that message exceeds the maximum message length.");
 static RESPONSE(hops, 554, "5.6.0 This message is looping, too many hops.");
 static RESPONSE(manyrcpt, 550, "5.5.3 Too many recipients");
@@ -51,12 +55,39 @@ static const response* reset(void)
   return 0;
 }
 
+static const char* find_param(const str* params, const char* name)
+{
+  const long len = strlen(name);
+  striter i;
+  striter_loop(&i, params, 0) {
+    if (strncasecmp(i.startptr, name, len) == 0) {
+      if (i.startptr[len] == '0')
+	return i.startptr + len;
+      if (i.startptr[len] == '=')
+	return i.startptr + len + 1;
+    }
+  }
+  return 0;
+}
+
 static const response* sender(str* r, str* params)
 {
+  unsigned long maxdatabytes;
+  unsigned long size;
+  const char* param;
+
   /* This MUST be done as a sender match to make sure SMTP "MAIL FROM"
    * commands with a SIZE parameter can be rejected properly. */
   minenv("maxdatabytes", "DATABYTES");
   minenv("maxrcpts", "MAXRCPTS");
+  /* Look up the size limit after handling the sender,
+     in order to honour limits set in the mail rules. */
+  maxdatabytes = session_getnum("maxdatabytes", ~0UL);
+  if ((param = find_param(params, "SIZE")) != 0 &&
+      (size = strtoul(param, (char**)&param, 10)) > 0 &&
+      *param == 0 &&
+      size > maxdatabytes)
+    return &resp_too_big;
   (void)r;
   return 0;
   (void)params;

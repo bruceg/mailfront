@@ -1,5 +1,4 @@
 #include <string.h>
-#include <stdlib.h>
 #include <systime.h>
 
 #include "mailfront.h"
@@ -8,7 +7,6 @@
 
 #include <iobuf/iobuf.h>
 #include <msg/msg.h>
-#include <str/iter.h>
 
 extern struct protocol protocol;
 
@@ -39,7 +37,6 @@ static RESPONSE(ok, 250, "2.3.0 OK");
 static RESPONSE(unimp, 500, "5.5.1 Not implemented.");
 static RESPONSE(needsparam, 501, "5.5.2 That command requires a parameter.");
 static RESPONSE(auth_already, 503, "5.5.1 You are already authenticated.");
-static RESPONSE(toobig, 552, "5.2.3 The message would exceed the maximum message size.");
 static RESPONSE(toomanyunimp, 503, "5.5.0 Too many unimplemented commands.\n5.5.0 Closing connection.");
 static RESPONSE(goodbye, 221, "2.0.0 Good bye.");
 static RESPONSE(authenticated, 235, "2.7.0 Authentication succeeded.");
@@ -91,21 +88,6 @@ static int parse_addr_arg(void)
     str_lcut(&addr, i);
     
   return 1;
-}
-
-static const char* find_param(const char* name)
-{
-  const long len = strlen(name);
-  striter i;
-  striter_loop(&i, &params, 0) {
-    if (strncasecmp(i.startptr, name, len) == 0) {
-      if (i.startptr[len] == '0')
-	return i.startptr + len;
-      if (i.startptr[len] == '=')
-	return i.startptr + len + 1;
-    }
-  }
-  return 0;
 }
 
 static int QUIT(void)
@@ -161,23 +143,12 @@ static void do_reset(void)
 static int MAIL(void)
 {
   const response* resp;
-  const char* param;
-  unsigned long size;
-  unsigned long maxdatabytes;
   msg2("MAIL ", arg.s);
   do_reset();
   parse_addr_arg();
   if ((resp = handle_sender(&addr, &params)) == 0)
     resp = &resp_mail_ok;
   if (number_ok(resp)) {
-    /* Look up the size limit after handling the sender,
-       in order to honour limits set in the mail rules. */
-    maxdatabytes = session_getnum("maxdatabytes", ~0UL);
-    if ((param = find_param("SIZE")) != 0 &&
-	(size = strtoul(param, (char**)&param, 10)) > 0 &&
-	*param == 0 &&
-	size > maxdatabytes)
-      return respond(&resp_toobig);
     saw_mail = 1;
   }
   return respond(resp);
