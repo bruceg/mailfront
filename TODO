@@ -10,6 +10,10 @@
 - Add hooks for plugins to load or (temporarily) disable the operation
   of other plugins?
 
+New plugin: starttls
+
+  - Add support for RFC 2487 STARTTLS as a plugin
+
 Plugin: clamav
 
   - Add tests (not sure how to emulate the daemon properly)
@@ -34,8 +38,6 @@ Protocol: SMTP
   - Build a shared routine for breaking out the domain name.
 
   - Add RFC 2034/3463 enhanced status codes to all responses.
-
-  - Add support for RFC 2487 STARTTLS
 
   - Add some information about authentication into the headers (?)
 
