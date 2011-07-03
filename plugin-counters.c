@@ -35,6 +35,15 @@ static const response* init(void)
   return 0;
 }
 
+static const response* helo(str* hostname, str* capabilities)
+{
+  if (!str_cats(capabilities, "SIZE ")) return &resp_oom;
+  if (!str_catu(capabilities, session_getnum("maxdatabytes", 0))) return &resp_oom;
+  if (!str_catc(capabilities, '\n')) return &resp_oom;
+  return 0;
+  (void)hostname;
+}
+
 static const response* reset(void)
 {
   minenv("maxdatabytes", "DATABYTES");
@@ -145,6 +154,7 @@ static const response* end(int fd)
 struct plugin plugin = {
   .version = PLUGIN_VERSION,
   .init = init,
+  .helo = helo,
   .reset = reset,
   .sender = sender,
   .recipient = recipient,

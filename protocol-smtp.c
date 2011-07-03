@@ -397,10 +397,7 @@ static int init(void)
     return 1;
   }
 
-  if (!str_copys(&init_capabilities, "SIZE ")
-      || !str_catu(&init_capabilities, session_getnum("maxdatabytes", 0))
-      || !str_catc(&init_capabilities, '\n')
-      || !str_cats(&init_capabilities, "8BITMIME\nENHANCEDSTATUSCODES\nPIPELINING")) {
+  if (!str_cats(&init_capabilities, "8BITMIME\nENHANCEDSTATUSCODES\nPIPELINING")) {
     respond(&resp_oom);
     return 1;
   }
