@@ -1,3 +1,6 @@
+- Fixed plugin-add-received to add the "IPv6:" prefix in the Received:
+  header when the protocol is TCP6.
+
 -------------------------------------------------------------------------------
 Changes in version 1.21
 

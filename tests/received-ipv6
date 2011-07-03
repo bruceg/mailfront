@@ -1,0 +1,23 @@
+PLUGINS=add-received:accept
+PROTO=TCP6
+TCP6LOCALHOST="localhost"
+TCP6LOCALIP="localip"
+TCP6REMOTEHOST="remotehost"
+TCP6REMOTEIP="remoteip"
+
+export TCP6{LOCAL,REMOTE}{HOST,IP}
+
+$src/mailfront smtp echo 2>&1 >/dev/null <<EOF | \
+	sed -n -e 's/^.* Received: //p'
+$helo
+MAIL FROM:<>
+RCPT TO:<test@example.com>
+DATA
+.
+EOF
+
+PROTO=TEST
+unset TCP6{LOCAL,REMOTE}{HOST,IP}
+
+<result>
+from remotehost (remotehost [IPv6:remoteip])  by localhost ([IPv6:localip])
