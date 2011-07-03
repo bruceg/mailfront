@@ -44,7 +44,6 @@ extern const char* getprotoenv(const char*);
 /* From mailfront.c */
 extern const char UNKNOWN[];
 extern const response* handle_helo(str* host);
-extern const response* handle_init(void);
 extern const response* handle_reset(void);
 extern const response* handle_sender(str* sender);
 extern const response* handle_recipient(str* recip);

@@ -42,7 +42,7 @@ static str tmp_prefix;
   } \
 } while(0)
 
-const response* handle_init(void)
+static const response* handle_init(void)
 {
   const response* resp;
 
