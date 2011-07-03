@@ -225,11 +225,12 @@ static const response* reset(void)
   return 0;
 }
 
-static const response* helo(str* hostname)
+static const response* helo(str* hostname, str* capabilities)
 {
   if (setup("helo")) {
     lua_pushlstring(L, hostname->s, hostname->len);
-    return callit(1);
+    lua_pushlstring(L, capabilities->s, capabilities->len);
+    return callit(2);
   }
   return 0;
 }

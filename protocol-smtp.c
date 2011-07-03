@@ -26,6 +26,7 @@ static str cmd;
 static str arg;
 static str addr;
 static str params;
+static str init_capabilities;
 
 static RESPONSE(no_mail, 503, "5.5.1 You must send MAIL FROM: first");
 static RESPONSE(vrfy, 252, "2.5.2 Send some mail, I'll try my best.");
@@ -42,7 +43,6 @@ static RESPONSE(toobig, 552, "5.2.3 The message would exceed the maximum message
 static RESPONSE(toomanyunimp, 503, "5.5.0 Too many unimplemented commands.\n5.5.0 Closing connection.");
 static RESPONSE(goodbye, 221, "2.0.0 Good bye.");
 static RESPONSE(authenticated, 235, "2.7.0 Authentication succeeded.");
-static RESPONSE(ehlo, 250, "8BITMIME\nENHANCEDSTATUSCODES\nPIPELINING");
 
 static int saw_mail = 0;
 static int saw_rcpt = 0;
@@ -126,32 +126,26 @@ static int HELO(void)
 {
   const response* resp;
   if (response_ok(resp = handle_reset()))
-    resp = handle_helo(&arg);
+    resp = handle_helo(&arg, &line);
   return (resp != 0) ? respond(resp)
     : respond_line(250, 1, domain_name.s, domain_name.len);
 }
 
 static int EHLO(void)
 {
-  static str auth_resp;
   const response* resp;
   protocol.name = "ESMTP";
+  line.len = 0;
   if (!response_ok(resp = handle_reset())
-      || !response_ok(resp = handle_helo(&arg)))
+      || !response_ok(resp = handle_helo(&arg, &line)))
     return respond(resp);
+  if (!str_cat(&line, &init_capabilities)) {
+    respond(&resp_oom);
+    return 0;
+  }
 
   if (!respond_line(250, 0, domain_name.s, domain_name.len)) return 0;
-  switch (sasl_auth_caps(&auth_resp)) {
-  case 0: break;
-  case 1:
-    if (!respond_line(250, 0, auth_resp.s, auth_resp.len)) return 0;
-    break;
-  default: return respond(&resp_internal);
-  }
-  if (!str_copys(&line, "SIZE ")) return 0;
-  if (!str_catu(&line, session_getnum("maxdatabytes", 0))) return 0;
-  if (!respond_line(250, 0, line.s, line.len)) return 0;
-  return respond(&resp_ehlo);
+  return respond_multiline(250, 1, line.s);
 }
 
 static void do_reset(void)
@@ -391,14 +385,31 @@ static int init(void)
   if ((tmp = getenv("MAXNOTIMPL")) != 0)
     maxnotimpl = strtoul(tmp, 0, 10);
 
+  if (!sasl_auth_init(&saslauth)) {
+    respond(&resp_authfail);
+    return 1;
+  }
+  switch (sasl_auth_caps(&init_capabilities)) {
+  case 0: break;
+  case 1: break;
+  default:
+    respond(&resp_authfail);
+    return 1;
+  }
+
+  if (!str_copys(&init_capabilities, "SIZE ")
+      || !str_catu(&init_capabilities, session_getnum("maxdatabytes", 0))
+      || !str_catc(&init_capabilities, '\n')
+      || !str_cats(&init_capabilities, "8BITMIME\nENHANCEDSTATUSCODES\nPIPELINING")) {
+    respond(&resp_oom);
+    return 1;
+  }
+
   return 0;
 }
 
 static int mainloop(void)
 {
-  if (!sasl_auth_init(&saslauth))
-    return respond(&resp_authfail);
-
   if (!respond_line(220, 1, str_welcome.s, str_welcome.len)) return 0;
   while (ibuf_getstr_crlf(&inbuf, &line))
     if (!smtp_dispatch()) {

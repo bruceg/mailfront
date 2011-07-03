@@ -13,7 +13,7 @@ static const response* init(void)
 /* The helo function is called once by the SMTP protocol when either the
  * HELO or EHLO command is issued.  The parameter is the hostname given
  * in the command. */
-static const response* helo(str* hostname)
+static const response* helo(str* hostname, str* capabilities)
 {
   return 0;
 }

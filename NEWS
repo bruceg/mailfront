@@ -1,8 +1,13 @@
 -------------------------------------------------------------------------------
 Changes in version 2.00
 
-- This version updates the API to add new features.  Plugins compiled
-  for previous versions of mailfront will not work without recompiling.
+- This version updates the plugin API to add new features:
+
+  - Capabilities reported by the SMTP EHLO response can be added by
+    plugins.
+
+  Plugins compiled for previous versions of mailfront will not work
+  without recompiling.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/

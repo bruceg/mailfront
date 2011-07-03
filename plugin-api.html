@@ -121,10 +121,12 @@ will flush any data specific to the message, as well as after error
 responses to the sender address or data, and after the SMTP
 <tt>HELO</tt> command.</dd>
 
-<dt><tt>const response* helo(str* hostname)</tt></dt> <dd>This hook is
-called when the SMTP <tt>HELO</tt> or <tt>EHLO</tt> commands are issued.
-As yet nothing actually uses the <tt>hostname</tt> string.  Other
-protocols will not call this hook.</dd>
+<dt><tt>const response* helo(str* hostname, str* capabilities)</tt></dt>
+<dd>This hook is called when the SMTP <tt>HELO</tt> or <tt>EHLO</tt>
+commands are issued.  As yet nothing actually uses the <tt>hostname</tt>
+string.  Other protocols will not call this hook.
+The <tt>capabilities</tt> variable contains a list of SMTP EHLO response
+capabilities, each followed by a newline.</dd>
 
 <dt><tt>const response* sender(str* address)</tt></dt> <dd>This hook is
 called after a sender email address is transmitted by the client, and is

@@ -57,11 +57,13 @@ static const response* handle_init(void)
   return 0;
 }
 
-const response* handle_helo(str* host)
+const response* handle_helo(str* host, str* capabilities)
 {
   const response* resp;
-  MODULE_CALL(helo, (host), 0, 0);
+  MODULE_CALL(helo, (host, capabilities), 0, 0);
   session_setstr("helo_domain", host->s);
+  if (session.backend->helo != 0)
+    return session.backend->helo(host, capabilities);
   return 0;
 }
 
@@ -188,13 +190,20 @@ int respond_line(unsigned number, int final,
   return 1;
 }
 
+int respond_multiline(unsigned number, int final, const char* msg)
+{
+  const char* nl;
+  while ((nl = strchr(msg, '\n')) != 0) {
+    if (!respond_line(number, 0, msg, nl-msg))
+      return 0;
+    msg = nl + 1;
+  }
+  return respond_line(number, final, msg, strlen(msg));
+}
+
 int respond(const response* resp)
 {
-  const char* msg;
-  const char* nl;
-  for (msg = resp->message; (nl = strchr(msg, '\n')) != 0; msg = nl + 1)
-    respond_line(resp->number, 0, msg, nl-msg);
-  return respond_line(resp->number, 1, msg, strlen(msg));
+  return respond_multiline(resp->number, 1, resp->message);
 }
 
 const response* backend_data_block(const char* data, unsigned long len)

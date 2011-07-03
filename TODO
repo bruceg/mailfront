@@ -14,6 +14,10 @@ Plugin: clamav
 
   - Add tests (not sure how to emulate the daemon properly)
 
+Plugin: lua
+
+  - Fix hooks that can modify strings to actually allow modification
+
 Plugin: patterns
 
   - Add better MIME attachment discrimination to patterns, instead of

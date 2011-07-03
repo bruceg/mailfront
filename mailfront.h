@@ -17,7 +17,7 @@ struct plugin
   const char* name;
   unsigned flags;
   const response* (*init)(void);
-  const response* (*helo)(str*);
+  const response* (*helo)(str* hostname, str* capabilities);
   const response* (*reset)(void);
   const response* (*sender)(str*);
   const response* (*recipient)(str*);
@@ -43,7 +43,7 @@ extern const char* getprotoenv(const char*);
 
 /* From mailfront.c */
 extern const char UNKNOWN[];
-extern const response* handle_helo(str* host);
+extern const response* handle_helo(str* host, str* capabilities);
 extern const response* handle_reset(void);
 extern const response* handle_sender(str* sender);
 extern const response* handle_recipient(str* recip);
@@ -53,6 +53,7 @@ extern const response* handle_message_end(void);
 extern int respond(const response*);
 extern int respond_line(unsigned number, int final,
 			const char* msg, unsigned long len);
+extern int respond_multiline(unsigned number, int final, const char* msg);
 extern const response* backend_data_block(const char* data, unsigned long len);
 extern int scratchfile(void);
 
