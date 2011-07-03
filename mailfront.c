@@ -241,6 +241,32 @@ int scratchfile(void)
   return fd;
 }
 
+struct command* commands;
+
+static int collect_commands(void)
+{
+  const struct plugin* plugin;
+  const struct command* cmd;
+  int i = 0;
+
+  for (cmd = session.backend->commands; cmd != 0 && cmd->name != 0; ++cmd, ++i) ;
+  for (plugin = session.plugin_list; plugin != 0; plugin = plugin->next)
+    for (cmd = plugin->commands; cmd != 0 && cmd->name != 0; ++cmd, ++i) ;
+
+  if ((commands = malloc((i+1) * sizeof *commands)) == 0)
+    return 0;
+
+  i = 0;
+  for (cmd = session.backend->commands; cmd != 0 && cmd->name != 0; ++cmd, ++i)
+    commands[i] = *cmd;
+  for (plugin = session.plugin_list; plugin != 0; plugin = plugin->next)
+    for (cmd = plugin->commands; cmd != 0 && cmd->name != 0; ++cmd, ++i)
+      commands[i] = *cmd;
+  commands[i].name = 0;
+
+  return 1;
+}
+
 int main(int argc, char* argv[])
 {
   const response* resp;
@@ -264,9 +290,14 @@ int main(int argc, char* argv[])
       die1(1, resp->message);
   }
 
+  if (!collect_commands()) {
+    respond(&resp_oom);
+    return 1;
+  }
+
   if (session.protocol->init != 0)
     if (session.protocol->init())
       return 1;
 
-  return session.protocol->mainloop();
+  return session.protocol->mainloop(commands);
 }

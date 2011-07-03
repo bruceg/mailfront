@@ -41,6 +41,7 @@ is to be defined as follows:</p>
 struct plugin plugin = {
   .version = PLUGIN_VERSION,
   .flags = 0,
+  .commands = commands,
   .init = init,
   .helo = helo,
   .reset = reset,
@@ -78,6 +79,32 @@ temporary file is passed to the <tt>.data_start</tt> and
 <tt>.message_end</tt> hooks.</dd>
 
 </dl>
+
+<h3>Commands</h3>
+
+<p>The <tt>commands</tt> entry allows for the definition of new SMTP
+commands in a plugin.  To add commands, set it to an array of <tt>struct
+command</tt> containing:</p>
+
+<blockquote><pre>
+struct command
+{
+  const char* name;
+  int (*fn)(str* arg);
+};
+</pre></blockquote>
+
+<p>The last command in the array must be followed by a termination
+record, with <tt>name</tt> set to <tt>NULL</tt>.</p>
+
+<p>All of the commands provided by plugins are collected together in the
+order they are found and passed to the protocol module.  Commands in
+plugins override any built-in commands of the same name.</p>
+
+<p>Since there is no regular grammar for SMTP command arguments, the
+entire text following the command is passed to the function with no
+modifications except for stripping leading extraneous spaces and the
+trailing line ending.</p>
 
 <h2>Hook Functions</h2>
 

@@ -10,12 +10,19 @@
 
 #define PLUGIN_VERSION 3
 
+struct command
+{
+  const char* name;
+  int (*fn)(str* arg);
+};
+
 struct plugin
 {
   unsigned version;
   struct plugin* next;
   const char* name;
   unsigned flags;
+  const struct command* commands;
   const response* (*init)(void);
   const response* (*helo)(str* hostname, str* capabilities);
   const response* (*reset)(void);
@@ -35,7 +42,7 @@ struct protocol
   int (*respond_line)(unsigned number, int final,
 		      const char* msg, unsigned long len);
   int (*init)(void);
-  int (*mainloop)(void);
+  int (*mainloop)(const struct command* commands);
 };
 
 /* From getprotoenv.c */

@@ -318,11 +318,17 @@ static int parse_line(void)
   return str_copy(&cmd, &line) && str_truncate(&arg, 0);
 }
 
-int smtp_dispatch(void)
+int smtp_dispatch(const struct command* commands)
 {
   static unsigned long notimpl = 0;
   struct dispatch* d;
+  const struct command* c;
   if (!parse_line()) return 1;
+  for (c = commands; c->name != 0; c++)
+    if (strcasecmp(c->name, cmd.s) == 0) {
+      notimpl = 0;
+      return c->fn(&arg);
+    }
   for (d = dispatch_table; d->cmd != 0; ++d)
     if (strcasecmp(d->cmd, cmd.s) == 0) {
       notimpl = 0;
@@ -374,11 +380,11 @@ static int init(void)
   return 0;
 }
 
-static int mainloop(void)
+static int mainloop(const struct command* commands)
 {
   if (!respond_line(220, 1, str_welcome.s, str_welcome.len)) return 0;
   while (ibuf_getstr_crlf(&inbuf, &line))
-    if (!smtp_dispatch()) {
+    if (!smtp_dispatch(commands)) {
       if (ibuf_eof(&inbuf))
 	msg1("Connection dropped");
       if (ibuf_timedout(&inbuf))

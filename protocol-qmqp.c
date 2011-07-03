@@ -95,11 +95,12 @@ static void get_package(ibuf* in)
   if (!respond(resp)) die("EOF while sending response");
 }
 
-static int mainloop(void)
+static int mainloop(const struct command* commands)
 {
   alarm(3600);
   get_package(&inbuf);
   return 0;
+  (void)commands;
 }
 
 struct protocol protocol = {

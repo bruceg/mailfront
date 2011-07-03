@@ -9,6 +9,8 @@ Changes in version 2.00
   - Plugins are passed any SMTP parameters given with the sender and
     recipient commands.
 
+  - Plugins can add new commands to the SMTP protocol.
+
   Plugins compiled for previous versions of mailfront will not work
   without recompiling.
 

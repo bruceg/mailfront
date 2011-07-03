@@ -64,12 +64,28 @@ static const response* message_end(int fd)
   return 0;
 }
 
+/* To define a new command, write the function that will be executed
+ * when the command is invoked, and add it to a "struct command" array
+ * as below. The function is passed the entire command argument, and
+ * must handle sending responses itself. Return positive for success or
+ * 0 to disconnect. */
+static int cmd_X_CMD(str* arg)
+{
+  return 1;
+}
+
+static const struct command commands[] = {
+  { "X-CMD", cmd_X_CMD },
+  { 0, 0 }
+};
+
 /* Plugins must export this structure.
  * Remove any of the entries that are not used (ie 0 or NULL).
  */
 struct plugin plugin = {
   .version = PLUGIN_VERSION,
   .flags = 0,
+  .commands = commands,
   .init = init,
   .helo = helo,
   .reset = reset,
