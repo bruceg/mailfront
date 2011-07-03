@@ -8,7 +8,7 @@
 
 #define FLAG_NEED_FILE (1<<0)
 
-#define PLUGIN_VERSION 2
+#define PLUGIN_VERSION 3
 
 struct plugin
 {
@@ -26,7 +26,7 @@ struct plugin
   const response* (*message_end)(int fd);
 };
 
-#define PROTOCOL_VERSION 2
+#define PROTOCOL_VERSION 3
 
 struct protocol
 {

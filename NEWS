@@ -1,6 +1,9 @@
 -------------------------------------------------------------------------------
 Changes in version 2.00
 
+- This version updates the API to add new features.  Plugins compiled
+  for previous versions of mailfront will not work without recompiling.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
