@@ -23,6 +23,8 @@ extern void report_io_bytes(void);
 
 static str tmp_prefix;
 
+static str no_params;
+
 #define MODULE_CALL(NAME,PARAMS,SHORT,RESET) do{ \
   struct plugin* plugin; \
   const response* tmp; \
@@ -80,29 +82,37 @@ const response* handle_reset(void)
   return resp;
 }
 
-const response* handle_sender(str* sender)
+const response* handle_sender(str* sender, str* params)
 {
   const response* resp = 0;
   const response* tmpresp = 0;
-  MODULE_CALL(sender, (sender), 1, 0);
+  if (params == 0) {
+    no_params.len = 0;
+    params = &no_params;
+  }
+  MODULE_CALL(sender, (sender, params), 1, 0);
   if (resp == 0)
     return &resp_no_sender;
   if (session.backend->sender != 0)
-    if (!response_ok(tmpresp = session.backend->sender(sender)))
+    if (!response_ok(tmpresp = session.backend->sender(sender, params)))
       return tmpresp;
   if (resp == 0 || resp->message == 0) resp = tmpresp;
   return resp;
 }
 
-const response* handle_recipient(str* recip)
+const response* handle_recipient(str* recip, str* params)
 {
   const response* resp = 0;
   const response* hresp = 0;
-  MODULE_CALL(recipient, (recip), 1, 0);
+  if (params == 0) {
+    no_params.len = 0;
+    params = &no_params;
+  }
+  MODULE_CALL(recipient, (recip, params), 1, 0);
   if (resp == 0)
     return &resp_no_rcpt;
   if (session.backend->recipient != 0)
-    if (!response_ok(hresp = session.backend->recipient(recip)))
+    if (!response_ok(hresp = session.backend->recipient(recip, params)))
       return hresp;
   if (resp == 0 || resp->message == 0) resp = hresp;
   return resp;

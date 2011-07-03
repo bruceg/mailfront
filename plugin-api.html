@@ -103,6 +103,11 @@ the <a href="http://untroubled.org/bglibs/docs/group__str.html">bglibs
 str</a> documentation module for functions to use in manipulating these
 objects.</p>
 
+<p>Sender and recipient SMTP parameters are passed as a <tt>str*</tt>
+containing a NUL delimited list of <tt>KEYWORD=VALUE</tt> pairs.  If the
+parameter keyword was not followed by a value in the SMTP conversation,
+the <tt>=VALUE</tt> portion will not be present in the string.</tt>
+
 <p>Be aware that the <tt>sender</tt> and <tt>recipient</tt> hooks may be
 called before the message data is handled (as with the SMTP protocol) or
 after (as with the QMQP and QMTP protocol).  In either case, the
@@ -128,15 +133,15 @@ string.  Other protocols will not call this hook.
 The <tt>capabilities</tt> variable contains a list of SMTP EHLO response
 capabilities, each followed by a newline.</dd>
 
-<dt><tt>const response* sender(str* address)</tt></dt> <dd>This hook is
-called after a sender email address is transmitted by the client, and is
-called exactly once per message.  This chain short-circuits on non-error
-response.</dd>
+<dt><tt>const response* sender(str* address, str* params)</tt></dt>
+<dd>This hook is called after a sender email address is transmitted by
+the client, and is called exactly once per message.  This chain
+short-circuits on non-error response.</dd>
 
-<dt><tt>const response* recipient(str* address)</tt></dt> <dd>This hook
-is called after a sender email address is transmitted by the client, and
-may be called zero or more times per message.  This chain short-circuits
-on non-error responses.</dd>
+<dt><tt>const response* recipient(str* address, str* params)</tt></dt>
+<dd>This hook is called after a sender email address is transmitted by
+the client, and may be called zero or more times per message.  This
+chain short-circuits on non-error responses.</dd>
 
 <dt><tt>const response* data_start(int fd)</tt></dt> <dd>This hook is
 called when the sender starts transmitting the message data.  Note that

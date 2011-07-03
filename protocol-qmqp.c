@@ -63,7 +63,7 @@ static void get_sender(ibuf* in)
   }
   msg3("sender <", line.s, ">");
   if (response_ok(resp))
-    resp = handle_sender(&line);
+    resp = handle_sender(&line, 0);
 }
 
 static void get_recips(ibuf* in)
@@ -77,7 +77,7 @@ static void get_recips(ibuf* in)
     }
     msg3("recipient <", line.s, ">");
     if (response_ok(resp))
-      resp = handle_recipient(&line);
+      resp = handle_recipient(&line, 0);
   }
   die("EOF before end of recipient list");
 }

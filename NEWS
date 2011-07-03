@@ -6,6 +6,9 @@ Changes in version 2.00
   - Capabilities reported by the SMTP EHLO response can be added by
     plugins.
 
+  - Plugins are passed any SMTP parameters given with the sender and
+    recipient commands.
+
   Plugins compiled for previous versions of mailfront will not work
   without recompiling.
 

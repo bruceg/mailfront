@@ -97,9 +97,7 @@ static const char* find_param(const char* name)
 {
   const long len = strlen(name);
   striter i;
-  for (striter_start(&i, &params, 0);
-       striter_valid(&i);
-       striter_advance(&i)) {
+  striter_loop(&i, &params, 0) {
     if (strncasecmp(i.startptr, name, len) == 0) {
       if (i.startptr[len] == '0')
 	return i.startptr + len;
@@ -169,7 +167,7 @@ static int MAIL(void)
   msg2("MAIL ", arg.s);
   do_reset();
   parse_addr_arg();
-  if ((resp = handle_sender(&addr)) == 0)
+  if ((resp = handle_sender(&addr, &params)) == 0)
     resp = &resp_mail_ok;
   if (number_ok(resp)) {
     /* Look up the size limit after handling the sender,
@@ -191,7 +189,7 @@ static int RCPT(void)
   msg2("RCPT ", arg.s);
   if (!saw_mail) return respond(&resp_no_mail);
   parse_addr_arg();
-  if ((resp = handle_recipient(&addr)) == 0)
+  if ((resp = handle_recipient(&addr, &params)) == 0)
     resp = &resp_rcpt_ok;
   if (number_ok(resp)) saw_rcpt = 1;
   return respond(resp);
