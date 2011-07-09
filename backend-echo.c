@@ -3,6 +3,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <msg/msg.h>
+#include <str/iter.h>
 #include "mailfront.h"
 
 static response resp = { 250, 0 };
@@ -15,14 +16,22 @@ static const response* reset(void)
   return 0;
 }
 
+static int str_cat_params(str* s, const str* param)
+{
+  striter i;
+  striter_loop(&i, param, 0)
+    if (!str_cat3s(s, " [", i.startptr, "]")) return 0;
+  return 1;
+}
+
 static const response* sender(str* s, str* params)
 {
   str_copys(&tmp, "Sender='");
   str_cat(&tmp, s);
   str_cats(&tmp, "'.");
+  str_cat_params(&tmp, params);
   resp.message = tmp.s;
   return &resp;
-  (void)params;
 }
 
 static const response* recipient(str* r, str* params)
@@ -30,9 +39,9 @@ static const response* recipient(str* r, str* params)
   str_copys(&tmp, "Recipient='");
   str_cat(&tmp, r);
   str_cats(&tmp, "'.");
+  str_cat_params(&tmp, params);
   resp.message = tmp.s;
   return &resp;
-  (void)params;
 }
 
 static const response* data_block(const char* bytes, unsigned long len)

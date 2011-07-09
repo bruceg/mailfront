@@ -86,7 +86,7 @@ unset LUA_SCRIPT
 250 Received 137 bytes.^M
 
 250 local.host^M
-250 Sender='sender'.^M
+250 Sender='sender'. [SIZE=13]^M
 250 Recipient='recip1'.^M
 250 Recipient='recip2'.^M
 421 start fd=-1^M
@@ -94,7 +94,7 @@ unset LUA_SCRIPT
 500 5.5.1 Not implemented.^M
 
 250 local.host^M
-250 Sender='sender'.^M
+250 Sender='sender'. [SIZE=13]^M
 250 Recipient='recip1'.^M
 250 Recipient='recip2'.^M
 354 End your message with a period on a line by itself.^M
@@ -109,14 +109,14 @@ unset LUA_SCRIPT
 500 5.5.1 Not implemented.^M
 
 250 local.host^M
-250 Sender='sender'.^M
+250 Sender='sender'. [SIZE=13]^M
 250 Recipient='recip1'.^M
 250 Recipient='recip2'.^M
 354 End your message with a period on a line by itself.^M
 552 5.2.3 Sorry, that message exceeds the maximum message length.^M
 
 250 local.host^M
-250 Sender='sender'.^M
+250 Sender='sender'. [SIZE=13]^M
 252 recipient #1^M
 252 recipient #2^M
 354 End your message with a period on a line by itself.^M

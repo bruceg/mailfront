@@ -40,7 +40,7 @@ rm -f $tmp/rules
 250-8BITMIME^M
 250-ENHANCEDSTATUSCODES^M
 250 PIPELINING^M
-250 Sender='somebody@example.net'.^M
+250 Sender='somebody@example.net'. [SIZE=10000]^M
 250 OK^M
 354 End your message with a period on a line by itself.^M
 250 Received 8 bytes.^M
@@ -49,7 +49,7 @@ rm -f $tmp/rules
 250-8BITMIME^M
 250-ENHANCEDSTATUSCODES^M
 250 PIPELINING^M
-250 Sender='somebody@example.net'.^M
+250 Sender='somebody@example.net'. [SIZE=10000]^M
 250 OK^M
 250 OK^M
 354 End your message with a period on a line by itself.^M
@@ -59,7 +59,7 @@ rm -f $tmp/rules
 250-8BITMIME^M
 250-ENHANCEDSTATUSCODES^M
 250 PIPELINING^M
-250 Sender='somebody@example.net'.^M
+250 Sender='somebody@example.net'. [SIZE=10000]^M
 250 OK^M
 250 OK^M
 250 OK^M
