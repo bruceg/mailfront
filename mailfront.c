@@ -25,20 +25,19 @@ static str tmp_prefix;
 
 static str no_params;
 
-#define MODULE_CALL(NAME,PARAMS,SHORT,RESET) do{ \
+#define MODULE_CALL(NAME,PARAMS,RESET) do{ \
   struct plugin* plugin; \
   const response* tmp; \
   for (plugin = session.plugin_list; plugin != 0; plugin = plugin->next) { \
     if (plugin->NAME != 0) { \
       if ((tmp = plugin->NAME PARAMS) != 0) { \
-        resp = tmp; \
-        if (!response_ok(resp)) { \
-          if (RESET) \
-            handle_reset(); \
-          return resp; \
-        } \
-        else if (SHORT) \
-          break; \
+        if (!response_ok(tmp)) {	      \
+          if (RESET)			      \
+            handle_reset();		      \
+          return tmp;			      \
+        }				      \
+        if (resp == 0)			      \
+	  resp = tmp;			      \
       } \
     } \
   } \
@@ -46,13 +45,13 @@ static str no_params;
 
 static const response* handle_init(void)
 {
-  const response* resp;
+  const response* resp = 0;
 
   atexit(report_io_bytes);
 
   set_timeout();
 
-  MODULE_CALL(init, (), 0, 0);
+  MODULE_CALL(init, (), 0);
 
   if (session.backend->init != 0)
     return session.backend->init();
@@ -61,8 +60,8 @@ static const response* handle_init(void)
 
 const response* handle_helo(str* host, str* capabilities)
 {
-  const response* resp;
-  MODULE_CALL(helo, (host, capabilities), 0, 0);
+  const response* resp = 0;
+  MODULE_CALL(helo, (host, capabilities), 0);
   session_setstr("helo_domain", host->s);
   if (session.backend->helo != 0)
     return session.backend->helo(host, capabilities);
@@ -78,7 +77,7 @@ const response* handle_reset(void)
   }
   if (session.backend->reset != 0)
     session.backend->reset();
-  MODULE_CALL(reset, (), 0, 0);
+  MODULE_CALL(reset, (), 0);
   return resp;
 }
 
@@ -90,7 +89,7 @@ const response* handle_sender(str* sender, str* params)
     no_params.len = 0;
     params = &no_params;
   }
-  MODULE_CALL(sender, (sender, params), 1, 0);
+  MODULE_CALL(sender, (sender, params), 0);
   if (resp == 0)
     return &resp_no_sender;
   if (session.backend->sender != 0)
@@ -108,7 +107,7 @@ const response* handle_recipient(str* recip, str* params)
     no_params.len = 0;
     params = &no_params;
   }
-  MODULE_CALL(recipient, (recip, params), 1, 0);
+  MODULE_CALL(recipient, (recip, params), 0);
   if (resp == 0)
     return &resp_no_rcpt;
   if (session.backend->recipient != 0)
@@ -135,7 +134,7 @@ const response* handle_data_start(void)
   if (session.backend->data_start != 0)
     resp = session.backend->data_start(session.fd);
   if (response_ok(resp))
-    MODULE_CALL(data_start, (session.fd), 0, 1);
+    MODULE_CALL(data_start, (session.fd), 1);
   if (!response_ok(resp)) {
     handle_reset();
     data_response = resp;
@@ -171,7 +170,7 @@ const response* handle_message_end(void)
   const response* resp = 0;
   if (!response_ok(data_response))
     return data_response;
-  MODULE_CALL(message_end, (session.fd), 0, 1);
+  MODULE_CALL(message_end, (session.fd), 1);
   if (session.backend->message_end != 0)
     resp = session.backend->message_end(session.fd);
   if (session.fd >= 0)

@@ -12,7 +12,8 @@ Changes in version 2.00
   - Plugins can add new commands to the SMTP protocol.
 
   Plugins compiled for previous versions of mailfront will not work
-  without recompiling.
+  without recompiling.  The short-circuit on accept logic has also been
+  eliminated to fix a semantic issue.
 
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/

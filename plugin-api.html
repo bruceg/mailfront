@@ -18,10 +18,10 @@ completed.</li> </ol>
 
 <p>At each of these events, mailfront goes through the list of loaded
 plugins. For each plugin that has a handler for such an event, mailfront
-calls that handler.  If the handler returns no response, control passes
-to the next handler, otherwise no further handlers are called.  If the
-returned code was an error, it is passed back to the protocol
-immediately, which will present it to the client.  If the sender or
+calls that handler.  If the handler returns an error, no further
+handlers are called; otherwise control passes to the next handler.  The
+return code passed back to the protocol is either the error response, if
+any was encountered, or the first non-error response.  If the sender or
 recipient handlers of all the plugins return no response, the address is
 considered rejected, and it is not passed on to the back end. This is
 done to prevent the default configuration from being an open relay.
@@ -113,15 +113,16 @@ trailing line ending.</p>
 SMTP response code <tt>number</tt> and an ASCII <tt>message</tt>.  If
 the plugin returns a NULL response, processing continues to the next
 plugin in the chain (ie pass-through).  If the plugin returns a response
-and either the response number is greater than or equal to 400 (ie an
-error) or the hook is short-circuiting (as indicated below), then no
-further hooks in the chain are called.  Response numbers less than 400
-are treated as acceptance.  If the response was an error, the error is
-passed back through the protocol, otherwise processing continues to the
-backend.  Protocols that do not use the SMTP numbers (such as QMTP) will
-translate the number into something appropriate.  Error numbers between
-400 and 499 inclusive are considered "temporary" errors.  All others are
-considered "permanent" failures (ie reject).</p>
+and the response number is greater than or equal to 400 (ie an error),
+then no further hooks in the chain are called.  Response numbers less
+than 400 are treated as acceptance.  The first acceptance response is
+remembered, but subsequent plugins are still called.  If the response
+was an error, the error is passed back through the protocol, otherwise
+processing continues to the backend.  Protocols that do not use the SMTP
+numbers (such as QMTP) will translate the number into something
+appropriate.  Error numbers between 400 and 499 inclusive are considered
+"temporary" errors.  All others are considered "permanent" failures (ie
+reject).</p>
 
 <p>All string parameters are passed as type <tt>str*</tt> and are
 modifiable.  If their value is changed, all subsequent plugins and the
@@ -162,13 +163,11 @@ capabilities, each followed by a newline.</dd>
 
 <dt><tt>const response* sender(str* address, str* params)</tt></dt>
 <dd>This hook is called after a sender email address is transmitted by
-the client, and is called exactly once per message.  This chain
-short-circuits on non-error response.</dd>
+the client, and is called exactly once per message.</dd>
 
 <dt><tt>const response* recipient(str* address, str* params)</tt></dt>
 <dd>This hook is called after a sender email address is transmitted by
-the client, and may be called zero or more times per message.  This
-chain short-circuits on non-error responses.</dd>
+the client, and may be called zero or more times per message.</dd>
 
 <dt><tt>const response* data_start(int fd)</tt></dt> <dd>This hook is
 called when the sender starts transmitting the message data.  Note that
