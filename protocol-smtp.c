@@ -2,20 +2,14 @@
 #include <systime.h>
 
 #include "mailfront.h"
-#include <cvm/facts.h>
-#include <cvm/sasl.h>
 
 #include <iobuf/iobuf.h>
 #include <msg/msg.h>
 
 extern struct protocol protocol;
 
-static RESPONSE(authfail, 421, "4.3.0 Failed to initialize AUTH");
-
 static str line = {0,0,0};
 static str domain_name = {0,0,0};
-
-static struct sasl_auth saslauth = { .prefix = "334 " };
 
 static unsigned long maxnotimpl = 0;
 
@@ -36,10 +30,8 @@ static RESPONSE(data_ok, 354, "End your message with a period on a line by itsel
 static RESPONSE(ok, 250, "2.3.0 OK");
 static RESPONSE(unimp, 500, "5.5.1 Not implemented.");
 static RESPONSE(needsparam, 501, "5.5.2 That command requires a parameter.");
-static RESPONSE(auth_already, 503, "5.5.1 You are already authenticated.");
 static RESPONSE(toomanyunimp, 503, "5.5.0 Too many unimplemented commands.\n5.5.0 Closing connection.");
 static RESPONSE(goodbye, 221, "2.0.0 Good bye.");
-static RESPONSE(authenticated, 235, "2.7.0 Authentication succeeded.");
 
 static int saw_mail = 0;
 static int saw_rcpt = 0;
@@ -255,32 +247,6 @@ static int VRFY(void)
   return respond(&resp_vrfy);
 }
 
-static int AUTH(void)
-{
-  int i;
-  if (session_getnum("authenticated", 0)) return respond(&resp_auth_already);
-  if (arg.len == 0) return respond(&resp_needsparam);
-  if ((i = sasl_auth1(&saslauth, &arg)) != 0) {
-    const char* msg = sasl_auth_msg(&i);
-    return respond_line(i, 1, msg, strlen(msg));
-  }
-  else {
-    session_setnum("authenticated", 1);
-    session_delstr("helo_domain");
-    session_setstr("auth_user", cvm_fact_username);
-    session_setnum("auth_uid", cvm_fact_userid);
-    session_setnum("auth_gid", cvm_fact_groupid);
-    if (cvm_fact_realname != 0)
-      session_setstr("auth_realname", cvm_fact_realname);
-    if (cvm_fact_domain != 0)
-      session_setstr("auth_domain", cvm_fact_domain);
-    if (cvm_fact_mailbox != 0)
-      session_setstr("auth_mailbox", cvm_fact_mailbox);
-    respond(&resp_authenticated);
-  }
-  return 1;
-}
-
 typedef int (*dispatch_fn)(void);
 struct dispatch 
 {
@@ -298,7 +264,6 @@ static struct dispatch dispatch_table[] = {
   { "RCPT", RCPT },
   { "RSET", RSET },
   { "VRFY", VRFY },
-  { "AUTH", AUTH },
   { 0, 0 }
 };
 
@@ -359,18 +324,6 @@ static int init(void)
 
   if ((tmp = getenv("MAXNOTIMPL")) != 0)
     maxnotimpl = strtoul(tmp, 0, 10);
-
-  if (!sasl_auth_init(&saslauth)) {
-    respond(&resp_authfail);
-    return 1;
-  }
-  switch (sasl_auth_caps(&init_capabilities)) {
-  case 0: break;
-  case 1: break;
-  default:
-    respond(&resp_authfail);
-    return 1;
-  }
 
   if (!str_cats(&init_capabilities, "8BITMIME\nENHANCEDSTATUSCODES\nPIPELINING")) {
     respond(&resp_oom);

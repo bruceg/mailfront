@@ -15,6 +15,11 @@ Changes in version 2.00
   without recompiling.  The short-circuit on accept logic has also been
   eliminated to fix a semantic issue.
 
+- SMTP AUTH support has been moved into a new plugin, cvm-authenticate.
+  Existing installations relying on SMTP AUTH support will need to make
+  sure they are using this new plugin.  The smtpfront-qmail wrapper
+  has been modified to provide this additional plugin.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
