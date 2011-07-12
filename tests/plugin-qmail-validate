@@ -1,4 +1,4 @@
-PLUGINS=qmail-validate:accept-sender
+PLUGINS=qmail-validate
 
 QMAILHOME=$tmp/@notthere@
 export QMAILHOME

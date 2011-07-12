@@ -53,7 +53,7 @@ static const response* validate_sender(str* sender, str* params)
     str_lower(&tmp);
     if (dict_get(&bmf, &tmp)) return &resp_badmailfrom;
   }
-  return 0;
+  return &resp_accept;
   (void)params;
 }
 
