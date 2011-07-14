@@ -69,13 +69,19 @@ static const response* message_end(int fd)
  * as below. The function is passed the entire command argument, and
  * must handle sending responses itself. Return positive for success or
  * 0 to disconnect. */
-static int cmd_X_CMD(str* arg)
+static int cmd_X_CMD0(void)
+{
+  return 1;
+}
+
+static int cmd_X_CMD1(str* param)
 {
   return 1;
 }
 
 static const struct command commands[] = {
-  { "X-CMD", cmd_X_CMD },
+  { "X-CMD0", .fn_noparam = cmd_X_CMD0 },
+  { "X-CMD1", .fn_hasparam = cmd_X_CMD1 },
   { 0, 0 }
 };
 

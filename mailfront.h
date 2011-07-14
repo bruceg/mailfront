@@ -13,7 +13,8 @@
 struct command
 {
   const char* name;
-  int (*fn)(str* arg);
+  int (*fn_noparam)(void);
+  int (*fn_hasparam)(str* param);
 };
 
 struct plugin

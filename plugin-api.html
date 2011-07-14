@@ -90,7 +90,8 @@ command</tt> containing:</p>
 struct command
 {
   const char* name;
-  int (*fn)(str* arg);
+  int (*fn_noparam)(void);
+  int (*fn_hasparam)(str* param);
 };
 </pre></blockquote>
 
@@ -101,10 +102,12 @@ record, with <tt>name</tt> set to <tt>NULL</tt>.</p>
 order they are found and passed to the protocol module.  Commands in
 plugins override any built-in commands of the same name.</p>
 
-<p>Since there is no regular grammar for SMTP command arguments, the
-entire text following the command is passed to the function with no
-modifications except for stripping leading extraneous spaces and the
-trailing line ending.</p>
+<p>Two command functions are allowed: <tt>fn_noparam</tt> is for
+commands that must not have a parameter, and <tt>fn_hasparam</tt> is for
+commands that require a parameter.  Since there is no regular grammar
+for SMTP command parameters, the entire text following the command is
+passed to the function with no modifications except for stripping
+leading extraneous spaces and the trailing line ending.</p>
 
 <h2>Hook Functions</h2>
 

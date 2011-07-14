@@ -6,7 +6,6 @@
 static RESPONSE(authfail, 421, "4.3.0 Failed to initialize AUTH");
 static RESPONSE(auth_already, 503, "5.5.1 You are already authenticated.");
 static RESPONSE(authenticated, 235, "2.7.0 Authentication succeeded.");
-static RESPONSE(needsparam, 501, "5.5.2 That command requires a parameter.");
 
 static struct sasl_auth saslauth = { .prefix = "334 " };
 
@@ -33,14 +32,12 @@ static const response* helo(str* hostname, str* capabilities)
   (void)hostname;
 }
 
-static int cmd_AUTH(str* arg)
+static int cmd_AUTH(str* param)
 {
   int i;
   if (session_getnum("authenticated", 0))
     return respond(&resp_auth_already);
-  if (arg->len == 0)
-    return respond(&resp_needsparam);
-  if ((i = sasl_auth1(&saslauth, arg)) != 0) {
+  if ((i = sasl_auth1(&saslauth, param)) != 0) {
     const char* msg = sasl_auth_msg(&i);
     return respond_line(i, 1, msg, strlen(msg));
   }
@@ -62,8 +59,8 @@ static int cmd_AUTH(str* arg)
 }
 
 static struct command commands[] = {
-  { "AUTH", cmd_AUTH },
-  { 0, 0 }
+  { "AUTH", .fn_hasparam = cmd_AUTH },
+  { .name = 0 }
 };
 
 struct plugin plugin = {

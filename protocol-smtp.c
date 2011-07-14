@@ -29,7 +29,8 @@ static RESPONSE(no_rcpt, 503, "5.5.1 You must send RCPT TO: first");
 static RESPONSE(data_ok, 354, "End your message with a period on a line by itself.");
 static RESPONSE(ok, 250, "2.3.0 OK");
 static RESPONSE(unimp, 500, "5.5.1 Not implemented.");
-static RESPONSE(needsparam, 501, "5.5.2 That command requires a parameter.");
+static RESPONSE(needsparam, 501, "5.5.2 Syntax error, command requires a parameter.");
+static RESPONSE(noparam, 501, "5.5.2 Syntax error, no parameters allowed.");
 static RESPONSE(toomanyunimp, 503, "5.5.0 Too many unimplemented commands.\n5.5.0 Closing connection.");
 static RESPONSE(goodbye, 221, "2.0.0 Good bye.");
 
@@ -292,7 +293,16 @@ int smtp_dispatch(const struct command* commands)
   for (c = commands; c->name != 0; c++)
     if (strcasecmp(c->name, cmd.s) == 0) {
       notimpl = 0;
-      return c->fn(&arg);
+      if (arg.len == 0) {
+	if (c->fn_noparam == 0)
+	  return respond(&resp_noparam);
+	return c->fn_noparam();
+      }
+      else {
+	if (c->fn_hasparam == 0)
+	  return respond(&resp_needsparam);
+	return c->fn_hasparam(&arg);
+      }
     }
   for (d = dispatch_table; d->cmd != 0; ++d)
     if (strcasecmp(d->cmd, cmd.s) == 0) {
