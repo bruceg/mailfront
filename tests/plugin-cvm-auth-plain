@@ -34,7 +34,7 @@ EOF
 
 unset CVM_SASL_PLAIN
 <result>
-504 Unrecognized authentication mechanism.^M
+500 5.5.1 Not implemented.^M
 250 Sender='user@example.com'.^M
 550 5.1.0 Mail system is not configured to accept that recipient^M
 501 Authentication failed.^M

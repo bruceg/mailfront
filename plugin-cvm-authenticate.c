@@ -11,27 +11,6 @@ static struct sasl_auth saslauth = { .prefix = "334 " };
 
 static str auth_caps;
 
-static const response* init(void)
-{
-  if (!sasl_auth_init(&saslauth))
-    return &resp_authfail;
-  switch (sasl_auth_caps(&auth_caps)) {
-  case 0: break;
-  case 1: break;
-  default:
-    return &resp_authfail;
-  }
-
-  return 0;
-}
-
-static const response* helo(str* hostname, str* capabilities)
-{
-  str_cat(capabilities, &auth_caps);
-  return 0;
-  (void)hostname;
-}
-
 static int cmd_AUTH(str* param)
 {
   int i;
@@ -62,6 +41,35 @@ static struct command commands[] = {
   { "AUTH", .fn_hasparam = cmd_AUTH },
   { .name = 0 }
 };
+
+static const response* init(void)
+{
+  if (!sasl_auth_init(&saslauth))
+    return &resp_authfail;
+
+  if (sasl_mechanisms != 0) {
+    switch (sasl_auth_caps(&auth_caps)) {
+    case 0: break;
+    case 1: break;
+    default:
+      return &resp_authfail;
+    }
+  }
+  else
+    commands[0].name = 0;
+
+  return 0;
+}
+
+static const response* helo(str* hostname, str* capabilities)
+{
+  if (sasl_mechanisms)
+    if (!str_cat(capabilities, &auth_caps)
+	|| !str_catc(capabilities, '\n'))
+      return &resp_oom;
+  return 0;
+  (void)hostname;
+}
 
 struct plugin plugin = {
   .version = PLUGIN_VERSION,
