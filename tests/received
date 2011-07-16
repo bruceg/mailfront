@@ -1,4 +1,4 @@
-<loop remotehost "" "">
+<loop remotehost "" "rh">
 <loop remoteip "" "ri">
 <loop localhost "" lh>
 <loop localip "" "li">
