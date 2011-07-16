@@ -6,13 +6,14 @@ static RESPONSE(ok, 250, 0);
 static RESPONSE(mustauth, 530, "5.7.1 You must authenticate first.");
 static response resp;
 
-static const response* accept(str* s)
+static const response* accept(str* s, str* params)
 {
   return &resp_accept;
   (void)s;
+  (void)params;
 }
 
-static const response* reject(str* s)
+static const response* reject(str* s, str* params)
 {
   const char* sr;
   if ((sr = session_getenv("SMTPREJECT")) != 0
@@ -30,9 +31,10 @@ static const response* reject(str* s)
   }
   return 0;
   (void)s;
+  (void)params;
 }
 
-static const response* relayclient_recip(str* recipient)
+static const response* relayclient_recip(str* recipient, str* params)
 {
   const char* relayclient = session_getenv("RELAYCLIENT");
   if (relayclient != 0) {
@@ -42,15 +44,17 @@ static const response* relayclient_recip(str* recipient)
   else if (session_getnum("authenticated", 0))
     return &resp_ok;
   return 0;
+  (void)params;
 }
 
-static const response* require_auth(str* s)
+static const response* require_auth(str* s, str* params)
 {
   if (!session_getnum("authenticated", 0)
       && session_getenv("RELAYCLIENT") == 0)
     return &resp_mustauth;
   return 0;
   (void)s;
+  (void)params;
 }
 
 struct plugin builtin_plugins[] = {

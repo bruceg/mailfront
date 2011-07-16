@@ -23,20 +23,21 @@ extern void report_io_bytes(void);
 
 static str tmp_prefix;
 
-#define MODULE_CALL(NAME,PARAMS,SHORT,RESET) do{ \
+static str no_params;
+
+#define MODULE_CALL(NAME,PARAMS,RESET) do{ \
   struct plugin* plugin; \
   const response* tmp; \
   for (plugin = session.plugin_list; plugin != 0; plugin = plugin->next) { \
     if (plugin->NAME != 0) { \
       if ((tmp = plugin->NAME PARAMS) != 0) { \
-        resp = tmp; \
-        if (!response_ok(resp)) { \
-          if (RESET) \
-            handle_reset(); \
-          return resp; \
-        } \
-        else if (SHORT) \
-          break; \
+        if (!response_ok(tmp)) {	      \
+          if (RESET)			      \
+            handle_reset();		      \
+          return tmp;			      \
+        }				      \
+        if (resp == 0)			      \
+	  resp = tmp;			      \
       } \
     } \
   } \
@@ -44,24 +45,26 @@ static str tmp_prefix;
 
 static const response* handle_init(void)
 {
-  const response* resp;
+  const response* resp = 0;
 
   atexit(report_io_bytes);
 
   set_timeout();
 
-  MODULE_CALL(init, (), 0, 0);
+  MODULE_CALL(init, (), 0);
 
   if (session.backend->init != 0)
     return session.backend->init();
   return 0;
 }
 
-const response* handle_helo(str* host)
+const response* handle_helo(str* host, str* capabilities)
 {
-  const response* resp;
-  MODULE_CALL(helo, (host), 0, 0);
+  const response* resp = 0;
+  MODULE_CALL(helo, (host, capabilities), 0);
   session_setstr("helo_domain", host->s);
+  if (session.backend->helo != 0)
+    return session.backend->helo(host, capabilities);
   return 0;
 }
 
@@ -74,33 +77,41 @@ const response* handle_reset(void)
   }
   if (session.backend->reset != 0)
     session.backend->reset();
-  MODULE_CALL(reset, (), 0, 0);
+  MODULE_CALL(reset, (), 0);
   return resp;
 }
 
-const response* handle_sender(str* sender)
+const response* handle_sender(str* sender, str* params)
 {
   const response* resp = 0;
   const response* tmpresp = 0;
-  MODULE_CALL(sender, (sender), 1, 0);
+  if (params == 0) {
+    no_params.len = 0;
+    params = &no_params;
+  }
+  MODULE_CALL(sender, (sender, params), 0);
   if (resp == 0)
     return &resp_no_sender;
   if (session.backend->sender != 0)
-    if (!response_ok(tmpresp = session.backend->sender(sender)))
+    if (!response_ok(tmpresp = session.backend->sender(sender, params)))
       return tmpresp;
   if (resp == 0 || resp->message == 0) resp = tmpresp;
   return resp;
 }
 
-const response* handle_recipient(str* recip)
+const response* handle_recipient(str* recip, str* params)
 {
   const response* resp = 0;
   const response* hresp = 0;
-  MODULE_CALL(recipient, (recip), 1, 0);
+  if (params == 0) {
+    no_params.len = 0;
+    params = &no_params;
+  }
+  MODULE_CALL(recipient, (recip, params), 0);
   if (resp == 0)
     return &resp_no_rcpt;
   if (session.backend->recipient != 0)
-    if (!response_ok(hresp = session.backend->recipient(recip)))
+    if (!response_ok(hresp = session.backend->recipient(recip, params)))
       return hresp;
   if (resp == 0 || resp->message == 0) resp = hresp;
   return resp;
@@ -123,7 +134,7 @@ const response* handle_data_start(void)
   if (session.backend->data_start != 0)
     resp = session.backend->data_start(session.fd);
   if (response_ok(resp))
-    MODULE_CALL(data_start, (session.fd), 0, 1);
+    MODULE_CALL(data_start, (session.fd), 1);
   if (!response_ok(resp)) {
     handle_reset();
     data_response = resp;
@@ -159,7 +170,7 @@ const response* handle_message_end(void)
   const response* resp = 0;
   if (!response_ok(data_response))
     return data_response;
-  MODULE_CALL(message_end, (session.fd), 0, 1);
+  MODULE_CALL(message_end, (session.fd), 1);
   if (session.backend->message_end != 0)
     resp = session.backend->message_end(session.fd);
   if (session.fd >= 0)
@@ -188,13 +199,20 @@ int respond_line(unsigned number, int final,
   return 1;
 }
 
+int respond_multiline(unsigned number, int final, const char* msg)
+{
+  const char* nl;
+  while ((nl = strchr(msg, '\n')) != 0) {
+    if (!respond_line(number, 0, msg, nl-msg))
+      return 0;
+    msg = nl + 1;
+  }
+  return respond_line(number, final, msg, strlen(msg));
+}
+
 int respond(const response* resp)
 {
-  const char* msg;
-  const char* nl;
-  for (msg = resp->message; (nl = strchr(msg, '\n')) != 0; msg = nl + 1)
-    respond_line(resp->number, 0, msg, nl-msg);
-  return respond_line(resp->number, 1, msg, strlen(msg));
+  return respond_multiline(resp->number, 1, resp->message);
 }
 
 const response* backend_data_block(const char* data, unsigned long len)
@@ -222,6 +240,32 @@ int scratchfile(void)
   return fd;
 }
 
+struct command* commands;
+
+static int collect_commands(void)
+{
+  const struct plugin* plugin;
+  const struct command* cmd;
+  int i = 0;
+
+  for (cmd = session.backend->commands; cmd != 0 && cmd->name != 0; ++cmd, ++i) ;
+  for (plugin = session.plugin_list; plugin != 0; plugin = plugin->next)
+    for (cmd = plugin->commands; cmd != 0 && cmd->name != 0; ++cmd, ++i) ;
+
+  if ((commands = malloc((i+1) * sizeof *commands)) == 0)
+    return 0;
+
+  i = 0;
+  for (cmd = session.backend->commands; cmd != 0 && cmd->name != 0; ++cmd, ++i)
+    commands[i] = *cmd;
+  for (plugin = session.plugin_list; plugin != 0; plugin = plugin->next)
+    for (cmd = plugin->commands; cmd != 0 && cmd->name != 0; ++cmd, ++i)
+      commands[i] = *cmd;
+  commands[i].name = 0;
+
+  return 1;
+}
+
 int main(int argc, char* argv[])
 {
   const response* resp;
@@ -245,9 +289,14 @@ int main(int argc, char* argv[])
       die1(1, resp->message);
   }
 
+  if (!collect_commands()) {
+    respond(&resp_oom);
+    return 1;
+  }
+
   if (session.protocol->init != 0)
     if (session.protocol->init())
       return 1;
 
-  return session.protocol->mainloop();
+  return session.protocol->mainloop(commands);
 }

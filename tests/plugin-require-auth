@@ -1,4 +1,4 @@
-PLUGINS=require-auth:relayclient:accept
+PLUGINS=cvm-authenticate:require-auth:relayclient:accept
 
 export CVM_SASL_PLAIN=$src/testcvm
 

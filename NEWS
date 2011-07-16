@@ -1,6 +1,30 @@
+-------------------------------------------------------------------------------
+Changes in version 2.00
+
+- This version updates the plugin API to add new features:
+
+  - Capabilities reported by the SMTP EHLO response can be added by
+    plugins.
+
+  - Plugins are passed any SMTP parameters given with the sender and
+    recipient commands.
+
+  - Plugins can add new commands to the SMTP protocol.
+
+  Plugins compiled for previous versions of mailfront will not work
+  without recompiling.  The short-circuit on accept logic has also been
+  eliminated to fix a semantic issue.
+
+- SMTP AUTH support has been moved into a new plugin, cvm-authenticate.
+  Existing installations relying on SMTP AUTH support will need to make
+  sure they are using this new plugin.  The smtpfront-qmail wrapper
+  has been modified to provide this additional plugin.
+
 - Fixed plugin-add-received to add the "IPv6:" prefix in the Received:
   header when the protocol is TCP6.
 
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
 Changes in version 1.21
 

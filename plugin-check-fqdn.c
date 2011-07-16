@@ -68,7 +68,7 @@ static const response* check_domains(const str* s, const char* domains)
   }
 }
 
-static const response* sender(str* s)
+static const response* sender(str* s, str* params)
 {
   const response* r;
   const char* domains;
@@ -80,13 +80,15 @@ static const response* sender(str* s)
   if ((domains = session_getenv("SENDER_DOMAINS")) != 0)
     return check_domains(s, domains);
   return 0;
+  (void)params;
 }
 
-static const response* recipient(str* s)
+static const response* recipient(str* s, str* params)
 {
   if (s->len == 0)
     return &resp_notemptyrcpt;
   return check_fqdn(s);
+  (void)params;
 }
 
 struct plugin plugin = {

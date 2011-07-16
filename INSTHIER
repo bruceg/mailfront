@@ -17,6 +17,7 @@ c:::755::plugin-add-received.so
 c:::755::plugin-check-fqdn.so
 c:::755::plugin-clamav.so
 c:::755::plugin-counters.so
+c:::755::plugin-cvm-authenticate.so
 c:::755::plugin-cvm-validate.so
 c?:::755::plugin-lua.so
 c:::755::plugin-mailrules.so

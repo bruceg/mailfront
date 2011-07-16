@@ -58,7 +58,7 @@ static void get_sender(ibuf* in)
   }
   msg3("sender <", line.s, ">");
   if (response_ok(resp))
-    resp = handle_sender(&line);
+    resp = handle_sender(&line, 0);
 }
 
 static void get_recips(ibuf* in)
@@ -83,7 +83,7 @@ static void get_recips(ibuf* in)
     str_copyb(&tmp, line.s+j, len);
     msg3("recipient <", tmp.s, ">");
     if (response_ok(resp))
-      resp = handle_recipient(&tmp);
+      resp = handle_recipient(&tmp, 0);
     i = j + len;
   }
 }
@@ -100,12 +100,13 @@ static void get_package(ibuf* in)
   if (!respond(resp)) die("EOF while sending response");
 }
 
-static int mainloop(void)
+static int mainloop(const struct command* commands)
 {
   alarm(3600);
   for (;;)
     get_package(&inbuf);
   return 0;
+  (void)commands;
 }
 
 struct protocol protocol = {

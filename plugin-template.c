@@ -13,7 +13,7 @@ static const response* init(void)
 /* The helo function is called once by the SMTP protocol when either the
  * HELO or EHLO command is issued.  The parameter is the hostname given
  * in the command. */
-static const response* helo(str* hostname)
+static const response* helo(str* hostname, str* capabilities)
 {
   return 0;
 }
@@ -27,7 +27,7 @@ static const response* reset(void)
 
 /* The sender function is called exactly once per message. The parameter
  * is the sender email addres, and may be modified. */
-static const response* sender(str* address)
+static const response* sender(str* address, str* params)
 {
   return 0;
 }
@@ -35,7 +35,7 @@ static const response* sender(str* address)
 /* The recipient function is called one or more times per message, once
  * for each recipient.  The parameter is the recipient email address,
  * and may be modified. */
-static const response* recipient(str* address)
+static const response* recipient(str* address, str* params)
 {
   return 0;
 }
@@ -64,12 +64,34 @@ static const response* message_end(int fd)
   return 0;
 }
 
+/* To define a new command, write the function that will be executed
+ * when the command is invoked, and add it to a "struct command" array
+ * as below. The function is passed the entire command argument, and
+ * must handle sending responses itself. Return positive for success or
+ * 0 to disconnect. */
+static int cmd_X_CMD0(void)
+{
+  return 1;
+}
+
+static int cmd_X_CMD1(str* param)
+{
+  return 1;
+}
+
+static const struct command commands[] = {
+  { "X-CMD0", .fn_noparam = cmd_X_CMD0 },
+  { "X-CMD1", .fn_hasparam = cmd_X_CMD1 },
+  { 0, 0 }
+};
+
 /* Plugins must export this structure.
  * Remove any of the entries that are not used (ie 0 or NULL).
  */
 struct plugin plugin = {
   .version = PLUGIN_VERSION,
   .flags = 0,
+  .commands = commands,
   .init = init,
   .helo = helo,
   .reset = reset,

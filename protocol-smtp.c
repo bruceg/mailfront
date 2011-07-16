@@ -1,23 +1,15 @@
 #include <string.h>
-#include <stdlib.h>
 #include <systime.h>
 
 #include "mailfront.h"
-#include <cvm/facts.h>
-#include <cvm/sasl.h>
 
 #include <iobuf/iobuf.h>
 #include <msg/msg.h>
-#include <str/iter.h>
 
 extern struct protocol protocol;
 
-static RESPONSE(authfail, 421, "4.3.0 Failed to initialize AUTH");
-
 static str line = {0,0,0};
 static str domain_name = {0,0,0};
-
-static struct sasl_auth saslauth = { .prefix = "334 " };
 
 static unsigned long maxnotimpl = 0;
 
@@ -26,6 +18,7 @@ static str cmd;
 static str arg;
 static str addr;
 static str params;
+static str init_capabilities;
 
 static RESPONSE(no_mail, 503, "5.5.1 You must send MAIL FROM: first");
 static RESPONSE(vrfy, 252, "2.5.2 Send some mail, I'll try my best.");
@@ -36,13 +29,10 @@ static RESPONSE(no_rcpt, 503, "5.5.1 You must send RCPT TO: first");
 static RESPONSE(data_ok, 354, "End your message with a period on a line by itself.");
 static RESPONSE(ok, 250, "2.3.0 OK");
 static RESPONSE(unimp, 500, "5.5.1 Not implemented.");
-static RESPONSE(needsparam, 501, "5.5.2 That command requires a parameter.");
-static RESPONSE(auth_already, 503, "5.5.1 You are already authenticated.");
-static RESPONSE(toobig, 552, "5.2.3 The message would exceed the maximum message size.");
+static RESPONSE(needsparam, 501, "5.5.2 Syntax error, command requires a parameter.");
+static RESPONSE(noparam, 501, "5.5.2 Syntax error, no parameters allowed.");
 static RESPONSE(toomanyunimp, 503, "5.5.0 Too many unimplemented commands.\n5.5.0 Closing connection.");
 static RESPONSE(goodbye, 221, "2.0.0 Good bye.");
-static RESPONSE(authenticated, 235, "2.7.0 Authentication succeeded.");
-static RESPONSE(ehlo, 250, "8BITMIME\nENHANCEDSTATUSCODES\nPIPELINING");
 
 static int saw_mail = 0;
 static int saw_rcpt = 0;
@@ -93,23 +83,6 @@ static int parse_addr_arg(void)
   return 1;
 }
 
-static const char* find_param(const char* name)
-{
-  const long len = strlen(name);
-  striter i;
-  for (striter_start(&i, &params, 0);
-       striter_valid(&i);
-       striter_advance(&i)) {
-    if (strncasecmp(i.startptr, name, len) == 0) {
-      if (i.startptr[len] == '0')
-	return i.startptr + len;
-      if (i.startptr[len] == '=')
-	return i.startptr + len + 1;
-    }
-  }
-  return 0;
-}
-
 static int QUIT(void)
 {
   respond(&resp_goodbye);
@@ -126,32 +99,26 @@ static int HELO(void)
 {
   const response* resp;
   if (response_ok(resp = handle_reset()))
-    resp = handle_helo(&arg);
+    resp = handle_helo(&arg, &line);
   return (resp != 0) ? respond(resp)
     : respond_line(250, 1, domain_name.s, domain_name.len);
 }
 
 static int EHLO(void)
 {
-  static str auth_resp;
   const response* resp;
   protocol.name = "ESMTP";
+  line.len = 0;
   if (!response_ok(resp = handle_reset())
-      || !response_ok(resp = handle_helo(&arg)))
+      || !response_ok(resp = handle_helo(&arg, &line)))
     return respond(resp);
+  if (!str_cat(&line, &init_capabilities)) {
+    respond(&resp_oom);
+    return 0;
+  }
 
   if (!respond_line(250, 0, domain_name.s, domain_name.len)) return 0;
-  switch (sasl_auth_caps(&auth_resp)) {
-  case 0: break;
-  case 1:
-    if (!respond_line(250, 0, auth_resp.s, auth_resp.len)) return 0;
-    break;
-  default: return respond(&resp_internal);
-  }
-  if (!str_copys(&line, "SIZE ")) return 0;
-  if (!str_catu(&line, session_getnum("maxdatabytes", 0))) return 0;
-  if (!respond_line(250, 0, line.s, line.len)) return 0;
-  return respond(&resp_ehlo);
+  return respond_multiline(250, 1, line.s);
 }
 
 static void do_reset(void)
@@ -169,23 +136,12 @@ static void do_reset(void)
 static int MAIL(void)
 {
   const response* resp;
-  const char* param;
-  unsigned long size;
-  unsigned long maxdatabytes;
   msg2("MAIL ", arg.s);
   do_reset();
   parse_addr_arg();
-  if ((resp = handle_sender(&addr)) == 0)
+  if ((resp = handle_sender(&addr, &params)) == 0)
     resp = &resp_mail_ok;
   if (number_ok(resp)) {
-    /* Look up the size limit after handling the sender,
-       in order to honour limits set in the mail rules. */
-    maxdatabytes = session_getnum("maxdatabytes", ~0UL);
-    if ((param = find_param("SIZE")) != 0 &&
-	(size = strtoul(param, (char**)&param, 10)) > 0 &&
-	*param == 0 &&
-	size > maxdatabytes)
-      return respond(&resp_toobig);
     saw_mail = 1;
   }
   return respond(resp);
@@ -197,7 +153,7 @@ static int RCPT(void)
   msg2("RCPT ", arg.s);
   if (!saw_mail) return respond(&resp_no_mail);
   parse_addr_arg();
-  if ((resp = handle_recipient(&addr)) == 0)
+  if ((resp = handle_recipient(&addr, &params)) == 0)
     resp = &resp_rcpt_ok;
   if (number_ok(resp)) saw_rcpt = 1;
   return respond(resp);
@@ -292,32 +248,6 @@ static int VRFY(void)
   return respond(&resp_vrfy);
 }
 
-static int AUTH(void)
-{
-  int i;
-  if (session_getnum("authenticated", 0)) return respond(&resp_auth_already);
-  if (arg.len == 0) return respond(&resp_needsparam);
-  if ((i = sasl_auth1(&saslauth, &arg)) != 0) {
-    const char* msg = sasl_auth_msg(&i);
-    return respond_line(i, 1, msg, strlen(msg));
-  }
-  else {
-    session_setnum("authenticated", 1);
-    session_delstr("helo_domain");
-    session_setstr("auth_user", cvm_fact_username);
-    session_setnum("auth_uid", cvm_fact_userid);
-    session_setnum("auth_gid", cvm_fact_groupid);
-    if (cvm_fact_realname != 0)
-      session_setstr("auth_realname", cvm_fact_realname);
-    if (cvm_fact_domain != 0)
-      session_setstr("auth_domain", cvm_fact_domain);
-    if (cvm_fact_mailbox != 0)
-      session_setstr("auth_mailbox", cvm_fact_mailbox);
-    respond(&resp_authenticated);
-  }
-  return 1;
-}
-
 typedef int (*dispatch_fn)(void);
 struct dispatch 
 {
@@ -335,7 +265,6 @@ static struct dispatch dispatch_table[] = {
   { "RCPT", RCPT },
   { "RSET", RSET },
   { "VRFY", VRFY },
-  { "AUTH", AUTH },
   { 0, 0 }
 };
 
@@ -355,11 +284,26 @@ static int parse_line(void)
   return str_copy(&cmd, &line) && str_truncate(&arg, 0);
 }
 
-int smtp_dispatch(void)
+int smtp_dispatch(const struct command* commands)
 {
   static unsigned long notimpl = 0;
   struct dispatch* d;
+  const struct command* c;
   if (!parse_line()) return 1;
+  for (c = commands; c->name != 0; c++)
+    if (strcasecmp(c->name, cmd.s) == 0) {
+      notimpl = 0;
+      if (arg.len == 0) {
+	if (c->fn_noparam == 0)
+	  return respond(&resp_noparam);
+	return c->fn_noparam();
+      }
+      else {
+	if (c->fn_hasparam == 0)
+	  return respond(&resp_needsparam);
+	return c->fn_hasparam(&arg);
+      }
+    }
   for (d = dispatch_table; d->cmd != 0; ++d)
     if (strcasecmp(d->cmd, cmd.s) == 0) {
       notimpl = 0;
@@ -391,17 +335,19 @@ static int init(void)
   if ((tmp = getenv("MAXNOTIMPL")) != 0)
     maxnotimpl = strtoul(tmp, 0, 10);
 
+  if (!str_cats(&init_capabilities, "8BITMIME\nENHANCEDSTATUSCODES\nPIPELINING")) {
+    respond(&resp_oom);
+    return 1;
+  }
+
   return 0;
 }
 
-static int mainloop(void)
+static int mainloop(const struct command* commands)
 {
-  if (!sasl_auth_init(&saslauth))
-    return respond(&resp_authfail);
-
   if (!respond_line(220, 1, str_welcome.s, str_welcome.len)) return 0;
   while (ibuf_getstr_crlf(&inbuf, &line))
-    if (!smtp_dispatch()) {
+    if (!smtp_dispatch(commands)) {
       if (ibuf_eof(&inbuf))
 	msg1("Connection dropped");
       if (ibuf_timedout(&inbuf))

@@ -225,31 +225,36 @@ static const response* reset(void)
   return 0;
 }
 
-static const response* helo(str* hostname)
+static const response* helo(str* hostname, str* capabilities)
 {
   if (setup("helo")) {
     lua_pushlstring(L, hostname->s, hostname->len);
-    return callit(1);
+    lua_pushlstring(L, capabilities->s, capabilities->len);
+    return callit(2);
   }
   return 0;
 }
 
-static const response* sender(str* address)
+static const response* sender(str* address, str* params)
 {
   if (setup("sender")) {
     lua_pushlstring(L, address->s, address->len);
-    return callit(1);
+    lua_pushlstring(L, params->s, params->len);
+    return callit(2);
   }
   return 0;
+  (void)params;
 }
 
-static const response* recipient(str* address)
+static const response* recipient(str* address, str* params)
 {
   if (setup("recipient")) {
     lua_pushlstring(L, address->s, address->len);
-    return callit(1);
+    lua_pushlstring(L, params->s, params->len);
+    return callit(2);
   }
   return 0;
+  (void)params;
 }
 
 static const response* data_start(int fd)

@@ -1,51 +1,56 @@
-PLUGINS=relayclient:accept-sender
+PLUGINS=cvm-authenticate:relayclient:accept-sender
 
 sfecho <<EOF
-AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
+AUTH LOGIN
 EOF
 
-export CVM_SASL_PLAIN=$src/testcvm
+export CVM_SASL_LOGIN=$src/testcvm
 
 sfecho <<EOF
 MAIL FROM: <user@example.com>
 RCPT TO: <user@example.com>
-AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3x=
-AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
-AUTH PLAIN dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
+AUTH LOGIN
+dGVzdHVzZXI=
+dGVzdHBhc3x=
+AUTH LOGIN
+dGVzdHVzZXI=
+dGVzdHBhc3M=
+AUTH LOGIN
 MAIL FROM: <user@example.com>
 RCPT TO: <user@example.com>
 EOF
 
 sfecho << EOF
-AUTH PLAIN
-dGVzdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
+AUTH LOGIN dGVzdHVzZXI=
+dGVzdHBhc3M=
 EOF
 
 sfecho <<EOF
-AUTH PLAIN
+AUTH LOGIN
+dGVzdHVzZXI=
 *
 MAIL FROM: <user@example.com>
 RCPT TO: <user@example.com>
 EOF
 
-sfecho << EOF
-AUTH PLAIN XXXXdHVzZXIAdGVzdHVzZXIAdGVzdHBhc3M=
-EOF
-
 unset CVM_SASL_PLAIN
 <result>
-504 Unrecognized authentication mechanism.^M
+500 5.5.1 Not implemented.^M
 250 Sender='user@example.com'.^M
 550 5.1.0 Mail system is not configured to accept that recipient^M
+334 VXNlcm5hbWU6^M
+334 UGFzc3dvcmQ6^M
 501 Authentication failed.^M
+334 VXNlcm5hbWU6^M
+334 UGFzc3dvcmQ6^M
 235 2.7.0 Authentication succeeded.^M
 503 5.5.1 You are already authenticated.^M
 250 Sender='user@example.com'.^M
 250 Recipient='user@example.com'.^M
-334 ^M
+334 UGFzc3dvcmQ6^M
 235 2.7.0 Authentication succeeded.^M
-334 ^M
+334 VXNlcm5hbWU6^M
+334 UGFzc3dvcmQ6^M
 501 Authentication failed.^M
 250 Sender='user@example.com'.^M
 550 5.1.0 Mail system is not configured to accept that recipient^M
-235 2.7.0 Authentication succeeded.^M
