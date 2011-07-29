@@ -13,6 +13,7 @@
 struct command
 {
   const char* name;
+  int (*fn_enabled)(void);
   int (*fn_noparam)(void);
   int (*fn_hasparam)(str* param);
 };

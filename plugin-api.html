@@ -90,6 +90,7 @@ command</tt> containing:</p>
 struct command
 {
   const char* name;
+  int (*fn_enabled)(void);
   int (*fn_noparam)(void);
   int (*fn_hasparam)(str* param);
 };
@@ -101,6 +102,10 @@ record, with <tt>name</tt> set to <tt>NULL</tt>.</p>
 <p>All of the commands provided by plugins are collected together in the
 order they are found and passed to the protocol module.  Commands in
 plugins override any built-in commands of the same name.</p>
+
+<p>The <tt>fn_enabled</tt> member is an optional pointer to a function
+which returns non-zero if the command is available for use.  If this
+function is not present, the command is considered always enabled.</p>
 
 <p>Two command functions are allowed: <tt>fn_noparam</tt> is for
 commands that must not have a parameter, and <tt>fn_hasparam</tt> is for

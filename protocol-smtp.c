@@ -292,16 +292,18 @@ int smtp_dispatch(const struct command* commands)
   if (!parse_line()) return 1;
   for (c = commands; c->name != 0; c++)
     if (strcasecmp(c->name, cmd.s) == 0) {
-      notimpl = 0;
-      if (arg.len == 0) {
-	if (c->fn_noparam == 0)
-	  return respond(&resp_noparam);
-	return c->fn_noparam();
-      }
-      else {
-	if (c->fn_hasparam == 0)
-	  return respond(&resp_needsparam);
-	return c->fn_hasparam(&arg);
+      if (c->fn_enabled == 0 || c->fn_enabled()) {
+	notimpl = 0;
+	if (arg.len == 0) {
+	  if (c->fn_noparam == 0)
+	    return respond(&resp_noparam);
+	  return c->fn_noparam();
+	}
+	else {
+	  if (c->fn_hasparam == 0)
+	    return respond(&resp_needsparam);
+	  return c->fn_hasparam(&arg);
+	}
       }
     }
   for (d = dispatch_table; d->cmd != 0; ++d)

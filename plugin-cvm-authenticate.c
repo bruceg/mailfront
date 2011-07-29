@@ -11,6 +11,11 @@ static struct sasl_auth saslauth = { .prefix = "334 " };
 
 static str auth_caps;
 
+static int enabled(void)
+{
+  return sasl_mechanisms != 0;
+}
+
 static int cmd_AUTH(str* param)
 {
   int i;
@@ -38,7 +43,7 @@ static int cmd_AUTH(str* param)
 }
 
 static struct command commands[] = {
-  { "AUTH", .fn_hasparam = cmd_AUTH },
+  { "AUTH", .fn_enabled = enabled, .fn_hasparam = cmd_AUTH },
   { .name = 0 }
 };
 
@@ -55,8 +60,6 @@ static const response* init(void)
       return &resp_authfail;
     }
   }
-  else
-    commands[0].name = 0;
 
   return 0;
 }
