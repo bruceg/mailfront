@@ -1,0 +1,53 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">mailfront</a></h2>
+
+<h1>Plugin: starttls-ucspi</h1>
+
+<hr />
+
+<p>This plugin uses
+<a href="http://www.suspectclass.com/sgifford/ucspi-tls/">ucspi-tls</a>
+to implement the <tt>STARTTLS</tt> SMTP command, which is used to begin
+TLS encryption on a plaintext SMTP connection.</p>
+
+
+<h2>Configuration</h2>
+
+<p>This module is configured by the following environment variable:
+<dl>
+  <dt><tt>UCSPITLS</tt></dt>
+  <dd>Instructs mailfront to offer the <tt>STARTTLS</tt> command.
+  This variable is removed from the environment after TLS has been
+  negotiated.</dd>
+</dl>
+</p>
+
+<h2>Commands</h2>
+
+<dl>
+
+<dt><tt>STARTTLS</tt></dt> <dd>Implements the SMTP service extension for
+secure smtp over transport layer security, as specified by RFC 3207.</dd>
+
+</dl>
+
+<h2>Sender Action</h2>
+
+<p>None</p>
+
+<h2>Recipient Action</h2>
+
+<p>None</p>
+
+<h2>Data Action</h2>
+
+<p>None</p>
+
+<h2>Message Action</h2>
+
+<p>None</p>
+
+</body>
+</html>

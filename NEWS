@@ -23,6 +23,8 @@ Changes in version 2.00
 - Fixed plugin-add-received to add the "IPv6:" prefix in the Received:
   header when the protocol is TCP6.
 
+- Added plugin starttls-ucspi to implement STARTTLS using ucspi-tls.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
