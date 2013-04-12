@@ -2,6 +2,7 @@
 #include <string.h>
 #include <cvm/facts.h>
 #include <cvm/sasl.h>
+#include <stdlib.h>
 
 static RESPONSE(authfail, 421, "4.3.0 Failed to initialize AUTH");
 static RESPONSE(auth_already, 503, "5.5.1 You are already authenticated.");
@@ -10,10 +11,13 @@ static RESPONSE(authenticated, 235, "2.7.0 Authentication succeeded.");
 static struct sasl_auth saslauth = { .prefix = "334 " };
 
 static str auth_caps;
+static int require_tls;
 
 static int enabled(void)
 {
-  return sasl_mechanisms != 0;
+  return (sasl_mechanisms != 0)
+    && (!require_tls
+	|| (session_getnum("tls_state", 0) > 0));
 }
 
 static int cmd_AUTH(str* param)
@@ -49,6 +53,8 @@ static struct command commands[] = {
 
 static const response* init(void)
 {
+  require_tls = getenv("AUTH_REQUIRES_TLS") != 0;
+
   if (!sasl_auth_init(&saslauth))
     return &resp_authfail;
 
@@ -66,7 +72,7 @@ static const response* init(void)
 
 static const response* helo(str* hostname, str* capabilities)
 {
-  if (sasl_mechanisms)
+  if (enabled())
     if (!str_cat(capabilities, &auth_caps)
 	|| !str_catc(capabilities, '\n'))
       return &resp_oom;

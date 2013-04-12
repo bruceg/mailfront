@@ -85,6 +85,7 @@ static int cmd_STARTTLS(void)
     return 0;
 
   tls_available = 0;
+  session_setnum("tls_state", 1);
 
   /* Remove UCSPITLS from environment to indicate it no longer available. */
   unsetenv("UCSPITLS");

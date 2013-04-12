@@ -25,6 +25,8 @@ Changes in version 2.00
 
 - Added plugin starttls-ucspi to implement STARTTLS using ucspi-tls.
 
+- SMTP AUTH can now be restricted to TLS-enabled sessions.
+
 Development of this version has been sponsored by FutureQuest, Inc.
 ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------

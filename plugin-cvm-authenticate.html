@@ -17,6 +17,19 @@ addresses.</p>
   the <a href="http://untroubled.org/cvm/sasl.html">CVM SASL</a>
   library.</p>
 
+<p>Additionally, it recognizes the following environment variable:</p>
+
+<dl>
+
+<dt><tt>$AUTH_REQUIRES_TLS</tt></dt>
+
+<dd>Only offer authentication when the client is using an encrypted
+connection, to avoid sending a password over an insecure connection.
+This checks that TLS has been negotiated by
+the <a href="plugin-starttls-ucspi.html">starttls-ucspi plugin</a>.</dd>
+
+</dl>
+
 <h2>Commands</h2>
 
 <dl>
