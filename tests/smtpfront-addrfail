@@ -1,0 +1,14 @@
+sfecho <<EOF
+MAIL FROM
+MAIL FROM 
+MAIL FROM:
+MAIL FROM<
+MAIL FROM>
+EOF
+
+<result>
+501 5.5.2 Syntax error in address parameter.^M
+501 5.5.2 Syntax error in address parameter.^M
+501 5.5.2 Syntax error in address parameter.^M
+501 5.5.2 Syntax error in address parameter.^M
+501 5.5.2 Syntax error in address parameter.^M

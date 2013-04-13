@@ -30,6 +30,7 @@ static RESPONSE(no_rcpt, 503, "5.5.1 You must send RCPT TO: first");
 static RESPONSE(data_ok, 354, "End your message with a period on a line by itself.");
 static RESPONSE(ok, 250, "2.3.0 OK");
 static RESPONSE(unimp, 500, "5.5.1 Not implemented.");
+static RESPONSE(badaddr, 501, "5.5.2 Syntax error in address parameter.");
 static RESPONSE(needsparam, 501, "5.5.2 Syntax error, command requires a parameter.");
 static RESPONSE(noparam, 501, "5.5.2 Syntax error, no parameters allowed.");
 static RESPONSE(toomanyunimp, 503, "5.5.0 Too many unimplemented commands.\n5.5.0 Closing connection.");
@@ -38,14 +39,14 @@ static RESPONSE(goodbye, 221, "2.0.0 Good bye.");
 static int saw_mail = 0;
 static int saw_rcpt = 0;
 
-static int parse_addr_arg(void)
+static const response* parse_addr_arg(void)
 {
   unsigned i;
   char term;
   int quoted;
   
-  if (!str_truncate(&addr, 0)) return 0;
-  if (!str_truncate(&params, 0)) return 0;
+  if (!str_truncate(&addr, 0)) return &resp_oom;
+  if (!str_truncate(&params, 0)) return &resp_oom;
 
   addr.len = 0;
   if ((i = str_findfirst(&arg, LBRACE) + 1) != 0)
@@ -54,7 +55,7 @@ static int parse_addr_arg(void)
     term = SPACE;
     if ((i = str_findfirst(&arg, COLON) + 1) == 0)
       if ((i = str_findfirst(&arg, SPACE) + 1) == 0)
-	return 0;
+	return &resp_badaddr;
     while (i < arg.len && arg.s[i] == SPACE)
       ++i;
   }
@@ -68,12 +69,13 @@ static int parse_addr_arg(void)
       ++i;
       /* fall through */
     default:
-      if (!str_catc(&addr, arg.s[i])) return 0;
+      if (!str_catc(&addr, arg.s[i])) return &resp_oom;
     }
   }
   ++i;
+  if (i > arg.len) return &resp_badaddr;
   while (i < arg.len && arg.s[i] == SPACE) ++i;
-  if (!str_copyb(&params, arg.s+i, arg.len-i)) return 0;
+  if (!str_copyb(&params, arg.s+i, arg.len-i)) return &resp_oom;
   str_subst(&params, ' ', 0);
 
   /* strip source routing */
@@ -81,7 +83,7 @@ static int parse_addr_arg(void)
       && (i = str_findfirst(&addr, COLON) + 1) != 0)
     str_lcut(&addr, i);
     
-  return 1;
+  return 0;
 }
 
 static int QUIT(void)
@@ -139,11 +141,12 @@ static int MAIL(void)
   const response* resp;
   msg2("MAIL ", arg.s);
   do_reset();
-  parse_addr_arg();
-  if ((resp = handle_sender(&addr, &params)) == 0)
-    resp = &resp_mail_ok;
-  if (number_ok(resp)) {
-    saw_mail = 1;
+  if ((resp = parse_addr_arg()) == 0) {
+    if ((resp = handle_sender(&addr, &params)) == 0)
+      resp = &resp_mail_ok;
+    if (number_ok(resp)) {
+      saw_mail = 1;
+    }
   }
   return respond(resp);
 }
@@ -153,10 +156,12 @@ static int RCPT(void)
   const response* resp;
   msg2("RCPT ", arg.s);
   if (!saw_mail) return respond(&resp_no_mail);
-  parse_addr_arg();
-  if ((resp = handle_recipient(&addr, &params)) == 0)
-    resp = &resp_rcpt_ok;
-  if (number_ok(resp)) saw_rcpt = 1;
+  if ((resp = parse_addr_arg()) == 0) {
+    if ((resp = handle_recipient(&addr, &params)) == 0)
+      resp = &resp_rcpt_ok;
+    if (number_ok(resp))
+      saw_rcpt = 1;
+  }
   return respond(resp);
 }
 
