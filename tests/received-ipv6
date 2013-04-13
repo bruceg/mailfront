@@ -5,7 +5,7 @@ TCP6LOCALIP="localip"
 TCP6REMOTEHOST="remotehost"
 TCP6REMOTEIP="remoteip"
 
-export TCP6{LOCAL,REMOTE}{HOST,IP}
+export TCP6LOCALHOST TCP6LOCALIP TCP6REMOTEHOST TCP6REMOTEIP
 
 $src/mailfront smtp echo 2>&1 >/dev/null <<EOF | \
 	sed -n -e 's/^.* Received: //p'
@@ -17,7 +17,7 @@ DATA
 EOF
 
 PROTO=TEST
-unset TCP6{LOCAL,REMOTE}{HOST,IP}
+unset TCP6LOCALHOST TCP6LOCALIP TCP6REMOTEHOST TCP6REMOTEIP
 
 <result>
 from remotehost (remotehost [IPv6:remoteip])  by localhost ([IPv6:localip])
