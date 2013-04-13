@@ -21,8 +21,8 @@ To subscribe, send an email to:
 A mailing list archive is available at:
 	http://lists.untroubled.org/?list=bgware
 
-Development versions of @PACKAGE@ are available via git at:
-	http://bruce-guenter.dyndns.org/git/@PACKAGE@.git
+Development versions of @PACKAGE@ are available at:
+	https://github.com/bruceg/mailfront
 
 Requirements:
 
