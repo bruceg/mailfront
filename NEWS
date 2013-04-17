@@ -1,4 +1,6 @@
 
+- Added missing plugin-starttls-ucspi to installed files.
+
 - Added support for limiting the number of messages to plugin-counters.
 -------------------------------------------------------------------------------
 Changes in version 2.00

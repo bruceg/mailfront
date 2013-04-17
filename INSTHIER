@@ -24,6 +24,7 @@ c:::755::plugin-mailrules.so
 c:::755::plugin-patterns.so
 c:::755::plugin-qmail-validate.so
 c:::755::plugin-spamassassin.so
+c:::755::plugin-starttls-ucspi.so
 c:::755::protocol-qmqp.so
 c:::755::protocol-qmtp.so
 c:::755::protocol-smtp.so
