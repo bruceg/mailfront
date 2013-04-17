@@ -7,8 +7,10 @@ static RESPONSE(too_big, 552, "5.2.3 The message would exceed the maximum messag
 static RESPONSE(too_long, 552, "5.2.3 Sorry, that message exceeds the maximum message length.");
 static RESPONSE(hops, 554, "5.6.0 This message is looping, too many hops.");
 static RESPONSE(manyrcpt, 550, "5.5.3 Too many recipients");
+static RESPONSE(manymsgs, 550, "5.5.0 Too many messages");
 
 static unsigned rcpt_count = 0;
+static unsigned msg_count = 0;
 static unsigned long data_bytes; /* Total number of data bytes */
 static unsigned count_rec;	/* Count of the Received: headers */
 static unsigned count_dt;	/* Count of the Delivered-To: headers */
@@ -76,6 +78,10 @@ static const response* sender(str* r, str* params)
   unsigned long size;
   const char* param;
 
+  minenv("maxmsgs", "MAXMSGS");
+  if (msg_count >= session_getnum("maxmsgs", ~0UL))
+    return &resp_manymsgs;
+
   /* This MUST be done as a sender match to make sure SMTP "MAIL FROM"
    * commands with a SIZE parameter can be rejected properly. */
   minenv("maxdatabytes", "DATABYTES");
@@ -108,6 +114,9 @@ static const response* recipient(str* r, str* params)
 static const response* start(int fd)
 {
   unsigned long maxhops;
+  minenv("maxmsgs", "MAXMSGS");
+  if (msg_count >= session_getnum("maxmsgs", ~0UL))
+    return &resp_manymsgs;
   if (session_getenv("MAXRCPTS_REJECT")){
     unsigned long maxrcpts = minenv("maxrcpts", "MAXRCPTS");
     if (maxrcpts > 0 && rcpt_count > maxrcpts)
@@ -180,6 +189,7 @@ static const response* end(int fd)
     if (maxrcpts > 0 && rcpt_count > maxrcpts)
       return &resp_manyrcpt;
   }
+  ++msg_count;
   return 0;
   (void)fd;
 }

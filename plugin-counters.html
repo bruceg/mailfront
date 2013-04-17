@@ -13,6 +13,8 @@
 
 <dl>
 
+<dt><tt>$MAXMSGS</tt></dt> <dd>The maximum message count</dd>
+  
 <dt><tt>$MAXRCPTS</tt></dt> <dd>The maximum recipient limit</dd>
 
 <dt><tt>$MAXRCPTS_REJECT</tt></dt> <dd>If set (to anything), messages
@@ -28,7 +30,8 @@ rejected rather than just the excess recipients.</dd>
 
 <h2>Sender Action</h2>
 
-<p>None</p>
+<p>If the maximum message count has been reached, the sender is
+rejected. Otherwise no action.</p>
 
 <h2>Recipient Action</h2>
 
