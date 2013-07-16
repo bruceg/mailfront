@@ -1,7 +1,12 @@
+-------------------------------------------------------------------------------
+Changes in version 2.01
 
 - Added missing plugin-starttls-ucspi to installed files.
 
 - Added support for limiting the number of messages to plugin-counters.
+
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
 Changes in version 2.00
 
