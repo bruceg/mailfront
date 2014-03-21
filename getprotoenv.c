@@ -1,6 +1,7 @@
 #include <systime.h>
 #include <stdlib.h>
 #include <msg/msg.h>
+#include <msg/wrap.h>
 #include "mailfront.h"
 
 static const char* proto;
@@ -14,7 +15,7 @@ const char* getprotoenv(const char* name)
       proto = "TCP";
   if (name == 0 || *name == 0)
     return proto;
-  if (!str_copy2s(&fullname, proto, name)) die_oom(111);
+  wrap_str(str_copy2s(&fullname, proto, name));
   if ((env = getenv(fullname.s)) != 0
       && env[0] == 0)
     env = 0;
