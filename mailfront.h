@@ -66,6 +66,10 @@ extern int respond_multiline(unsigned number, int final, const char* msg);
 extern const response* backend_data_block(const char* data, unsigned long len);
 extern int scratchfile(void);
 
+/* From modules.c */
+extern const response* load_plugin(struct plugin** pptr, const char* name);
+extern const response* load_backend(struct plugin** bptr, const char* name);
+
 /* From netstring.c */
 int get_netstring_len(ibuf* in, unsigned long* i);
 int get_netstring(ibuf* in, str* s);

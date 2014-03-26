@@ -77,9 +77,25 @@ static struct plugin* find_builtin_plugin(const char* name)
   return 0;
 }
 
-static const response* load_plugin(const char* name)
+const response* load_plugin(struct plugin** pptr, const char* name)
 {
   struct plugin* plugin;
+  if ((plugin = find_builtin_plugin(name)) == 0) {
+    if ((plugin = load_object("plugin", name)) == 0)
+      return &resp_load;
+    if (plugin->version != PLUGIN_VERSION)
+      return &resp_plugin_version;
+    if ((plugin->name = strdup(name)) == 0)
+      return &resp_oom;
+  }
+  *pptr = plugin;
+  return 0;
+}
+
+static const response* load_add_plugin(const char* name)
+{
+  struct plugin* plugin;
+  const response* r;
   void (*add)(struct plugin*);
   if (name[0] == '-') {
     remove_plugin(++name);
@@ -92,14 +108,8 @@ static const response* load_plugin(const char* name)
   else
     add = append_plugin;
   if ((plugin = remove_plugin(name)) == 0) {
-    if ((plugin = find_builtin_plugin(name)) == 0) {
-      if ((plugin = load_object("plugin", name)) == 0)
-	return &resp_load;
-      if (plugin->version != PLUGIN_VERSION)
-	return &resp_plugin_version;
-      if ((plugin->name = strdup(name)) == 0)
-	return &resp_oom;
-    }
+    if ((r = load_plugin(&plugin, name)) != 0)
+      return r;
   }
   add(plugin);
   session.flags |= plugin->flags;
@@ -121,12 +131,23 @@ static const response* load_plugins(const char* list)
       char copy[len+1];
       memcpy(copy, start, len);
       copy[len] = 0;
-      if ((resp = load_plugin(copy)) != 0)
+      if ((resp = load_add_plugin(copy)) != 0)
 	return resp;
     }
     if (*end == ':')
       ++end;
   }
+  return 0;
+}
+
+const response* load_backend(struct plugin** bptr, const char* name)
+{
+  struct plugin* backend;
+  if ((backend = load_object("backend", name)) == 0)
+    return &resp_load;
+  if (backend->version != PLUGIN_VERSION)
+    return &resp_backend_version;
+  *bptr = backend;
   return 0;
 }
 
@@ -142,10 +163,8 @@ const response* load_modules(const char* protocol_name,
     return &resp_load;
   if (session.protocol->version != PROTOCOL_VERSION)
     return &resp_protocol_version;
-  if ((session.backend = load_object("backend", backend_name)) == 0)
-    return &resp_load;
-  if (session.backend->version != PLUGIN_VERSION)
-    return &resp_backend_version;
+  if ((r = load_backend(&session.backend, backend_name)) != 0)
+    return r;
   session.flags |= session.backend->flags;
   while (*plugins != 0)
     if ((r = load_plugins(*plugins++)) != 0)
