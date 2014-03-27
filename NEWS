@@ -1,3 +1,5 @@
+- Added new "queuedir" backend, to save messages to simple files.
+
 -------------------------------------------------------------------------------
 Changes in version 2.01
 

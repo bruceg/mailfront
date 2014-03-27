@@ -13,6 +13,7 @@ c:::755::smtpfront-qmail
 >modules
 c:::755::backend-echo.so
 c:::755::backend-qmail.so
+c:::755::backend-queuedir.so
 c:::755::plugin-add-received.so
 c:::755::plugin-check-fqdn.so
 c:::755::plugin-clamav.so

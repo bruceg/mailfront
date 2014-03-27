@@ -1,0 +1,48 @@
+<html>
+<body>
+
+<h2><a href="mailfront.html">mailfront</a></h2>
+
+<h1>Backend: queuedir</h1>
+
+<hr />
+
+<p>This backend writes messages into individual files in a named
+directory. The files are written to temporary files with unique
+filenames and moved into the final directory when the contents are
+complete.</p>
+
+<p>The file format is as follows:</p>
+
+<ol>
+
+  <li>The envelope sender address, followed by a NUL byte.</li>
+  <li>A list of envelope recipient addresses, each followed by a NUL byte.</li>
+  <li>A terminating NUL byte.</li>
+  <li>The full message data.</li>
+
+</ol>
+
+<h2>Configuration</h2>
+
+<p>None</p>
+
+<dl>
+
+<dt><tt>$QUEUEDIR</tt></dt> <dd>The destination top-level directory under which messages are written.</dd>
+
+<dt><tt>$QUEUEDIR_DEST</tt></dt> <dd>The subdirectory
+of <tt>$QUEUEDIR</tt> into which completed messages are moved. (defaults
+to "new")</dd>
+
+<dt><tt>$QUEUEDIR_NOSYNC</tt></dt> <dd>If set, the destination file is
+not synced to disk before the backend reports success.</dd>
+
+<dt><tt>$QUEUEDIR_TMP</tt></dt> <dd>The subdirectory
+of <tt>$QUEUEDIR</tt> into which temporary files are written. (defaults
+to "tmp")</dd>
+
+</dl>
+
+</body>
+</html>
