@@ -1,3 +1,5 @@
+- Added new "rbl" plugin, to block messages from IPs in an RBL.
+
 - Added new "queuedir" backend, to save messages to simple files.
 
 - Make sure plugin reset functions get called before exiting.

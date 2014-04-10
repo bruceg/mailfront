@@ -1,0 +1,21 @@
+<loop ip 127.0.0.4 127.0.0.99>
+export RBL_BLACKLISTS=sbl-xbl.spamhaus.org
+export TCPREMOTEIP=$ip
+
+sfecho rbl accept <<EOF
+HELO me
+MAIL FROM:<somewhere>
+RCPT TO:<elsewhere>
+EOF
+
+unset RBL_BLACKLISTS TCPLOCALIP
+
+<result 127.0.0.4>
+250 local.host^M
+451 Blocked: http://www.spamhaus.org/query/bl?ip=127.0.0.4^M
+503 5.5.1 You must send MAIL FROM: first^M
+
+<result 127.0.0.99>
+250 local.host^M
+250 Sender='somewhere'.^M
+250 Recipient='elsewhere'.^M
