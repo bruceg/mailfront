@@ -151,6 +151,15 @@ const response* load_backend(struct plugin** bptr, const char* name)
   return 0;
 }
 
+struct plugin* switch_backend(struct plugin* backend)
+{
+  struct plugin* old;
+  old = session.backend;
+  session.backend = backend;
+  session.flags |= backend->flags;
+  return old;
+}
+
 const response* load_modules(const char* protocol_name,
 			     const char* backend_name,
 			     const char** plugins)

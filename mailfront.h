@@ -69,6 +69,7 @@ extern int scratchfile(void);
 /* From modules.c */
 extern const response* load_plugin(struct plugin** pptr, const char* name);
 extern const response* load_backend(struct plugin** bptr, const char* name);
+extern struct plugin* switch_backend(struct plugin* backend);
 
 /* From netstring.c */
 int get_netstring_len(ibuf* in, unsigned long* i);
