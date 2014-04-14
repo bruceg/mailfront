@@ -2,6 +2,10 @@ sfecho() {
   $src/mailfront smtp echo "$@" 2>/dev/null \
   | grep -v '^220 local.host mailfront ESMTP'
 }
+sfecho2() {
+  $src/mailfront smtp echo "$@" 2>&1 \
+  | sed -e '/^220 local.host mailfront ESMTP/d; s/\[[0123456789]*\]:/[###]:/'
+}
 pfauth() {
   $src/pop3front-auth "$@" echo Yes. 2>/dev/null \
   | tail -n +2
