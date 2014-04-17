@@ -1,21 +1,33 @@
-<loop ip 127.0.0.4 127.0.0.99>
+<loop ip 127.0.0.2 127.0.0.99>
 export RBL_BLACKLISTS=sbl-xbl.spamhaus.org
+export RBL_DEBUG=1
 export TCPREMOTEIP=$ip
 
-sfecho rbl accept <<EOF
+smtpfront echo rbl accept <<EOF
 HELO me
 MAIL FROM:<somewhere>
 RCPT TO:<elsewhere>
 EOF
 
-unset RBL_BLACKLISTS TCPLOCALIP
+unset RBL_BLACKLISTS RBL_DEBUG TCPLOCALIP
 
-<result 127.0.0.4>
+<result 127.0.0.2>
+mailfront[#]: rbl: sbl-xbl.spamhaus.org:
+mailfront[#]: http://www.spamhaus.org/sbl/query/SBL233
+mailfront[#]: http://www.spamhaus.org/query/bl?ip=127.0.0.2
 250 local.host^M
-451 Blocked: http://www.spamhaus.org/query/bl?ip=127.0.0.4^M
+mailfront[#]: MAIL FROM:<somewhere>
+mailfront[#]: 451 Blocked: http://www.spamhaus.org/sbl/query/SBL233
+451 Blocked: http://www.spamhaus.org/sbl/query/SBL233^M
+mailfront[#]: RCPT TO:<elsewhere>
+mailfront[#]: 503 5.5.1 You must send MAIL FROM: first
 503 5.5.1 You must send MAIL FROM: first^M
+mailfront[#]: bytes in: 50 bytes out: 145
 
 <result 127.0.0.99>
 250 local.host^M
+mailfront[#]: MAIL FROM:<somewhere>
 250 Sender='somewhere'.^M
+mailfront[#]: RCPT TO:<elsewhere>
 250 Recipient='elsewhere'.^M
+mailfront[#]: bytes in: 50 bytes out: 101

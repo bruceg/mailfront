@@ -12,6 +12,7 @@ static enum msgstatus { na, good, bad } msgstatus;
 
 static response resp;
 static RESPONSE(dnserror, 451, "4.3.0 DNS error doing RBL lookup");
+static int debug = 0;
 
 static const response* make_response(int code, const char* status, const char* msg)
 {
@@ -47,9 +48,11 @@ static const response* test_rbl(const char* rbl, enum msgstatus status, const ip
     return &resp_dnserror;
   if (txt.count == 0)
     return 0;
-  msgf("{rbl: }s{:}", rbl);
-  for (i = 0; i < txt.count; ++i)
-    msg1(txt.rr.name[i]);
+  if (debug) {
+    msgf("{rbl: }s{:}", rbl);
+    for (i = 0; i < txt.count; ++i)
+      msg1(txt.rr.name[i]);
+  }
   msgstatus = status;
   return make_response(451, "Blocked", txt.rr.name[0]); /* 451 temporary, 553 permanent */
 }
@@ -75,12 +78,20 @@ static const response* init(void)
   const char* e;
   ipv4addr ip;
 
-  if ((blacklist = session_getenv("RBL_BLACKLISTS")) == 0 || *blacklist == 0)
+  debug = session_getenv("RBL_DEBUG") != 0;
+
+  if ((blacklist = session_getenv("RBL_BLACKLISTS")) == 0 || *blacklist == 0) {
+    if (debug)
+      msg1("{rbl: No blacklists, skipping}");
     return 0;
+  }
 
   /* Can only handle IPv4 sessions */
-  if ((e = session_getenv("TCPREMOTEIP")) == 0)
+  if ((e = session_getenv("TCPREMOTEIP")) == 0) {
+    if (debug)
+      msg1("{rbl: $TCPREMOTEIP is unset, skipping RBL tests}");
     return 0;
+  }
   if (!ipv4_scan(e, &ip)) {
     msgf("{rbl: Cannot parse IP '}s{'}", e);
     return 0;
