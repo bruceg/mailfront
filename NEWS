@@ -1,5 +1,7 @@
 - Added new "queuedir" backend, to save messages to simple files.
 
+- Make sure plugin reset functions get called before exiting.
+
 -------------------------------------------------------------------------------
 Changes in version 2.01
 

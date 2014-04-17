@@ -25,6 +25,12 @@ static str tmp_prefix;
 
 static str no_params;
 
+static void exitfn(void)
+{
+  handle_reset();
+  report_io_bytes();
+}
+
 #define MODULE_CALL(NAME,PARAMS,RESET) do{ \
   struct plugin* plugin; \
   const response* tmp; \
@@ -47,7 +53,7 @@ static const response* handle_init(void)
 {
   const response* resp = 0;
 
-  atexit(report_io_bytes);
+  atexit(exitfn);
 
   set_timeout();
 
