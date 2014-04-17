@@ -1,10 +1,10 @@
+smtpfront() {
+  $src/mailfront smtp "$@" 2>&1 \
+  | sed -e '/^220 local.host mailfront ESMTP/d; s/\[[0123456789]*\]:/[#]:/'
+}
 sfecho() {
   $src/mailfront smtp echo "$@" 2>/dev/null \
   | grep -v '^220 local.host mailfront ESMTP'
-}
-sfecho2() {
-  $src/mailfront smtp echo "$@" 2>&1 \
-  | sed -e '/^220 local.host mailfront ESMTP/d; s/\[[0123456789]*\]:/[###]:/'
 }
 pfauth() {
   $src/pop3front-auth "$@" echo Yes. 2>/dev/null \
@@ -32,6 +32,27 @@ tstmsg() {
     echo
     echo "body"
   } >$maildir/$fn
+}
+
+setup_queuedir() {
+    export QUEUEDIR=$tmp/queuedir
+    mkdir -p $tmp/queuedir/new $tmp/queuedir/tmp
+}
+
+dump_queuedir() {
+    echo queuedir tmp: $( find $QUEUEDIR/tmp -type f | wc -l ) new: $( find $QUEUEDIR/new -type f | wc -l )
+    find $QUEUEDIR/new -type f | while read file
+    do
+	echo "===== queued file ====="
+	cat -v "$file"
+	echo "====="
+	rm -f "$file"
+    done
+    rm -f $QUEUEDIR/tmp/*
+}
+
+cleanup_queuedir() {
+    rm -rf $QUEUEDIR
 }
 
 PROTO=TEST

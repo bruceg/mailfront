@@ -1,0 +1,41 @@
+setup_queuedir
+
+smtpfront queuedir accept <<EOF
+MAIL FROM:<somewhere>
+RCPT TO:<elsewhere>
+EOF
+
+dump_queuedir
+
+smtpfront queuedir accept <<EOF
+MAIL FROM:<somewhere>
+RCPT TO:<elsewhere>
+DATA
+Subject: testing
+
+.
+EOF
+
+dump_queuedir
+
+cleanup_queuedir
+
+<result>
+mailfront[#]: MAIL FROM:<somewhere>
+250 2.1.0 Sender accepted.^M
+mailfront[#]: RCPT TO:<elsewhere>
+250 2.1.5 Recipient accepted.^M
+mailfront[#]: bytes in: 42 bytes out: 91
+queuedir tmp: 0 new: 0
+mailfront[#]: MAIL FROM:<somewhere>
+250 2.1.0 Sender accepted.^M
+mailfront[#]: RCPT TO:<elsewhere>
+250 2.1.5 Recipient accepted.^M
+354 End your message with a period on a line by itself.^M
+250 2.6.0 Message accepted.^M
+mailfront[#]: bytes in: 67 bytes out: 177
+queuedir tmp: 0 new: 1
+===== queued file =====
+somewhere^@elsewhere^@^@Subject: testing
+
+=====
