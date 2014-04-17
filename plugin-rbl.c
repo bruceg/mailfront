@@ -77,6 +77,7 @@ static const response* init(void)
   const response* r;
   const char* e;
   ipv4addr ip;
+  struct plugin* backend = 0;
 
   debug = session_getenv("RBL_DEBUG") != 0;
 
@@ -84,6 +85,11 @@ static const response* init(void)
     if (debug)
       msg1("{rbl: No blacklists, skipping}");
     return 0;
+  }
+
+  if ((e = session_getenv("RBL_BACKEND")) != 0) {
+    if ((r = load_backend(&backend, e)) != 0)
+      return r;
   }
 
   /* Can only handle IPv4 sessions */
@@ -99,6 +105,13 @@ static const response* init(void)
 
   if ((r = test_rbls(blacklist, bad, &ip)) != 0)
     return r;
+  if (msgstatus == bad && backend != 0) {
+    if (backend->init != 0)
+      if ((r = backend->init()) != 0)
+	return r;
+    switch_backend(backend);
+    msgstatus = good;
+  }
   return 0;
 }
 
