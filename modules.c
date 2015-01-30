@@ -1,7 +1,7 @@
 #include <dlfcn.h>
 #include <stdlib.h>
 #include <string.h>
-#include <msg/msg.h>
+#include <bglibs/msg.h>
 #include "mailfront-internal.h"
 #include "conf_modules.c"
 

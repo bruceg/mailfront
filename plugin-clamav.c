@@ -1,14 +1,14 @@
 #include "mailfront.h"
 
-#include <sysdeps.h>
+#include <bglibs/sysdeps.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <msg/msg.h>
-#include <net/resolve.h>
-#include <net/socket.h>
-#include <uint32.h>
+#include <bglibs/msg.h>
+#include <bglibs/resolve.h>
+#include <bglibs/socket.h>
+#include <bglibs/uint32.h>
 
 static RESPONSE(no_hostname,451,"4.3.0 Could not resolve virus scanner hostname");
 static RESPONSE(no_scan,451,"4.3.0 Could not virus scan message");

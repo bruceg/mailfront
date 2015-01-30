@@ -26,8 +26,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <iobuf/iobuf.h>
-#include <msg/msg.h>
+#include <bglibs/iobuf.h>
+#include <bglibs/msg.h>
 #include "pop3.h"
 
 const char err_internal[] = "-ERR Internal error";

@@ -1,8 +1,8 @@
-#include <systime.h>
+#include <bglibs/systime.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <msg/msg.h>
+#include <bglibs/msg.h>
 #include "mailfront.h"
 
 static str received;

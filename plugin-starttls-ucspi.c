@@ -1,7 +1,7 @@
 #include "mailfront.h"
 #include <stdlib.h>
 #include <unistd.h>
-#include <iobuf/iobuf.h>
+#include <bglibs/iobuf.h>
 
 static RESPONSE(start, 220, "2.0.0 Ready to start TLS");
 static RESPONSE(earlytalker, 500, "5.5.1 Unexpected pipelined commands following STARTTLS");

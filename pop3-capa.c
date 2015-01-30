@@ -23,8 +23,8 @@
  * ossi@FutureQuest.net
  */
 #include <string.h>
-#include <iobuf/obuf.h>
-#include <str/str.h>
+#include <bglibs/obuf.h>
+#include <bglibs/str.h>
 #include <cvm/sasl.h>
 #include "pop3.h"
 

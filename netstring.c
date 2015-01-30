@@ -1,5 +1,5 @@
-#include <iobuf/iobuf.h>
-#include <str/str.h>
+#include <bglibs/iobuf.h>
+#include <bglibs/str.h>
 #include "mailfront.h"
 
 int get_netstring_len(ibuf* in, unsigned long* i)

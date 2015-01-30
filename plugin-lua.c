@@ -1,7 +1,7 @@
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
-#include <msg/msg.h>
+#include <bglibs/msg.h>
 #include "mailfront.h"
 
 static int l_msg(lua_State *L)

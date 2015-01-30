@@ -2,10 +2,10 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <systime.h>
-#include <iobuf/iobuf.h>
-#include <msg/msg.h>
-#include <str/str.h>
+#include <bglibs/systime.h>
+#include <bglibs/iobuf.h>
+#include <bglibs/msg.h>
+#include <bglibs/str.h>
 
 #include "mailfront.h"
 #include "qmtp.h"

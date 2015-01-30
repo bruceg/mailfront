@@ -1,12 +1,12 @@
-#include <sysdeps.h>
+#include <bglibs/sysdeps.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <misc/misc.h>
-#include <msg/msg.h>
-#include <unix/sig.h>
+#include <bglibs/misc.h>
+#include <bglibs/msg.h>
+#include <bglibs/sig.h>
 #include "mailfront.h"
 #include "conf_qmail.c"
 

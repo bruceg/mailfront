@@ -1,8 +1,8 @@
 #include <string.h>
 #include "responses.h"
 #include "qmtp.h"
-#include <iobuf/iobuf.h>
-#include <str/str.h>
+#include <bglibs/iobuf.h>
+#include <bglibs/str.h>
 
 int qmtp_respond_line(unsigned num, int final,
 		      const char* msg, unsigned long len)

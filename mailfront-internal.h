@@ -2,7 +2,7 @@
 #define MAIL_FRONT__MAILFRONT_INTERNAL__H__
 
 #include "mailfront.h"
-#include <adt/ghash.h>
+#include <bglibs/ghash.h>
 
 struct session
 {

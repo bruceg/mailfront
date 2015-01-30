@@ -1,14 +1,14 @@
 #include "mailfront.h"
 
-#include <sysdeps.h>
-#include <systime.h>
+#include <bglibs/sysdeps.h>
+#include <bglibs/systime.h>
 #include <errno.h>
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include <iobuf/iobuf.h>
-#include <path/path.h>
-#include <str/str.h>
+#include <bglibs/iobuf.h>
+#include <bglibs/path.h>
+#include <bglibs/str.h>
 
 static str destpath;
 static str temppath;

@@ -1,10 +1,10 @@
 #include <unistd.h>
 #include "mailfront.h"
-#include <iobuf/iobuf.h>
-#include <dict/dict.h>
-#include <dict/load.h>
+#include <bglibs/iobuf.h>
+#include <bglibs/dict.h>
+#include <bglibs/dict.h>
 #include "conf_qmail.c"
-#include <cdb/cdb.h>
+#include <bglibs/cdb.h>
 
 static RESPONSE(accept,250,0);
 static RESPONSE(no_chdir,451,"4.3.0 Could not change to the qmail directory.");

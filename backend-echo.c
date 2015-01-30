@@ -1,9 +1,9 @@
-#include <sysdeps.h>
+#include <bglibs/sysdeps.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <msg/msg.h>
-#include <str/iter.h>
+#include <bglibs/msg.h>
+#include <bglibs/striter.h>
 #include "mailfront.h"
 
 static response resp = { 250, 0 };

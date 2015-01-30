@@ -26,9 +26,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <cvm/v2client.h>
-#include <iobuf/iobuf.h>
-#include <str/iter.h>
-#include <str/str.h>
+#include <bglibs/iobuf.h>
+#include <bglibs/striter.h>
+#include <bglibs/str.h>
 #include <cvm/sasl.h>
 #include "pop3.h"
 

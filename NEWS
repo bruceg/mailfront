@@ -1,3 +1,5 @@
+- Updated for bglibs v2
+-------------------------------------------------------------------------------
 Changes in version 2.10
 
 - Added new "rbl" plugin, to block messages from IPs in an RBL.

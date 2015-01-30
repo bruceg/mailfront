@@ -1,7 +1,7 @@
-#include <systime.h>
+#include <bglibs/systime.h>
 #include <stdlib.h>
-#include <msg/msg.h>
-#include <msg/wrap.h>
+#include <bglibs/msg.h>
+#include <bglibs/wrap.h>
 #include "mailfront.h"
 
 static const char* proto;

@@ -1,10 +1,10 @@
 #include <string.h>
 
-#include <msg/msg.h>
-#include <msg/wrap.h>
-#include <net/dns.h>
-#include <net/ipv4.h>
-#include <str/str.h>
+#include <bglibs/msg.h>
+#include <bglibs/wrap.h>
+#include <bglibs/dns.h>
+#include <bglibs/ipv4.h>
+#include <bglibs/str.h>
 
 #include "mailfront.h"
 

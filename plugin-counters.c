@@ -1,7 +1,7 @@
 #include "mailfront.h"
 #include <stdlib.h>
 #include <string.h>
-#include <str/iter.h>
+#include <bglibs/striter.h>
 
 static RESPONSE(too_big, 552, "5.2.3 The message would exceed the maximum message size.");
 static RESPONSE(too_long, 552, "5.2.3 Sorry, that message exceeds the maximum message length.");

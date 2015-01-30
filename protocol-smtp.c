@@ -1,11 +1,11 @@
 #include <stdlib.h>
 #include <string.h>
-#include <systime.h>
+#include <bglibs/systime.h>
 
 #include "mailfront.h"
 
-#include <iobuf/iobuf.h>
-#include <msg/msg.h>
+#include <bglibs/iobuf.h>
+#include <bglibs/msg.h>
 
 extern struct protocol protocol;
 

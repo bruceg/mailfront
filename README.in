@@ -26,8 +26,8 @@ Development versions of @PACKAGE@ are available at:
 
 Requirements:
 
-- bglibs version 1.101
-- cvm version 0.82
+- bglibs version 2.01
+- cvm version 0.97
 - Lua version 5 or later (optional)
 
 Installation:

@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
-#include <msg/msg.h>
-#include <str/env.h>
+#include <bglibs/msg.h>
+#include <bglibs/envstr.h>
 #include "mailfront-internal.h"
 
 struct session session = {

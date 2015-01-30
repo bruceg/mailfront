@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <iobuf/iobuf.h>
-#include <msg/msg.h>
-#include <msg/wrap.h>
-#include <str/str.h>
+#include <bglibs/iobuf.h>
+#include <bglibs/msg.h>
+#include <bglibs/wrap.h>
+#include <bglibs/str.h>
 
 #include "mailfront.h"
 

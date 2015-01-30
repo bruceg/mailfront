@@ -4,11 +4,11 @@
 
 #include "mailfront.h"
 
-#include <cdb/cdb.h>
-#include <dict/dict.h>
-#include <dict/load.h>
-#include <iobuf/iobuf.h>
-#include <str/str.h>
+#include <bglibs/cdb.h>
+#include <bglibs/dict.h>
+#include <bglibs/dict.h>
+#include <bglibs/iobuf.h>
+#include <bglibs/str.h>
 
 static RESPONSE(erropen,421,"4.3.0 Could not open $MAILRULES file");
 static RESPONSE(syntax,421,"4.3.0 Syntax error in $MAILRULES");

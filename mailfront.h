@@ -2,8 +2,8 @@
 #define MAIL_FRONT__MAILFRONT__H__
 
 #include "responses.h"
-#include <iobuf/iobuf.h>
-#include <str/str.h>
+#include <bglibs/iobuf.h>
+#include <bglibs/str.h>
 #include "constants.h"
 
 #define FLAG_NEED_FILE (1<<0)

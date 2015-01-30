@@ -23,10 +23,10 @@
  * ossi@FutureQuest.net
  */
 #include <stdlib.h>
-#include <sysdeps.h>
+#include <bglibs/sysdeps.h>
 #include <unistd.h>
-#include <iobuf/iobuf.h>
-#include <unix/sig.h>
+#include <bglibs/iobuf.h>
+#include <bglibs/sig.h>
 
 unsigned long timeout;
 unsigned long session_timeout;

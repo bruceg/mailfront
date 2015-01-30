@@ -2,10 +2,10 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <systime.h>
-#include <msg/msg.h>
-#include <path/path.h>
-#include <str/str.h>
+#include <bglibs/systime.h>
+#include <bglibs/msg.h>
+#include <bglibs/path.h>
+#include <bglibs/str.h>
 
 #include "mailfront-internal.h"
 

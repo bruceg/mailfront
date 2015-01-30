@@ -22,7 +22,7 @@
  * http://www.FutureQuest.net/
  * ossi@FutureQuest.net
  */
-#include <sysdeps.h>
+#include <bglibs/sysdeps.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,8 +30,8 @@
 #include <sys/stat.h>
 #include <cvm/sasl.h>
 #include <cvm/v2client.h>
-#include <iobuf/iobuf.h>
-#include <str/str.h>
+#include <bglibs/iobuf.h>
+#include <bglibs/str.h>
 
 const char program[] = "imapfront-auth";
 const int msg_show_pid = 1;
