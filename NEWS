@@ -1,5 +1,7 @@
 - Fixed broken use of -lbg-sysdeps in modules.
 
+- Fixed missing plugin-rbl in installed image.
+
 -------------------------------------------------------------------------------
 Changes in version 2.11
 
