@@ -1,3 +1,5 @@
+- Fixed broken use of -lbg-sysdeps in modules.
+
 -------------------------------------------------------------------------------
 Changes in version 2.11
 
