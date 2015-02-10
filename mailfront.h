@@ -76,6 +76,7 @@ int get_netstring_len(ibuf* in, unsigned long* i);
 int get_netstring(ibuf* in, str* s);
 
 /* From queuedir.c */
+extern void queuedir_init(const char* prefix);
 extern const response* queuedir_reset(void);
 extern const response* queuedir_sender(str* address, str* params);
 extern const response* queuedir_recipient(str* address, str* params);

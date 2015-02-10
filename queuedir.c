@@ -9,6 +9,7 @@
 #include <bglibs/iobuf.h>
 #include <bglibs/path.h>
 #include <bglibs/str.h>
+#include <bglibs/wrap.h>
 
 static str destpath;
 static str temppath;
@@ -17,9 +18,22 @@ static str tempname;
 static int tmpfd;
 static obuf msgbuf;
 
+static const char* env_prefix;
+static str env_tmpdir;
+static str env_destdir;
+static str env_nosync;
+
 static RESPONSE(createerr, 451, "4.3.0 Error creating queue file");
 static RESPONSE(writeerr, 451, "4.3.0 Error writing queue file");
 static RESPONSE(configerr, 451, "4.3.0 Missing backend configuration parameter");
+
+void queuedir_init(const char* prefix)
+{
+  env_prefix = prefix;
+  wrap_str(str_copy2s(&env_tmpdir, prefix, "_TMP"));
+  wrap_str(str_copy2s(&env_destdir, prefix, "_DEST"));
+  wrap_str(str_copy2s(&env_nosync, prefix, "_NOSYNC"));
+}
 
 const response* queuedir_reset(void)
 {
@@ -58,9 +72,9 @@ static const response* make_filenames(void)
 const response* queuedir_sender(str* address, str* params)
 {
   const response* r;
-  const char* destdir = session_getenv("QUEUEDIR");
-  const char* tempsubdir = session_getenv("QUEUEDIR_TMP");
-  const char* destsubdir = session_getenv("QUEUEDIR_DEST");
+  const char* destdir = session_getenv(env_prefix);
+  const char* tempsubdir = session_getenv(env_tmpdir.s);
+  const char* destsubdir = session_getenv(env_destdir.s);
 
   if (destdir == 0)
     return &resp_configerr;
@@ -122,7 +136,7 @@ const response* queuedir_data_block(const char* bytes, unsigned long len)
 
 const response* queuedir_message_end(int fd)
 {
-  int dosync = session_getenv("QUEUEDIR_NOSYNC") == 0;
+  int dosync = session_getenv(env_nosync.s) == 0;
   /* If using a temporary file, copy it to the output. */
   if (tmpfd > 0) {
     if (lseek(tmpfd, SEEK_SET, 0) != 0 || !obuf_copyfromfd(tmpfd, &msgbuf)) {
