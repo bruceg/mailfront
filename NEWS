@@ -1,3 +1,5 @@
+- Added ability for rbl plugin to capture messages before rejecting them.
+
 - Fixed broken use of -lbg-sysdeps in modules.
 
 - Fixed missing plugin-rbl in installed image.

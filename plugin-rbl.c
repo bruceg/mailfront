@@ -13,6 +13,7 @@ static enum msgstatus { na, good, bad } msgstatus;
 static response resp;
 static RESPONSE(dnserror, 451, "4.3.0 DNS error doing RBL lookup");
 static int debug = 0;
+static int queuedir = 0;
 
 static const response* make_response(int code, const char* status, const char* msg)
 {
@@ -77,7 +78,6 @@ static const response* init(void)
   const response* r;
   const char* e;
   ipv4addr ip;
-  struct plugin* backend = 0;
 
   debug = session_getenv("RBL_DEBUG") != 0;
 
@@ -87,10 +87,9 @@ static const response* init(void)
     return 0;
   }
 
-  if ((e = session_getenv("RBL_BACKEND")) != 0) {
-    if ((r = load_backend(&backend, e)) != 0)
-      return r;
-  }
+  queuedir = session_getenv("RBL_QUEUEDIR") != 0;
+  if (queuedir)
+    queuedir_init("RBL_QUEUEDIR");
 
   /* Can only handle IPv4 sessions */
   if ((e = session_getenv("TCPREMOTEIP")) == 0) {
@@ -105,26 +104,59 @@ static const response* init(void)
 
   if ((r = test_rbls(blacklist, bad, &ip)) != 0)
     return r;
-  if (msgstatus == bad && backend != 0) {
-    if (backend->init != 0)
-      if ((r = backend->init()) != 0)
-	return r;
-    switch_backend(backend);
-    msgstatus = good;
-  }
   return 0;
 }
 
 static const response* sender(str* address, str* params)
 {
-  return (msgstatus == bad) ? &resp : 0;
-  (void)address;
-  (void)params;
+  const response* r;
+  if (msgstatus == bad) {
+    if (queuedir) {
+      if ((r = queuedir_sender(address, params)) != 0)
+	return r;
+    }
+    else
+      return &resp;
+  }
+  return 0;
+}
+
+static const response* recipient(str* address, str* params)
+{
+  return queuedir && msgstatus == bad ? queuedir_recipient(address, params): 0;
+}
+
+static const response* data_start(int fd)
+{
+  return queuedir && msgstatus == bad ? queuedir_data_start(fd) : 0;
+}
+
+static const response* data_block(const char* bytes, unsigned long len)
+{
+  return queuedir && msgstatus == bad ? queuedir_data_block(bytes, len) : 0;
+}
+
+static const response* message_end(int fd)
+{
+  const response* r;
+  if (msgstatus == bad) {
+    if (queuedir) {
+      if ((r = queuedir_message_end(fd)) != 0)
+	return r;
+    }
+    return &resp;
+  }
+  return 0;
 }
 
 struct plugin plugin = {
   .version = PLUGIN_VERSION,
   .flags = 0,
   .init = init,
+  .reset = queuedir_reset,
   .sender = sender,
+  .recipient = recipient,
+  .data_start = data_start,
+  .data_block = data_block,
+  .message_end = message_end,
 };

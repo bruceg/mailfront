@@ -21,6 +21,13 @@ action is taken.</dd>
 <dt><tt>RBL_DEBUG</tt></dt> <dd>If set, this plugin will provide extra
 output which may be useful in diagnosing RBL issues.</dd>
 
+<dt><tt>RBL_QUEUEDIR</tt></dt> <dd>If set and the client is listed on
+one of the listed RBLs, capture the message into the named directory and
+then reject instead of rejecting
+earlier. See <a href="backend-queuedir.html">the <tt>queuedir</tt>
+backend</a> for more details on settings (prefixed
+by <tt>RBL_</tt>).</dd>
+
 </dl>
 
 </body>

@@ -1,14 +1,15 @@
 <loop ip 127.0.0.2 127.0.0.99>
-<loop backend "" queuedir>
+<loop queuedir false true>
 
-if [ -n "$backend" ]; then
-    export RBL_BACKEND=$backend
-fi
 export RBL_BLACKLISTS=sbl-xbl.spamhaus.org
 export RBL_DEBUG=1
 export TCPREMOTEIP=$ip
 
 setup_queuedir
+if $queuedir
+then
+    export RBL_QUEUEDIR=$QUEUEDIR
+fi
 
 smtpfront echo rbl accept <<EOF
 HELO me
@@ -23,10 +24,10 @@ dump_queuedir
 
 cleanup_queuedir
 
-unset RBL_BACKEND RBL_BLACKLISTS RBL_DEBUG TCPLOCALIP QUEUEDIR
+unset RBL_BLACKLISTS RBL_DEBUG RBL_QUEUEDIR TCPLOCALIP QUEUEDIR
 rm -rf $tmp/queuedir $tmp/queuedir
 
-<result 127.0.0.2 "">
+<result 127.0.0.2 false>
 mailfront[#]: rbl: sbl-xbl.spamhaus.org:
 mailfront[#]: http://www.spamhaus.org/sbl/query/SBL233
 mailfront[#]: http://www.spamhaus.org/query/bl?ip=127.0.0.2
@@ -48,24 +49,26 @@ mailfront[#]: 500 5.5.1 Not implemented.
 mailfront[#]: bytes in: 71 bytes out: 243
 queuedir tmp: 0 new: 0
 
-<result 127.0.0.2 queuedir>
+<result 127.0.0.2 true>
 mailfront[#]: rbl: sbl-xbl.spamhaus.org:
 mailfront[#]: http://www.spamhaus.org/sbl/query/SBL233
 mailfront[#]: http://www.spamhaus.org/query/bl?ip=127.0.0.2
 250 local.host^M
 mailfront[#]: MAIL FROM:<somewhere>
-250 2.1.0 Sender accepted.^M
+250 Sender='somewhere'.^M
 mailfront[#]: RCPT TO:<elsewhere>
-250 2.1.5 Recipient accepted.^M
+250 Recipient='elsewhere'.^M
 354 End your message with a period on a line by itself.^M
-250 2.6.0 Message accepted.^M
-mailfront[#]: bytes in: 71 bytes out: 193
+mailfront[#]: Subject: test
+mailfront[#]: 451 Blocked: http://www.spamhaus.org/sbl/query/SBL233
+451 Blocked: http://www.spamhaus.org/sbl/query/SBL233^M
+mailfront[#]: bytes in: 71 bytes out: 213
 queuedir tmp: 0 new: 1
 ===== queued file =====
 somewhere^@elsewhere^@^@Subject: test
 =====
 
-<result 127.0.0.99 "">
+<result 127.0.0.99 false>
 250 local.host^M
 mailfront[#]: MAIL FROM:<somewhere>
 250 Sender='somewhere'.^M
@@ -77,7 +80,7 @@ mailfront[#]: Subject: test
 mailfront[#]: bytes in: 71 bytes out: 182
 queuedir tmp: 0 new: 0
 
-<result 127.0.0.99 queuedir>
+<result 127.0.0.99 true>
 250 local.host^M
 mailfront[#]: MAIL FROM:<somewhere>
 250 Sender='somewhere'.^M
