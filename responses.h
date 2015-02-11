@@ -8,7 +8,9 @@ struct response
 };
 typedef struct response response;
 
-extern const response resp_accepted;
+extern const response resp_accepted_message;
+extern const response resp_accepted_sender;
+extern const response resp_accepted_recip;
 extern const response resp_internal;
 extern const response resp_oom;
 

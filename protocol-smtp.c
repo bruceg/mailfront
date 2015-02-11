@@ -24,8 +24,6 @@ static str init_capabilities;
 static RESPONSE(no_mail, 503, "5.5.1 You must send MAIL FROM: first");
 static RESPONSE(vrfy, 252, "2.5.2 Send some mail, I'll try my best.");
 static RESPONSE(help, 214, "2.0.0 Help not available.");
-static RESPONSE(mail_ok, 250, "2.1.0 Sender accepted.");
-static RESPONSE(rcpt_ok, 250, "2.1.5 Recipient accepted.");
 static RESPONSE(no_rcpt, 503, "5.5.1 You must send RCPT TO: first");
 static RESPONSE(data_ok, 354, "End your message with a period on a line by itself.");
 static RESPONSE(ok, 250, "2.3.0 OK");
@@ -143,7 +141,7 @@ static int MAIL(void)
   do_reset();
   if ((resp = parse_addr_arg()) == 0) {
     if ((resp = handle_sender(&addr, &params)) == 0)
-      resp = &resp_mail_ok;
+      resp = &resp_accepted_sender;
     if (number_ok(resp)) {
       saw_mail = 1;
     }
@@ -158,7 +156,7 @@ static int RCPT(void)
   if (!saw_mail) return respond(&resp_no_mail);
   if ((resp = parse_addr_arg()) == 0) {
     if ((resp = handle_recipient(&addr, &params)) == 0)
-      resp = &resp_rcpt_ok;
+      resp = &resp_accepted_recip;
     if (number_ok(resp))
       saw_rcpt = 1;
   }
@@ -240,7 +238,7 @@ static int DATA(void)
     return 0;
   }
   if ((resp = handle_message_end()) == 0)
-    resp = &resp_accepted;
+    resp = &resp_accepted_message;
   return respond(resp);
 }
 
