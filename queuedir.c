@@ -45,8 +45,14 @@ const response* queuedir_reset(void)
   return 0;
 }
 
+static int make_filename(str* s, const struct timeval* tv, pid_t pid)
+{
+  return str_copyf(s, "d{.}06d{.}d", tv->tv_sec, tv->tv_usec, pid);
+}
+
 static const response* make_filenames(void)
 {
+  static str filename;
   pid_t pid = getpid();
   for (;;) {
     struct timeval tv;
@@ -54,12 +60,14 @@ static const response* make_filenames(void)
 
     gettimeofday(&tv, 0);
 
-    if (!str_copyf(&tempname, "S{/}d{.}06d{.}d", &temppath, tv.tv_sec, tv.tv_usec, pid))
+    if (!make_filename(&filename, &tv, pid))
+      return &resp_oom;
+    if (!str_copyf(&tempname, "S{/}S", &temppath, &filename))
       return &resp_oom;
     if (lstat(tempname.s, &st) == 0) continue;
     if (errno != ENOENT) return &resp_internal;
 
-    if (!str_copyf(&destname, "S{/}d{.}06d{.}d", &destpath, tv.tv_sec, tv.tv_usec, pid))
+    if (!str_copyf(&destname, "S{/}S", &destpath, &filename))
       return &resp_oom;
     if (lstat(destname.s, &st) != 0) {
       if (errno != ENOENT) return &resp_internal;
