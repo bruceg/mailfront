@@ -10,7 +10,7 @@
 
 static enum msgstatus { na, good, bad } msgstatus;
 
-static response resp;
+static response rbl_blocked;
 static RESPONSE(dnserror, 451, "4.3.0 DNS error doing RBL lookup");
 static int debug = 0;
 static int queuedir = 0;
@@ -24,8 +24,8 @@ static const response* make_response(int code, const char* status, const char* m
   for (i = 0; i < resp_str.len; ++i)
     if (resp_str.s[i] < 32 || resp_str.s[i] > 126)
       resp_str.s[i] = '?';
-  resp.number = code;
-  resp.message = resp_str.s;
+  rbl_blocked.number = code;
+  rbl_blocked.message = resp_str.s;
   return 0;
 }
 
@@ -116,7 +116,7 @@ static const response* sender(str* address, str* params)
 	return r;
     }
     else
-      return &resp;
+      return &rbl_blocked;
   }
   return 0;
 }
@@ -144,7 +144,7 @@ static const response* message_end(int fd)
       if ((r = queuedir_message_end(fd)) != 0)
 	return r;
     }
-    return &resp;
+    return &rbl_blocked;
   }
   return 0;
 }
