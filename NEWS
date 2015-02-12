@@ -1,9 +1,14 @@
+-------------------------------------------------------------------------------
+Changes in version 2.12
+
 - Added ability for rbl plugin to capture messages before rejecting them.
 
 - Fixed broken use of -lbg-sysdeps in modules.
 
 - Fixed missing plugin-rbl in installed image.
 
+Development of this version has been sponsored by FutureQuest, Inc.
+ossi@FutureQuest.net  http://www.FutureQuest.net/
 -------------------------------------------------------------------------------
 Changes in version 2.11
 
