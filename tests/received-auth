@@ -1,0 +1,28 @@
+<loop add_received "" 0 1>
+PLUGINS=add-received:accept
+TESTOCALHOST="localhost"
+TESTLOCALIP="localip"
+TESTREMOTEHOST="remotehost"
+TESTREMOTEIP="remoteip"
+AUTH_ADD_RECEIVED=$add_received
+RELAYCLIENT=1
+
+export AUTH_ADD_RECEIVED RELAYCLIENT
+
+$src/mailfront smtp echo 2>&1 >/dev/null <<EOF | sed -n -e 's/^.* Received: //p'
+$helo
+MAIL FROM:<>
+RCPT TO:<test@example.com>
+DATA
+.
+EOF
+
+unset AUTH_ADD_RECEIVED RELAYCLIENT
+
+<result "">
+from remotehost (remotehost [remoteip])  by local.host ([localip])
+
+<result 0>
+
+<result 1>
+from remotehost (remotehost [remoteip])  by local.host ([localip])

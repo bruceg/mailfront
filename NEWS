@@ -1,3 +1,5 @@
+- Added option to skip the Received header for authenticated connections.
+
 -------------------------------------------------------------------------------
 Changes in version 2.12
 

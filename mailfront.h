@@ -88,6 +88,7 @@ extern const response* queuedir_message_end(int fd);
 extern const char* session_protocol(void);
 extern const char* session_getenv(const char* name);
 extern unsigned long session_getenvu(const char* name);
+extern unsigned long session_getenvu_dflt(const char* name, unsigned long dflt);
 extern int session_exportenv(void);
 extern int session_putenv(const char* s);
 extern int session_setenv(const char* name, const char* value, int overwrite);

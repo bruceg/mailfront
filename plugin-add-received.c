@@ -131,12 +131,14 @@ static const response* init(void)
 
 static const response* data_start(int fd)
 {
+  int authenticated = session_getnum("authenticated", 0) || session_getenv("RELAYCLIENT") != NULL;
   received.len = 0;
-  if (!fixup_received(&received) ||
-      !add_header_add(&received) ||
-      !build_received(&received))
-    return &resp_internal;
-  return backend_data_block(received.s, received.len);
+  if (!authenticated || session_getenvu_dflt("AUTH_ADD_RECEIVED", 1) != 0)
+    if (!fixup_received(&received) ||
+        !add_header_add(&received) ||
+        !build_received(&received))
+      return &resp_internal;
+  return (received.len > 0) ? backend_data_block(received.s, received.len) : NULL;
   (void)fd;
 }
 

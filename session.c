@@ -21,6 +21,23 @@ const char* session_getenv(const char* name)
   return s;
 }
 
+/* Returns the first unsigned integer value set */
+unsigned long session_getenvu_dflt(const char* name, unsigned long dflt)
+{
+  const char* s;
+  unsigned long val;
+
+#define IFGET(FN) if ((s = FN) != NULL && *s != 0) {    \
+    val = strtoul(s, (char**)&s, 10);                   \
+    if (*s == 0)                                        \
+      return val;                                       \
+    }
+
+  IFGET(envstr_get(&session.env, name));
+  IFGET(getenv(name));
+  return dflt;
+}
+
 static unsigned long min_u_s(unsigned long u, const char* s)
 {
   unsigned long newu;
