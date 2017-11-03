@@ -29,12 +29,12 @@ rm -rf $tmp/queuedir $tmp/queuedir
 
 <result 127.0.0.2 false>
 mailfront[#]: rbl: sbl-xbl.spamhaus.org:
-mailfront[#]: http://www.spamhaus.org/sbl/query/SBL233
-mailfront[#]: http://www.spamhaus.org/query/bl?ip=127.0.0.2
+mailfront[#]: https://www.spamhaus.org/sbl/query/SBL2
+mailfront[#]: https://www.spamhaus.org/query/ip/127.0.0.2
 250 local.host^M
 mailfront[#]: MAIL FROM:<somewhere>
-mailfront[#]: 451 Blocked: http://www.spamhaus.org/sbl/query/SBL233
-451 Blocked: http://www.spamhaus.org/sbl/query/SBL233^M
+mailfront[#]: 451 Blocked: https://www.spamhaus.org/sbl/query/SBL2
+451 Blocked: https://www.spamhaus.org/sbl/query/SBL2^M
 mailfront[#]: RCPT TO:<elsewhere>
 mailfront[#]: 503 5.5.1 You must send MAIL FROM: first
 503 5.5.1 You must send MAIL FROM: first^M
@@ -46,13 +46,13 @@ mailfront[#]: 500 5.5.1 Not implemented.
 mailfront[#]: . 
 mailfront[#]: 500 5.5.1 Not implemented.
 500 5.5.1 Not implemented.^M
-mailfront[#]: bytes in: 71 bytes out: 243
+mailfront[#]: bytes in: 71 bytes out: 242
 queuedir tmp: 0 new: 0
 
 <result 127.0.0.2 true>
 mailfront[#]: rbl: sbl-xbl.spamhaus.org:
-mailfront[#]: http://www.spamhaus.org/sbl/query/SBL233
-mailfront[#]: http://www.spamhaus.org/query/bl?ip=127.0.0.2
+mailfront[#]: https://www.spamhaus.org/sbl/query/SBL2
+mailfront[#]: https://www.spamhaus.org/query/ip/127.0.0.2
 250 local.host^M
 mailfront[#]: MAIL FROM:<somewhere>
 250 Sender='somewhere'.^M
@@ -60,9 +60,9 @@ mailfront[#]: RCPT TO:<elsewhere>
 250 Recipient='elsewhere'.^M
 354 End your message with a period on a line by itself.^M
 mailfront[#]: Subject: test
-mailfront[#]: 451 Blocked: http://www.spamhaus.org/sbl/query/SBL233
-451 Blocked: http://www.spamhaus.org/sbl/query/SBL233^M
-mailfront[#]: bytes in: 71 bytes out: 213
+mailfront[#]: 451 Blocked: https://www.spamhaus.org/sbl/query/SBL2
+451 Blocked: https://www.spamhaus.org/sbl/query/SBL2^M
+mailfront[#]: bytes in: 71 bytes out: 212
 queuedir tmp: 0 new: 1
 ===== queued file =====
 somewhere^@elsewhere^@^@Subject: test
