@@ -1,7 +1,7 @@
 <loop ip 127.0.0.2 127.0.0.99>
 <loop queuedir false true>
 
-export RBL_BLACKLISTS=sbl-xbl.spamhaus.org
+export RBL_BLACKLISTS=zen.spamhaus.org
 export RBL_DEBUG=1
 export TCPREMOTEIP=$ip
 
@@ -28,7 +28,7 @@ unset RBL_BLACKLISTS RBL_DEBUG RBL_QUEUEDIR TCPLOCALIP QUEUEDIR
 rm -rf $tmp/queuedir $tmp/queuedir
 
 <result 127.0.0.2 false>
-mailfront[#]: rbl: sbl-xbl.spamhaus.org:
+mailfront[#]: rbl: zen.spamhaus.org:
 mailfront[#]: https://www.spamhaus.org/sbl/query/SBL2
 mailfront[#]: https://www.spamhaus.org/query/ip/127.0.0.2
 250 local.host^M
@@ -50,7 +50,7 @@ mailfront[#]: bytes in: 71 bytes out: 242
 queuedir tmp: 0 new: 0
 
 <result 127.0.0.2 true>
-mailfront[#]: rbl: sbl-xbl.spamhaus.org:
+mailfront[#]: rbl: zen.spamhaus.org:
 mailfront[#]: https://www.spamhaus.org/sbl/query/SBL2
 mailfront[#]: https://www.spamhaus.org/query/ip/127.0.0.2
 250 local.host^M
