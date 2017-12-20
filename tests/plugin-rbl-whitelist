@@ -1,0 +1,35 @@
+<loop enabled false true>
+
+export RBL_BLACKLISTS=zen.spamhaus.org
+if $enabled
+then
+    export RBL_WHITELISTS=zen.spamhaus.org
+fi
+export RBL_DEBUG=1
+export TCPREMOTEIP=127.0.0.2
+
+smtpfront echo rbl accept <<EOF
+HELO me
+MAIL FROM:<somewhere>
+EOF
+
+unset RBL_BLACKLISTS RBL_DEBUG TCPLOCALIP
+
+<result false>
+mailfront[#]: rbl: blacklisted by zen.spamhaus.org:
+mailfront[#]: https://www.spamhaus.org/sbl/query/SBL2
+mailfront[#]: https://www.spamhaus.org/query/ip/127.0.0.2
+250 local.host^M
+mailfront[#]: MAIL FROM:<somewhere>
+mailfront[#]: 451 Blocked: https://www.spamhaus.org/sbl/query/SBL2
+451 Blocked: https://www.spamhaus.org/sbl/query/SBL2^M
+mailfront[#]: bytes in: 30 bytes out: 102
+
+<result true>
+mailfront[#]: rbl: whitelisted by zen.spamhaus.org:
+mailfront[#]: https://www.spamhaus.org/sbl/query/SBL2
+mailfront[#]: https://www.spamhaus.org/query/ip/127.0.0.2
+250 local.host^M
+mailfront[#]: MAIL FROM:<somewhere>
+250 Sender='somewhere'.^M
+mailfront[#]: bytes in: 30 bytes out: 73

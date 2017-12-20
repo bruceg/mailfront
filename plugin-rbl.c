@@ -50,7 +50,7 @@ static const response* test_rbl(const char* rbl, enum msgstatus status, const ip
   if (txt.count == 0)
     return 0;
   if (debug) {
-    msgf("{rbl: }s{:}", rbl);
+    msgf("{rbl: }s{ by }s{:}", (status == good) ? "whitelisted" : "blacklisted", rbl);
     for (i = 0; i < txt.count; ++i)
       msg1(txt.rr.name[i]);
   }
@@ -75,6 +75,7 @@ static const response* test_rbls(const char* rbls, enum msgstatus status, const 
 static const response* init(void)
 {
   const char* blacklist;
+  const char* whitelist;
   const response* r;
   const char* e;
   ipv4addr ip;
@@ -102,7 +103,13 @@ static const response* init(void)
     return 0;
   }
 
-  if ((r = test_rbls(blacklist, bad, &ip)) != 0)
+  whitelist = session_getenv("RBL_WHITELISTS");
+  if (whitelist != NULL && *whitelist != 0)
+    if ((r = test_rbls(whitelist, good, &ip)) != NULL)
+      return r;
+
+  if (msgstatus == na
+      && (r = test_rbls(blacklist, bad, &ip)) != 0)
     return r;
   return 0;
 }
