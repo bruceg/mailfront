@@ -6,7 +6,7 @@ static RESPONSE(ok, 250, 0);
 static RESPONSE(mustauth, 530, "5.7.1 You must authenticate first.");
 static response resp;
 
-static const response* accept(str* s, str* params)
+static const response* acceptor(str* s, str* params)
 {
   return &resp_accept;
   (void)s;
@@ -60,16 +60,16 @@ static const response* require_auth(str* s, str* params)
 struct plugin builtin_plugins[] = {
   {
     .name = "accept",
-    .sender = accept,
-    .recipient = accept,
+    .sender = acceptor,
+    .recipient = acceptor,
   },
   {
     .name = "accept-recipient",
-    .recipient = accept,
+    .recipient = acceptor,
   },
   {
     .name = "accept-sender",
-    .sender = accept,
+    .sender = acceptor,
   },
   {
     .name = "force-file",

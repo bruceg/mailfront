@@ -1,3 +1,5 @@
+- Fix build issue with redefining the "accept" function.
+
 - Added support for whitelists in the rbl plugin.
 
 - Added option to skip the Received header for authenticated connections.
