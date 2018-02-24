@@ -1,3 +1,6 @@
+-------------------------------------------------------------------------------
+Changes in version 2.13
+
 - Fix build issue with redefining the "accept" function.
 
 - Added support for whitelists in the rbl plugin.
