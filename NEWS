@@ -1,3 +1,5 @@
+- Fixed minor memory leak in the rbl plugin.
+
 -------------------------------------------------------------------------------
 Changes in version 2.13
 

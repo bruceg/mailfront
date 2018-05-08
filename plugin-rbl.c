@@ -44,18 +44,21 @@ static const response* test_rbl(const char* rbl, enum msgstatus status, const ip
   static struct dns_result txt;
   int i;
   const char* query = make_name(ip, rbl);
+  const response* resp = NULL;
 
   if (dns_txt(&txt, query) < 0)
     return &resp_dnserror;
-  if (txt.count == 0)
-    return 0;
-  if (debug) {
-    msgf("{rbl: }s{ by }s{:}", (status == good) ? "whitelisted" : "blacklisted", rbl);
-    for (i = 0; i < txt.count; ++i)
-      msg1(txt.rr.name[i]);
+  if (txt.count > 0) {
+    if (debug) {
+      msgf("{rbl: }s{ by }s{:}", (status == good) ? "whitelisted" : "blacklisted", rbl);
+      for (i = 0; i < txt.count; ++i)
+        msg1(txt.rr.name[i]);
+    }
+    msgstatus = status;
+    resp = make_response(451, "Blocked", txt.rr.name[0]); /* 451 temporary, 553 permanent */
   }
-  msgstatus = status;
-  return make_response(451, "Blocked", txt.rr.name[0]); /* 451 temporary, 553 permanent */
+  dns_result_free(&txt);
+  return resp;
 }
 
 static const response* test_rbls(const char* rbls, enum msgstatus status, const ipv4addr* ip)
