@@ -50,9 +50,14 @@ static const response* test_rbl(const char* rbl, enum msgstatus status, const ip
     return &resp_dnserror;
   if (txt.count > 0) {
     if (debug) {
-      msgf("{rbl: }s{ by }s{:}", (status == good) ? "whitelisted" : "blacklisted", rbl);
-      for (i = 0; i < txt.count; ++i)
-        msg1(txt.rr.name[i]);
+      str lines = {0};
+      for (i = 0; i < txt.count; ++i) {
+        if (lines.len > 0)
+          wrap_str(str_cats(&lines, " // "));
+        wrap_str(str_cats(&lines, txt.rr.name[i]));
+      }
+      msgf("{rbl: }s{ by }s{: }S", (status == good) ? "whitelisted" : "blacklisted", rbl, &lines);
+      str_free(&lines);
     }
     msgstatus = status;
     resp = make_response(451, "Blocked", txt.rr.name[0]); /* 451 temporary, 553 permanent */

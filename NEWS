@@ -1,3 +1,5 @@
+- Modified rbl plugin to log all responses in a single line.
+
 - Fixed minor memory leak in the rbl plugin.
 
 -------------------------------------------------------------------------------

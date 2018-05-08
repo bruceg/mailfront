@@ -16,9 +16,7 @@ EOF
 unset RBL_BLACKLISTS RBL_DEBUG TCPLOCALIP
 
 <result false>
-mailfront[#]: rbl: blacklisted by zen.spamhaus.org:
-mailfront[#]: https://www.spamhaus.org/sbl/query/SBL2
-mailfront[#]: https://www.spamhaus.org/query/ip/127.0.0.2
+mailfront[#]: rbl: blacklisted by zen.spamhaus.org: https://www.spamhaus.org/sbl/query/SBL2 // https://www.spamhaus.org/query/ip/127.0.0.2
 250 local.host^M
 mailfront[#]: MAIL FROM:<somewhere>
 mailfront[#]: 451 Blocked: https://www.spamhaus.org/sbl/query/SBL2
@@ -26,9 +24,7 @@ mailfront[#]: 451 Blocked: https://www.spamhaus.org/sbl/query/SBL2
 mailfront[#]: bytes in: 30 bytes out: 102
 
 <result true>
-mailfront[#]: rbl: whitelisted by zen.spamhaus.org:
-mailfront[#]: https://www.spamhaus.org/sbl/query/SBL2
-mailfront[#]: https://www.spamhaus.org/query/ip/127.0.0.2
+mailfront[#]: rbl: whitelisted by zen.spamhaus.org: https://www.spamhaus.org/sbl/query/SBL2 // https://www.spamhaus.org/query/ip/127.0.0.2
 250 local.host^M
 mailfront[#]: MAIL FROM:<somewhere>
 250 Sender='somewhere'.^M
