@@ -238,11 +238,16 @@ static void parse_env(const char* ptr, str* out)
     }
 }
 
+static int iscode(char ch)
+{
+  return ch == 'k' || ch == 'd' || ch == 'z' || ch == 'p' || ch == 'n';
+}
+
 static const response* add(const char* l)
 {
   struct rule* r;
   
-  if (*l != 'k' && *l != 'd' && *l != 'z' && *l != 'p' && *l != 'n') return 0;
+  if (!iscode(*l)) return 0;
   r = alloc_rule();
   r->code = *l++;
 
@@ -393,42 +398,37 @@ static void copy_addr(const str* addr,
 static str saved_sender;
 static str sender_domain;
 
+static str saved_recip;
+static str recip_domain;
+
+static const response* run_rules(const struct rule* rule, int is_recip, str* addr, str* save_addr, str* save_domain)
+{
+  if (!loaded)
+    return NULL;
+  copy_addr(addr, save_addr, save_domain);
+
+  for (; rule != NULL; rule = rule->next) {
+    if (matches(&rule->sender, &saved_sender, &sender_domain)
+        && (!is_recip || matches(&rule->recipient, &saved_recip, &recip_domain))) {
+      const response* r = apply_rule(rule);
+      if (is_recip)
+        str_cat(addr, &rule->relayclient);
+      if (rule->code != 'n')
+        return r;
+    }
+  }
+  return NULL;
+}
+
 static const response* validate_sender(str* sender, str* params)
 {
-  struct rule* rule;
-  const response* r;
-  
-  if (!loaded) return 0;
-  copy_addr(sender, &saved_sender, &sender_domain);
-  for (rule = sender_rules; rule != 0; rule = rule->next)
-    if (matches(&rule->sender, &saved_sender, &sender_domain)) {
-      r = apply_rule(rule);
-      if (rule->code != 'n')
-	return r;
-    }
-  return 0;
+  return run_rules(sender_rules, 0, sender, &saved_sender, &sender_domain);
   (void)params;
 }
 
-static str laddr;
-static str rdomain;
-
 static const response* validate_recipient(str* recipient, str* params)
 {
-  struct rule* rule;
-  const response* r;
-  
-  if (!loaded) return 0;
-  copy_addr(recipient, &laddr, &rdomain);
-  for (rule = recip_rules; rule != 0; rule = rule->next)
-    if (matches(&rule->sender, &saved_sender, &sender_domain) &&
-	matches(&rule->recipient, &laddr, &rdomain)) {
-      str_cat(recipient, &rule->relayclient);
-      r = apply_rule(rule);
-      if (rule->code != 'n')
-	return r;
-    }
-  return 0;
+  return run_rules(recip_rules, 1, recipient, &saved_recip, &recip_domain);
   (void)params;
 }
 
