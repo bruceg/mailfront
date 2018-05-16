@@ -1,3 +1,6 @@
+-------------------------------------------------------------------------------
+Changes in version 2.15
+
 - Added support for "and" lines to mailrules plugin.
 
 - Modified rbl plugin to log all responses in a single line.
