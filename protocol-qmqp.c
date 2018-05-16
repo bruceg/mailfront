@@ -15,6 +15,7 @@ static const response* resp;
 static char buf[8192];
 static str line;
 
+static void die(const char* msg) __NORETURN__;
 static void die(const char* msg)
 {
   response r = { 451, msg };
