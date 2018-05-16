@@ -1,0 +1,35 @@
+PLUGINS=mailrules:accept
+
+cat >$tmp/domains <<EOF
+example.com
+EOF
+
+cat >$tmp/rules <<EOF
+&a@*:*:K1
+k[[@$tmp/domains]]:*:K2
+&b@*:*:K3
+&*@example.com:*:K4
+k*:*:K5
+k*:*:K6
+EOF
+
+export MAILRULES=$tmp/rules
+
+sfecho <<EOF
+MAIL FROM:<a@example.com>
+MAIL FROM:<b@example.com>
+MAIL FROM:<c@example.com>
+MAIL FROM:<a@example.net>
+MAIL FROM:<b@example.net>
+MAIL FROM:<c@example.net>
+EOF
+
+rm -f $tmp/domains $tmp/rules
+
+<result>
+250 K2^M
+250 K5^M
+250 K6^M
+250 K6^M
+250 K6^M
+250 K6^M

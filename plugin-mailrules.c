@@ -240,7 +240,7 @@ static void parse_env(const char* ptr, str* out)
 
 static int iscode(char ch)
 {
-  return ch == 'k' || ch == 'd' || ch == 'z' || ch == 'p' || ch == 'n';
+  return ch == 'k' || ch == 'd' || ch == 'z' || ch == 'p' || ch == 'n' || ch == '&';
 }
 
 static const response* add(const char* l)
@@ -401,21 +401,32 @@ static str sender_domain;
 static str saved_recip;
 static str recip_domain;
 
+static int rule_matches(const struct rule* rule, int is_recip)
+{
+  return matches(&rule->sender, &saved_sender, &sender_domain)
+    && (!is_recip || matches(&rule->recipient, &saved_recip, &recip_domain));
+}
+
 static const response* run_rules(const struct rule* rule, int is_recip, str* addr, str* save_addr, str* save_domain)
 {
+  int prev_and;
   if (!loaded)
     return NULL;
   copy_addr(addr, save_addr, save_domain);
 
-  for (; rule != NULL; rule = rule->next) {
-    if (matches(&rule->sender, &saved_sender, &sender_domain)
-        && (!is_recip || matches(&rule->recipient, &saved_recip, &recip_domain))) {
+  for (prev_and = 1; rule != NULL; rule = rule->next) {
+    if (rule->code == '&') {
+      prev_and = prev_and && rule_matches(rule, is_recip);
+    }
+    else if (prev_and && rule_matches(rule, is_recip)) {
       const response* r = apply_rule(rule);
       if (is_recip)
         str_cat(addr, &rule->relayclient);
       if (rule->code != 'n')
         return r;
     }
+    else
+      prev_and = 1;
   }
   return NULL;
 }

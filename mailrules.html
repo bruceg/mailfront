@@ -61,6 +61,9 @@ code.
 environment settings, but continue processing further rules.
 <dt><tt>p</tt> <dd>Pass the sender or recipient on to the next
 processing state (ie <tt>$RELAYCLIENT</tt> or back-end validation).
+<dt><tt>&</tt> <dd>AND: the next rule is only tested if this one
+matches.  This is useful for matching both a regular pattern and special
+pattern (see below) which can't normally be done in the same rule.</dd>
 
 </dl> The remainder of the line consists of a series of fields seperated
 by colons (":").  The fields are: <ol>
