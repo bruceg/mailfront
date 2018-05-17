@@ -19,4 +19,4 @@ unset MAILRULES REJECT
 
 <result>
 451 Rejected^M
-250 OK^M
+250 Sender='b@example.com'.^M
