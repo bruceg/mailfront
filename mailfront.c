@@ -9,6 +9,8 @@
 
 #include "mailfront-internal.h"
 
+#define DEBUG_PLUGINS 1
+
 static RESPONSE(no_sender,550,"5.1.0 Mail system is not configured to accept that sender");
 static RESPONSE(no_rcpt,550,"5.1.0 Mail system is not configured to accept that recipient");
 
@@ -34,9 +36,13 @@ static void exitfn(void)
 #define MODULE_CALL(NAME,PARAMS,RESET) do{ \
   struct plugin* plugin; \
   const response* tmp; \
+  debugf(DEBUG_PLUGINS, "{Calling plugin hook: }s", #NAME);  \
   for (plugin = session.plugin_list; plugin != 0; plugin = plugin->next) { \
     if (plugin->NAME != 0) { \
+      debugf(DEBUG_PLUGINS, "{Calling plugin: }s", plugin->name);       \
       if ((tmp = plugin->NAME PARAMS) != 0) { \
+        debugf(DEBUG_PLUGINS, "{Plugin }s{ returned }d{:}s", \
+               plugin->name, tmp->number, tmp->message ? tmp->message : "(null)"); \
         if (!response_ok(tmp)) {	      \
           if (RESET)			      \
             handle_reset();		      \
@@ -277,6 +283,7 @@ int main(int argc, char* argv[])
   const response* resp;
   const char* tmp;
 
+  msg_debug_init();
   if (argc < 3)
     die1(111, "Protocol or backend name are missing from the command line");
 

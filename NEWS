@@ -1,3 +1,5 @@
+- Added hook for debugging plugin invocation (set $MSG_DEBUG=1).
+
 -------------------------------------------------------------------------------
 Changes in version 2.15
 

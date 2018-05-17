@@ -1,0 +1,63 @@
+export MSG_DEBUG=1
+
+smtpfront echo check-fqdn accept-recipient accept-sender <<EOF
+EHLO $HOSTNAME
+MAIL FROM:<from>
+MAIL FROM:<from@example.com>
+RCPT TO:<rcpt@example.net>
+RCPT TO:<rcpt@example.org>
+DATA
+Subject: test
+
+test
+.
+EOF
+
+unset MSG_DEBUG
+<result>
+mailfront[#]: Debug: Calling plugin hook: init
+mailfront[#]: Debug: Calling plugin hook: reset
+mailfront[#]: Debug: Calling plugin hook: helo
+250-local.host^M
+250-8BITMIME^M
+250-ENHANCEDSTATUSCODES^M
+250 PIPELINING^M
+mailfront[#]: MAIL FROM:<from>
+mailfront[#]: Debug: Calling plugin hook: reset
+mailfront[#]: Debug: Calling plugin hook: sender
+mailfront[#]: Debug: Calling plugin: check-fqdn
+mailfront[#]: Debug: Plugin check-fqdn returned 554:5.1.2 Address is missing a domain name
+mailfront[#]: 554 5.1.2 Address is missing a domain name
+554 5.1.2 Address is missing a domain name^M
+mailfront[#]: MAIL FROM:<from@example.com>
+mailfront[#]: Debug: Calling plugin hook: reset
+mailfront[#]: Debug: Calling plugin hook: sender
+mailfront[#]: Debug: Calling plugin: check-fqdn
+mailfront[#]: Debug: Calling plugin: accept-sender
+mailfront[#]: Debug: Plugin accept-sender returned 250:(null)
+mailfront[#]: Debug: Calling plugin: accept
+mailfront[#]: Debug: Plugin accept returned 250:(null)
+250 Sender='from@example.com'.^M
+mailfront[#]: RCPT TO:<rcpt@example.net>
+mailfront[#]: Debug: Calling plugin hook: recipient
+mailfront[#]: Debug: Calling plugin: check-fqdn
+mailfront[#]: Debug: Calling plugin: accept-recipient
+mailfront[#]: Debug: Plugin accept-recipient returned 250:(null)
+mailfront[#]: Debug: Calling plugin: accept
+mailfront[#]: Debug: Plugin accept returned 250:(null)
+250 Recipient='rcpt@example.net'.^M
+mailfront[#]: RCPT TO:<rcpt@example.org>
+mailfront[#]: Debug: Calling plugin hook: recipient
+mailfront[#]: Debug: Calling plugin: check-fqdn
+mailfront[#]: Debug: Calling plugin: accept-recipient
+mailfront[#]: Debug: Plugin accept-recipient returned 250:(null)
+mailfront[#]: Debug: Calling plugin: accept
+mailfront[#]: Debug: Plugin accept returned 250:(null)
+250 Recipient='rcpt@example.org'.^M
+mailfront[#]: Debug: Calling plugin hook: data_start
+354 End your message with a period on a line by itself.^M
+mailfront[#]: Subject: test
+mailfront[#]: Debug: Calling plugin hook: message_end
+250 Received 20 bytes.^M
+mailfront[#]: Debug: Calling plugin hook: reset
+mailfront[#]: bytes in: 133 bytes out: 330
