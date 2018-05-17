@@ -240,7 +240,7 @@ static void parse_env(const char* ptr, str* out)
 
 static int iscode(char ch)
 {
-  return ch == 'k' || ch == 'd' || ch == 'z' || ch == 'p' || ch == 'n' || ch == '&';
+  return ch == 'k' || ch == 'K' || ch == 'd' || ch == 'z' || ch == 'p' || ch == 'n' || ch == '&';
 }
 
 static const response* add(const char* l)
@@ -359,6 +359,7 @@ static const response* build_response(int type, const str* message)
   case 'p': return 0;
   case 'n': return 0;
   case 'k': code = 250; defmsg = "OK"; break;
+  case 'K': code = 250 | RESPONSE_FINAL; defmsg = "OK"; break;
   case 'd': code = 553; defmsg = "Rejected"; break;
   case 'z': code = 451; defmsg = "Deferred"; break;
   default:  code = 451; defmsg = "Temporary failure"; break;
