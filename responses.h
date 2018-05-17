@@ -1,6 +1,9 @@
 #ifndef MAIL_FRONT__RESPONSES__H__
 #define MAIL_FRONT__RESPONSES__H__
 
+#define RESPONSE_MASK  0x3ff
+#define RESPONSE_FINAL 0x400
+
 struct response 
 {
   unsigned number;
