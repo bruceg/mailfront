@@ -1,0 +1,22 @@
+PLUGINS=mailrules:reject
+export REJECT=Rejected
+
+cat >$tmp/rules <<EOF
+ka@example.com:*
+Kb@example.com:*
+EOF
+
+export MAILRULES=$tmp/rules
+
+sfecho <<EOF
+MAIL FROM:<a@example.com>
+MAIL FROM:<b@example.com>
+EOF
+
+rm -f $tmp/domains $tmp/rules
+
+unset MAILRULES REJECT
+
+<result>
+451 Rejected^M
+250 Sender='b@example.com'.^M

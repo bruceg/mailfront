@@ -52,7 +52,10 @@ everything), it will be applied as a sender only rule.
 
 <p>Each rule line starts with one of the following prefixes: <dl>
 
-<dt><tt>k</tt> <dd>Accept the sender or recipient.
+<dt><tt>k</tt> <dd>Accept the sender or recipient, passing control to
+the next plugin.
+<dt><tt>K</tt> <dd>Accept the sender or recipient, and bypass all
+further plugins.
 <dt><tt>z</tt> <dd>Reject the sender or recipient with a temporary error
 code.
 <dt><tt>d</tt> <dd>Reject the sender or recipient with a permanent error

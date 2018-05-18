@@ -1,3 +1,5 @@
+- Added support for "final ok" rules in mailrules plugin.
+
 - Added hook for debugging plugin invocation (set $MSG_DEBUG=1).
 
 -------------------------------------------------------------------------------

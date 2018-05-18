@@ -41,7 +41,7 @@ rm -f $tmp/rules
 250-ENHANCEDSTATUSCODES^M
 250 PIPELINING^M
 250 Sender='somebody@example.net'. [SIZE=10000]^M
-250 OK^M
+250 Recipient='a@example.com'.^M
 354 End your message with a period on a line by itself.^M
 250 Received 8 bytes.^M
 250-local.host^M
@@ -50,8 +50,8 @@ rm -f $tmp/rules
 250-ENHANCEDSTATUSCODES^M
 250 PIPELINING^M
 250 Sender='somebody@example.net'. [SIZE=10000]^M
-250 OK^M
-250 OK^M
+250 Recipient='a@example.com'.^M
+250 Recipient='b@example.com'.^M
 354 End your message with a period on a line by itself.^M
 552 5.2.3 Sorry, that message exceeds the maximum message length.^M
 250-local.host^M
@@ -60,8 +60,8 @@ rm -f $tmp/rules
 250-ENHANCEDSTATUSCODES^M
 250 PIPELINING^M
 250 Sender='somebody@example.net'. [SIZE=10000]^M
-250 OK^M
-250 OK^M
-250 OK^M
+250 Recipient='a@example.com'.^M
+250 Recipient='b@example.com'.^M
+250 Recipient='c@example.com'.^M
 354 End your message with a period on a line by itself.^M
 552 5.2.3 Sorry, that message exceeds the maximum message length.^M

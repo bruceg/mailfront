@@ -25,7 +25,7 @@ rm -f $tmp/rules
 <result>
 553 Rejected^M
 451 Deferred^M
-250 OK^M
+250 Sender='k@example.com'.^M
 553 Rejected^M
 451 Deferred^M
-250 OK^M
+250 Recipient='k@example.com'.^M

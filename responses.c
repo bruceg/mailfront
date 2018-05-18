@@ -8,7 +8,7 @@ RESPONSE(oom, 451, "4.3.0 Out of memory.");
 
 int number_ok(const response* r)
 {
-  return r->number < 400;
+  return (r->number & RESPONSE_MASK) < 400;
 }
 
 int response_ok(const response* r)

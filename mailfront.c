@@ -48,6 +48,10 @@ static void exitfn(void)
             handle_reset();		      \
           return tmp;			      \
         }				      \
+        if (tmp->number & RESPONSE_FINAL) {   \
+          resp = tmp;                         \
+          break;                              \
+        }                                     \
         if (resp == 0)			      \
 	  resp = tmp;			      \
       } \
@@ -224,7 +228,7 @@ int respond_multiline(unsigned number, int final, const char* msg)
 
 int respond(const response* resp)
 {
-  return respond_multiline(resp->number, 1, resp->message);
+  return respond_multiline(resp->number & RESPONSE_MASK, 1, resp->message);
 }
 
 const response* backend_data_block(const char* data, unsigned long len)
