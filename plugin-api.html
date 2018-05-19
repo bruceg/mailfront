@@ -131,9 +131,11 @@ SMTP response code <tt>number</tt> and an ASCII <tt>message</tt>.  If
 the plugin returns a NULL response, processing continues to the next
 plugin in the chain (ie pass-through).  If the plugin returns a response
 and the response number is greater than or equal to 400 (ie an error),
+or the number has the <tt>RESPONSE_FINAL</tt> bit set,
 then no further hooks in the chain are called.  Response numbers less
 than 400 are treated as acceptance.  The first acceptance response is
-remembered, but subsequent plugins are still called.  If the response
+remembered, but subsequent plugins are still called unless the
+<tt>RESPONSE_FINAL</tt> bit is set in the number. If the response
 was an error, the error is passed back through the protocol, otherwise
 processing continues to the backend.  Protocols that do not use the SMTP
 numbers (such as QMTP) will translate the number into something
