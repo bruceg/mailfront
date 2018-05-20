@@ -26,6 +26,7 @@ c:::755::plugin-patterns.so
 c:::755::plugin-qmail-validate.so
 c:::755::plugin-rbl.so
 c:::755::plugin-spamassassin.so
+c:::755::plugin-starttls-gnutls.so
 c:::755::plugin-starttls-ucspi.so
 c:::755::protocol-qmqp.so
 c:::755::protocol-qmtp.so
