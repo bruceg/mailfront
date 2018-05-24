@@ -6,7 +6,6 @@
 #include <bglibs/str.h>
 
 #include <errno.h>
-/* #include <gnutls3/gnutls/gnutls.h> */
 #include <gnutls/gnutls.h>
 
 #define DH_BITS 1024
@@ -37,9 +36,9 @@ static int tlsread(int n, void *ptr, unsigned long len)
 
   for(;;) {
     ret = gnutls_record_recv(gsession, ptr, (size_t)len);
-    if(ret >= 0) return ret;
-    if(ret == GNUTLS_E_AGAIN || ret == GNUTLS_E_INTERRUPTED) continue;
-    if(ret == GNUTLS_E_PREMATURE_TERMINATION) return 0;
+    if (ret >= 0) return ret;
+    if (ret == GNUTLS_E_AGAIN || ret == GNUTLS_E_INTERRUPTED) continue;
+    if (ret == GNUTLS_E_PREMATURE_TERMINATION) return 0;
     msgf("{TLS error }d", ret);
     return 0;
   }
@@ -54,10 +53,10 @@ static int tlswrite(int n, void *ptr, unsigned long len)
 
   for(;;) {
     ret = gnutls_record_send(gsession, ptr, (size_t)len);
-    if(ret <= 0)
+    if (ret <= 0)
       return ret;
     tret += ret;
-    if(ret >= len)
+    if (ret >= len)
       return tret;
     len -= ret;
     ptr = (char *)ptr + ret;
@@ -75,10 +74,10 @@ static ssize_t llread(gnutls_transport_ptr_t p, void* buf, size_t size)
   size_t r = 1;
 
   n = ibuf_getc(&realinbuf, buf++);
-  if(!n) return 0;
-  while(r < size && realinbuf.io.bufstart < realinbuf.io.buflen) {
+  if (!n) return 0;
+  while (r < size && realinbuf.io.bufstart < realinbuf.io.buflen) {
     n = ibuf_getc(&realinbuf, buf++);
-    if(!n) return 0;
+    if (!n) return 0;
     r++;
   }
   return r;
@@ -91,7 +90,7 @@ static ssize_t llwrite(gnutls_transport_ptr_t p, void* buf, size_t size)
 
   n = obuf_write(&realoutbuf, buf, size);
   obuf_flush(&realoutbuf);
-  if(n) return size;
+  if (n) return size;
   return realoutbuf.count;	/* actual amount written */
   (void)p;
 }
@@ -100,15 +99,15 @@ static const response* init(void)
 {
   certfile = getenv("TLS_CERTFILE");
   keyfile = getenv("TLS_KEYFILE");
-  if(!keyfile) keyfile = certfile;
+  if (!keyfile) keyfile = certfile;
   
-  if(getenv("SMTPS")) {
-    if(!starttls())
+  if (getenv("SMTPS")) {
+    if (!starttls())
       exit(1);			/* not much else to do */
     return 0;
   }
 
-  if(certfile && *certfile && keyfile && *keyfile)
+  if (certfile && *certfile && keyfile && *keyfile)
     tls_available = 1;
   return 0;
 }
@@ -121,29 +120,28 @@ static const response* helo(str* hostname, str* capabilities)
   (void)hostname;
 }
 
-static gnutls_session_t
-initialize_tls_session (void)
+static gnutls_session_t initialize_tls_session(void)
 {
   gnutls_session_t tlssession;
 
-  gnutls_init (&tlssession, GNUTLS_SERVER);
+  gnutls_init(&tlssession, GNUTLS_SERVER);
 
-  gnutls_priority_set (tlssession, priority_cache);
+  gnutls_priority_set(tlssession, priority_cache);
 
-  gnutls_credentials_set (tlssession, GNUTLS_CRD_CERTIFICATE, x509_cred);
+  gnutls_credentials_set(tlssession, GNUTLS_CRD_CERTIFICATE, x509_cred);
 
-  /* request client certificate if any.
-   */
-  gnutls_certificate_server_set_request (tlssession, GNUTLS_CERT_REQUEST);
+  /* request client certificate if any. */
+  gnutls_certificate_server_set_request(tlssession, GNUTLS_CERT_REQUEST);
 
   /* Set maximum compatibility mode. */
-  gnutls_session_enable_compatibility_mode (tlssession);
+  gnutls_session_enable_compatibility_mode(tlssession);
 
   return tlssession;
 }
+
 static gnutls_dh_params_t dh_params;
 
-str tlsparams;
+str tlsparams = {0};
 
 static int didstarttls = 0;
 
@@ -157,65 +155,62 @@ static int starttls(void)
    * I don't think CVE-2011-0411 applies since the TLS handshake
    * consumes whtatever follows the STARTTLS command  */
 
-  if(didstarttls) {
-	  msg2("already called","gnutls global init");
-	  return 0;
+  if (didstarttls) {
+    msg2("already called", "gnutls global init");
+    return 0;
   }
   didstarttls = 1;
   
-  gnutls_global_init ();
+  gnutls_global_init();
 
-  gnutls_certificate_allocate_credentials (&x509_cred);
-  ret = gnutls_certificate_set_x509_key_file (x509_cred, certfile, keyfile,
-					      GNUTLS_X509_FMT_PEM);
-  if(ret != GNUTLS_E_SUCCESS) {
-    msg2("TLS init failed ", gnutls_strerror (ret));
+  gnutls_certificate_allocate_credentials(&x509_cred);
+  ret = gnutls_certificate_set_x509_key_file(x509_cred, certfile, keyfile, GNUTLS_X509_FMT_PEM);
+  if (ret != GNUTLS_E_SUCCESS) {
+    msg2("TLS init failed ", gnutls_strerror(ret));
     return 0;
   }
 
   /* Generate Diffie-Hellman parameters - for use with DHE
    * kx algorithms. When short bit length is used, it might
-   * be wise to regenerate parameters.
-   */
-  gnutls_dh_params_init (&dh_params);
-  gnutls_dh_params_generate2 (dh_params, DH_BITS);
+   * be wise to regenerate parameters. */
+  gnutls_dh_params_init(&dh_params);
+  gnutls_dh_params_generate2(dh_params, DH_BITS);
 
-  if(!my_priority) my_priority = "NORMAL";
-  ret = gnutls_priority_init (&priority_cache, my_priority, NULL);
-  if(ret != GNUTLS_E_SUCCESS) {
-    msg2("TLS priority error ", gnutls_strerror (ret));
+  if (!my_priority)
+    my_priority = "NORMAL";
+  ret = gnutls_priority_init(&priority_cache, my_priority, NULL);
+  if (ret != GNUTLS_E_SUCCESS) {
+    msg2("TLS priority error ", gnutls_strerror(ret));
     return 0;
   }
 
-  gnutls_certificate_set_dh_params (x509_cred, dh_params);
+  gnutls_certificate_set_dh_params(x509_cred, dh_params);
 
-  gsession = initialize_tls_session ();
+  gsession = initialize_tls_session();
 
-  /* save input and output to feed into TLS engine via llread and
-    * llwrite */
+  /* save input and output to feed into TLS engine via llread and llwrite */
   realinbuf = inbuf;
   realoutbuf = outbuf;
 
   /* Re-initialize input and output to use our local TLS-ized I/O */
-  ibuf_init(&inbuf, -1,(ibuf_fn)*tlsread, 0, 0);
-  obuf_init(&outbuf,-1,(obuf_fn)*tlswrite, 0, 0);
+  ibuf_init(&inbuf, -1, (ibuf_fn)*tlsread, 0, 0);
+  obuf_init(&outbuf,-1, (obuf_fn)*tlswrite, 0, 0);
 
-  gnutls_transport_set_pull_function(gsession, (gnutls_pull_func) llread);
-  gnutls_transport_set_push_function(gsession, (gnutls_push_func) llwrite);
+  gnutls_transport_set_pull_function(gsession, (gnutls_pull_func)llread);
+  gnutls_transport_set_push_function(gsession, (gnutls_push_func)llwrite);
 
   msg1("Starting TLS handshake ");
 
-  ret = gnutls_handshake (gsession);
+  ret = gnutls_handshake(gsession);
   if (ret < 0) {
-    gnutls_deinit (gsession);
-    msg2("TLS handshake failed ", gnutls_strerror (ret));
+    gnutls_deinit(gsession);
+    msg2("TLS handshake failed ", gnutls_strerror(ret));
     return 0;
   }
-  str_init(&tlsparams);
-  p = gnutls_protocol_get_name (gnutls_protocol_get_version (gsession));
-  p2 = gnutls_certificate_type_get_name (gnutls_certificate_type_get (gsession));
-  p3 = gnutls_mac_get_name (gnutls_mac_get (gsession));
-  str_copy5s(&tlsparams,p, "/" ,p2, "/", p3);
+  p = gnutls_protocol_get_name(gnutls_protocol_get_version(gsession));
+  p2 = gnutls_certificate_type_get_name(gnutls_certificate_type_get(gsession));
+  p3 = gnutls_mac_get_name(gnutls_mac_get(gsession));
+  str_copy5s(&tlsparams, p, "/" , p2, "/", p3);
   msg2("TLS handshake: ", tlsparams.s);
   session_setstr("tlsparams", tlsparams.s);
   return 1;
