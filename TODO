@@ -2,17 +2,15 @@
 
 - Write install document.
 
-- Build up TLS support.
-
 - Tests:
   - Test application of environment variables in mail rules
 
 - Add hooks for plugins to load or (temporarily) disable the operation
   of other plugins?
 
-New plugin: starttls
+Plugin: starttls
 
-  - Add support for RFC 2487 STARTTLS as a plugin
+  - Run TLS handling in a subprocess for isolation?
 
 Plugin: clamav
 

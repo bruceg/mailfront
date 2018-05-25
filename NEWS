@@ -1,3 +1,6 @@
+- Added starttls-gnutls plugin, to enable STARTTLS support using GnuTLS.
+  Contributed by John R. Levine.
+
 -------------------------------------------------------------------------------
 Changes in version 2.15
 
