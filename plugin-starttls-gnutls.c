@@ -101,14 +101,15 @@ static const response* init(void)
   keyfile = getenv("TLS_KEYFILE");
   if (!keyfile) keyfile = certfile;
   
-  if (getenv("SMTPS")) {
-    if (!starttls())
-      exit(1);			/* not much else to do */
-    return 0;
+  if (certfile && *certfile && keyfile && *keyfile) {
+    tls_available = 1;
+    if (getenv("SMTPS")) {
+      if (!starttls())
+        exit(1);		/* not much else to do */
+      return 0;
+    }
   }
 
-  if (certfile && *certfile && keyfile && *keyfile)
-    tls_available = 1;
   return 0;
 }
 
