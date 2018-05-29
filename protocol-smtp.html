@@ -11,42 +11,60 @@
 
 <ul>
 
-<li>Handles <a href="http://www.faqs.org/rfcs/rfc2554.html">RFC 2554</a>
-SMTP authentication.  Note that the <a
-href="plugin-require-auth.html">require-auth plugin</a> and/or the <a
-href="plugin-relayclient.html">relayclient plugin</a> will need to be
-loaded to make use of this authentication.
+  <li>Handles
+    <a href="http://www.faqs.org/rfcs/rfc2554.html">RFC 2554</a> SMTP
+    authentication.  Note that
+    the <a href="plugin-require-auth.html">require-auth plugin</a>
+    and/or the <a href="plugin-relayclient.html">relayclient plugin</a>
+    will need to be loaded to make use of this authentication.</li>
 
-<li>Automatically handles either bare NL or <a
-href="http://www.faqs.org/rfcs/rfc821.html">RFC 821</a> / <a
-href="http://www.faqs.org/rfcs/rfc2821.html">RFC 2821</a> compliant
-CR/NL end-of-line conventions.
+  <li>Automatically handles either bare NL or
+    <a href="http://www.faqs.org/rfcs/rfc821.html">RFC 821</a> /
+    <a href="http://www.faqs.org/rfcs/rfc2821.html">RFC 2821</a> compliant
+    CR/NL end-of-line conventions.</li>
 
-<li>Times out connections after <tt>$TIMEOUT</tt> seconds of inactivity
-(defaults to 1200 seconds or 20 minutes), or <tt>$SESSION_TIMEOUT</tt>
-seconds after the connection was established (defaults to 86400 seconds
-or 24 hours).
+  <li>Will drop connections on inactivity or too many errors.</li>
 
-<li>All error responses are logged.
+  <li>All error responses are logged.</li>
 
-<li>Handles (ignores) <a
-href="http://www.faqs.org/rfcs/rfc1869.html">RFC 1869</a> extended
-parameters on the <tt>RCPT TO:</tt> and <tt>MAIL FROM:</tt> commands.
+  <li>Handles (ignores)
+    <a href="http://www.faqs.org/rfcs/rfc1869.html">RFC 1869</a>
+    extended parameters on the <tt>RCPT TO:</tt> and <tt>MAIL FROM:</tt>
+    commands.</li>
 
-<li>Initial greeting message is configureable by <tt>$SMTPGREETING</tt>.
-If that is not set, the greeting is generated based on the domain name
-in <tt>${$PROTO}LOCALHOST</tt> set by the invoking <a
-href="http://cr.yp.to/proto/ucspi.txt">UCSPI</a> server such as <a
-href="http://cr.yp.to/ucspi-tcp/tcpserver.html">tcpserver</a>.
+  <li>Configurable initial greeting.</li>
 
-<li>Supports <a href="http://www.faqs.org/rfcs/rfc1870.html">RFC
-1870</a> SMTP Service Extension for Message Size Declaration.
-
-<li>If <tt>$MAXNOTIMPL</tt> is set, clients are disconnected if they
-send more than the specified number of commands that result in a
-"<tt>500 Not implemented.</tt>" error.
+  <li>Supports
+    <a href="http://www.faqs.org/rfcs/rfc1870.html">RFC 1870</a>
+    SMTP Service Extension for Message Size Declaration.</li>
 
 </ul>
+
+<h2>Configuration</h2>
+
+<dl>
+
+  <dt><tt>$MAXNOTIMPL</tt></dt>
+  <dd>The maximum number of unimplemented commands (resulting in a
+    "<tt>500 Not implemented.</tt>" response) allowed in a session
+    before dropping the connection. No default.</dd>
+
+  <dt><tt>$SESSION_TIMEOUT</tt></dt>
+  <dd>The number of seconds from the start of the session after which to
+    drop the connection. Defaults to 86400 seconds (24 hours).</dd>
+
+  <dt><tt>$SMTPGREETING</tt></dt>
+  <dd>The greeting text to send on startup. If not set, the greeting is
+    generated based on the domain name in <tt>${$PROTO}LOCALHOST</tt>
+    set by the invoking
+    <a href="http://cr.yp.to/proto/ucspi.txt">UCSPI</a> server such as
+    <a href="http://cr.yp.to/ucspi-tcp/tcpserver.html">tcpserver</a>.</dd>
+
+  <dt><tt>$TIMEOUT</tt></dt>
+  <dd>The number of seconds of inactivity after which to drop
+    connections. Defaults to 1200 seconds (20 minutes).</dd>
+
+</dl>
 
 </body>
 </html>
