@@ -1,5 +1,5 @@
-- Added starttls-gnutls plugin, to enable STARTTLS support using GnuTLS.
-  Contributed by John R. Levine.
+- Added support for STARTTLS directly in the SMTP protocol.
+  Adapted from contribution by John R. Levine.
 
 -------------------------------------------------------------------------------
 Changes in version 2.15

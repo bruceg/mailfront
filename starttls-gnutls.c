@@ -103,7 +103,7 @@ const response* starttls_init(void)
   
   if (certfile && *certfile && keyfile && *keyfile) {
     tls_available = 1;
-    if (getenv("SMTPS")) {
+    if (getenv("TLS_IMMEDIATE")) {
       if (!starttls_start())
         exit(1);		/* not much else to do */
       return 0;
@@ -142,7 +142,7 @@ int starttls_start(void)
 {
   int ret;
   const char *p, *p2, *p3;
-  const char *my_priority = getenv("GNUTLS_PRIORITY");
+  const char *my_priority = getenv("TLS_PRIORITY");
 
   /* STARTTLS must be the last command in a pipeline, but too bad.
    * I don't think CVE-2011-0411 applies since the TLS handshake

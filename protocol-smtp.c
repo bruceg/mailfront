@@ -3,6 +3,7 @@
 #include <bglibs/systime.h>
 
 #include "mailfront.h"
+#include "starttls.h"
 
 #include <bglibs/iobuf.h>
 #include <bglibs/msg.h>
@@ -33,6 +34,7 @@ static RESPONSE(needsparam, 501, "5.5.2 Syntax error, command requires a paramet
 static RESPONSE(noparam, 501, "5.5.2 Syntax error, no parameters allowed.");
 static RESPONSE(toomanyunimp, 503, "5.5.0 Too many unimplemented commands.\n5.5.0 Closing connection.");
 static RESPONSE(goodbye, 221, "2.0.0 Good bye.");
+static RESPONSE(starttls, 220, "2.0.0 Ready to start TLS");
 
 static int saw_mail = 0;
 static int saw_rcpt = 0;
@@ -252,6 +254,19 @@ static int VRFY(void)
   return respond(&resp_vrfy);
 }
 
+static int STARTTLS(void)
+{
+  if (!starttls_available())
+    return respond(&resp_unimp);
+  if (!respond(&resp_starttls))
+    return 0;
+  if (!starttls_start())
+    return 0;
+  starttls_disable();
+  session_setnum("tls_state", 1);
+  return 1;
+}
+
 typedef int (*dispatch_fn)(void);
 struct dispatch 
 {
@@ -268,6 +283,7 @@ static struct dispatch dispatch_table[] = {
   { "QUIT", QUIT },
   { "RCPT", RCPT },
   { "RSET", RSET },
+  { "STARTTLS", STARTTLS },
   { "VRFY", VRFY },
   { 0, 0 }
 };
@@ -326,6 +342,7 @@ int smtp_dispatch(const struct command* commands)
 static int init(void)
 {
   const char* tmp;
+  const response* resp;
 
   if ((tmp = getprotoenv("LOCALHOST")) == 0) tmp = UNKNOWN;
   str_copys(&domain_name, tmp);
@@ -344,6 +361,18 @@ static int init(void)
   if (!str_cats(&init_capabilities, "8BITMIME\nENHANCEDSTATUSCODES\nPIPELINING")) {
     respond(&resp_oom);
     return 1;
+  }
+
+  if ((resp = starttls_init()) != NULL) {
+    respond(resp);
+    return 1;
+  }
+
+  if (starttls_available()) {
+    if (!str_cats(&init_capabilities, "\nSTARTTLS")) {
+      respond(&resp_oom);
+      return 1;
+    }
   }
 
   return 0;

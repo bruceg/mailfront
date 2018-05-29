@@ -64,6 +64,30 @@
   <dd>The number of seconds of inactivity after which to drop
     connections. Defaults to 1200 seconds (20 minutes).</dd>
 
+  <dt><tt>$TLS_CERTFILE</tt></dt>
+  <dd>The filename containing the TLS certificate and any intermediate
+    certificates used to sign it. The file contents must be in PEM
+    format. This setting is required for operation <tt>STARTTLS</tt> or
+    SMTPS mode.</dd>
+
+  <dt><tt>$TLS_IMMEDIATE</tt></dt>
+  <dd>If set, this plugin will switch to TLS mode on startup (if
+    possible, see below). This is primarily useful for running mailfront
+    as a SMTP submission server on TCP port 465 (SMTPS).</dd>
+
+  <dt><tt>$TLS_KEYFILE</tt></dt>
+  <dd>The filename containing the private key for to the
+    certificate. The file contents must be in PEM format. If unset, it
+    defaults to the value of <tt>$TLS_CERTFILE</tt>.</dd>
+
+  <dt><tt>$TLS_PRIORITY</tt></dt>
+  <dd>The GnuTLS priority string, which specifies the TLS session's
+    handshake algorithms and options. See
+    <a href="https://gnutls.org/manual/html_node/Priority-Strings.html">the
+    manual page</a> for more details on possible values. Defaults to
+    "<tt>NORMAL</tt>", which represents all the known to be secure
+    ciphersuites.</dd>
+
 </dl>
 
 </body>

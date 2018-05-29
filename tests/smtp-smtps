@@ -1,0 +1,14 @@
+setup_cert
+make_stunnel_conf 'smtp echo accept'
+
+export TLS_IMMEDIATE=1
+stunnel $tmp/stunnel.conf < /dev/null 2>&1 | fixtls
+unset TLS_IMMEDIATE
+
+<result>
+LOG5[#]: Service [stunnel] accepted connection
+mailfront[#]: Starting TLS handshake 
+mailfront[#]: TLS handshake: TLS#.#/X.509/AEAD
+220 local.host mailfront ESMTP^M
+mailfront[#]: bytes in: 0 bytes out: 32
+LOG5[#]: Connection closed: 0 byte(s) sent to TLS, 32 byte(s) sent to socket
