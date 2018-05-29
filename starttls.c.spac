@@ -1,0 +1,3 @@
+dependon(glob('starttls-*.c'))
+: conf-tls make-tls.sh Makefile
+sh make-tls.sh $@
