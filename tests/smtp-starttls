@@ -9,14 +9,19 @@ make_stunnel_conf 'smtp echo accept' 'protocol = smtp'
     sleep 1
 } | stunnel $tmp/stunnel.conf 2>&1 | fixtls
 
+echo ==========
+
 cat $TLS_CERTFILE $TLS_KEYFILE > $tmp/tlsboth.pem
 unset TLS_KEYFILE
 export TLS_CERTFILE=$tmp/tlsboth.pem
-
-echo
 stunnel $tmp/stunnel.conf < /dev/null 2>&1 | fixtls
 
-unset TLS_CERTFILE TLS_KEYFILE
+echo ==========
+
+rm -f $TLS_CERTFILE
+stunnel $tmp/stunnel.conf < /dev/null 2>&1 | fixtls
+
+unset TLS_CERTFILE
 
 <result>
 LOG5[#]: Service [stunnel] accepted connection
@@ -29,10 +34,18 @@ mailfront[#]: RCPT TO:<somebody>
 250 Recipient='somebody'.^M
 LOG5[#]: Connection closed: 38 byte(s) sent to TLS, 49 byte(s) sent to socket
 mailfront[#]: bytes in: 38 bytes out: 49
-
+==========
 LOG5[#]: Service [stunnel] accepted connection
 220 local.host mailfront ESMTP^M
 mailfront[#]: Starting TLS handshake
 mailfront[#]: TLS handshake: TLS#.#/X.509/AEAD
 mailfront[#]: bytes in: 0 bytes out: 0
 LOG5[#]: Connection closed: 0 byte(s) sent to TLS, 0 byte(s) sent to socket
+==========
+LOG5[#]: Service [stunnel] accepted connection
+mailfront[#]: TLS init failed: Error while reading file.
+220 local.host mailfront ESMTP^M
+mailfront[#]: 500 5.5.1 Not implemented.
+LOG3[#]: Remote server is not RFC 2487 compliant
+LOG5[#]: Connection reset: 0 byte(s) sent to TLS, 0 byte(s) sent to socket
+mailfront[#]: bytes in: 26 bytes out: 131

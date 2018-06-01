@@ -94,25 +94,6 @@ static ssize_t llwrite(gnutls_transport_ptr_t p, void* buf, size_t size)
   (void)p;
 }
 
-const response* starttls_init(void)
-{
-  certfile = getenv("TLS_CERTFILE");
-  keyfile = getenv("TLS_KEYFILE");
-  if (keyfile == NULL)
-    keyfile = certfile;
-  
-  if (certfile && *certfile && keyfile && *keyfile) {
-    tls_available = 1;
-    if (getenv("TLS_IMMEDIATE")) {
-      if (!starttls_start())
-        exit(1);		/* not much else to do */
-      return 0;
-    }
-  }
-
-  return 0;
-}
-
 static gnutls_session_t initialize_tls_session(void)
 {
   gnutls_session_t tlssession;
@@ -134,6 +115,53 @@ static gnutls_session_t initialize_tls_session(void)
 
 static gnutls_dh_params_t dh_params;
 
+const response* starttls_init(void)
+{
+  int ret;
+  const char *my_priority = getenv("TLS_PRIORITY");
+
+  certfile = getenv("TLS_CERTFILE");
+  keyfile = getenv("TLS_KEYFILE");
+  if (keyfile == NULL)
+    keyfile = certfile;
+
+  if (certfile == NULL || *certfile == 0 || keyfile == NULL || *keyfile == 0)
+    return NULL;
+
+  gnutls_global_init();
+
+  gnutls_certificate_allocate_credentials(&x509_cred);
+  ret = gnutls_certificate_set_x509_key_file(x509_cred, certfile, keyfile, GNUTLS_X509_FMT_PEM);
+  if (ret != GNUTLS_E_SUCCESS) {
+    msg2("TLS init failed: ", gnutls_strerror(ret));
+    return 0;
+  }
+
+  if (!my_priority)
+    my_priority = "NORMAL";
+  ret = gnutls_priority_init(&priority_cache, my_priority, NULL);
+  if (ret != GNUTLS_E_SUCCESS) {
+    msg2("TLS priority error: ", gnutls_strerror(ret));
+    return 0;
+  }
+
+  /* Generate Diffie-Hellman parameters - for use with DHE
+   * kx algorithms. When short bit length is used, it might
+   * be wise to regenerate parameters. */
+  gnutls_dh_params_init(&dh_params);
+  gnutls_dh_params_generate2(dh_params, DH_BITS);
+  gnutls_certificate_set_dh_params(x509_cred, dh_params);
+
+  gsession = initialize_tls_session();
+  tls_available = 1;
+
+  if (getenv("TLS_IMMEDIATE")) {
+    if (!starttls_start())
+      exit(1);		/* not much else to do */
+  }
+  return NULL;
+}
+
 static str tlsparams;
 
 static int didstarttls = 0;
@@ -142,7 +170,6 @@ int starttls_start(void)
 {
   int ret;
   const char *p, *p2, *p3;
-  const char *my_priority = getenv("TLS_PRIORITY");
 
   /* STARTTLS must be the last command in a pipeline, but too bad.
    * I don't think CVE-2011-0411 applies since the TLS handshake
@@ -153,33 +180,6 @@ int starttls_start(void)
     return 0;
   }
   didstarttls = 1;
-  
-  gnutls_global_init();
-
-  gnutls_certificate_allocate_credentials(&x509_cred);
-  ret = gnutls_certificate_set_x509_key_file(x509_cred, certfile, keyfile, GNUTLS_X509_FMT_PEM);
-  if (ret != GNUTLS_E_SUCCESS) {
-    msg2("TLS init failed: ", gnutls_strerror(ret));
-    return 0;
-  }
-
-  /* Generate Diffie-Hellman parameters - for use with DHE
-   * kx algorithms. When short bit length is used, it might
-   * be wise to regenerate parameters. */
-  gnutls_dh_params_init(&dh_params);
-  gnutls_dh_params_generate2(dh_params, DH_BITS);
-
-  if (!my_priority)
-    my_priority = "NORMAL";
-  ret = gnutls_priority_init(&priority_cache, my_priority, NULL);
-  if (ret != GNUTLS_E_SUCCESS) {
-    msg2("TLS priority error: ", gnutls_strerror(ret));
-    return 0;
-  }
-
-  gnutls_certificate_set_dh_params(x509_cred, dh_params);
-
-  gsession = initialize_tls_session();
 
   /* save input and output to feed into TLS engine via llread and llwrite */
   realinbuf = inbuf;
