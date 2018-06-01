@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <bglibs/iobuf.h>
 #include <bglibs/msg.h>
@@ -10,8 +11,6 @@
 
 #include "mailfront.h"
 #include "starttls.h"
-
-#define DH_BITS 1024
 
 static gnutls_session_t gsession;
 
@@ -99,6 +98,7 @@ const response* starttls_init(void)
   const char *my_priority = getenv("TLS_PRIORITY");
   const char* certfile = getenv("TLS_CERTFILE");
   const char* keyfile = getenv("TLS_KEYFILE");
+  const char* dhfile = getenv("TLS_DH_PARAMS");
 
   if (keyfile == NULL)
     keyfile = certfile;
@@ -123,12 +123,23 @@ const response* starttls_init(void)
     return 0;
   }
 
-  /* Generate Diffie-Hellman parameters - for use with DHE
-   * kx algorithms. When short bit length is used, it might
-   * be wise to regenerate parameters. */
-  gnutls_dh_params_init(&dh_params);
-  gnutls_dh_params_generate2(dh_params, DH_BITS);
-  gnutls_certificate_set_dh_params(x509_cred, dh_params);
+  if (dhfile != NULL) {
+    str data = {0};
+    gnutls_datum_t params;
+    if (!ibuf_openreadclose(dhfile, &data)) {
+      msg2("TLS error reading DH params: ", strerror(errno));
+      return NULL;
+    }
+    params.data = (unsigned char*)data.s;
+    params.size = data.len;
+    gnutls_dh_params_init(&dh_params);
+    if ((ret = gnutls_dh_params_import_pkcs3(dh_params, &params, GNUTLS_X509_FMT_PEM)) < 0) {
+      msg2("TLS error parsing DH params: ", gnutls_strerror(ret));
+      return NULL;
+    }
+    gnutls_certificate_set_dh_params(x509_cred, dh_params);
+    gnutls_dh_params_deinit(dh_params);
+  }
 
   gnutls_init(&gsession, GNUTLS_SERVER);
 

@@ -1,0 +1,12 @@
+setup_cert
+make_stunnel_conf 'smtp echo accept' 'protocol = smtp'
+env TLS_CERTFILE=$certfile TLS_KEYFILE=$keyfile TLS_DH_PARAMS=$dhparams \
+stunnel $tmp/stunnel.conf < /dev/null 2>&1 | fixtls
+
+<result>
+LOG5[#]: Service [stunnel] accepted connection
+220 local.host mailfront ESMTP^M
+mailfront[#]: Starting TLS handshake
+mailfront[#]: TLS handshake: TLS#.#/X.509/AEAD
+mailfront[#]: bytes in: 0 bytes out: 0
+LOG5[#]: Connection closed: 0 byte(s) sent to TLS, 0 byte(s) sent to socket

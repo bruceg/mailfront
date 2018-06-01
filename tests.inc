@@ -69,6 +69,7 @@ cleanup_queuedir() {
 setup_cert() {
     certfile=$tmp/tlscrt.pem
     keyfile=$tmp/tlskey.pem
+    dhparams=$tmp/dhparams.pem
 
     if ! [ -s $certfile ]
     then
@@ -77,6 +78,7 @@ setup_cert() {
         echo 'cn = example.com' > $template
         certtool --generate-self-signed --load-privkey $keyfile --template $template --outfile $certfile 2> /dev/null
         rm -f $template
+        certtool --generate-dh-params --sec-param low --outfile $dhparams 2> /dev/null
     fi
 }
 
