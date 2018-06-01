@@ -67,15 +67,16 @@ cleanup_queuedir() {
 }
 
 setup_cert() {
-    export TLS_CERTFILE=$tmp/tlscrt.pem
-    export TLS_KEYFILE=$tmp/tlskey.pem
+    certfile=$tmp/tlscrt.pem
+    keyfile=$tmp/tlskey.pem
 
-    if ! [ -s $TLS_CERTFILE ]
+    if ! [ -s $certfile ]
     then
+        certtool --generate-privkey --sec-param low --outfile $keyfile 2> /dev/null
         template=$tmp/cert.cfg
         echo 'cn = example.com' > $template
-        certtool --generate-privkey --sec-param low --outfile $TLS_KEYFILE 2> /dev/null
-        certtool --generate-self-signed --load-privkey $TLS_KEYFILE --template $template --outfile $TLS_CERTFILE 2> /dev/null
+        certtool --generate-self-signed --load-privkey $keyfile --template $template --outfile $certfile 2> /dev/null
+        rm -f $template
     fi
 }
 

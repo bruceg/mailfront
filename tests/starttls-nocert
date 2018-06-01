@@ -1,0 +1,12 @@
+make_stunnel_conf 'smtp echo accept' 'protocol = smtp'
+env TLS_CERTFILE=$tmp/does/not/exist \
+stunnel $tmp/stunnel.conf < /dev/null 2>&1 | fixtls
+
+<result>
+LOG5[#]: Service [stunnel] accepted connection
+mailfront[#]: TLS init failed: Error while reading file.
+220 local.host mailfront ESMTP^M
+mailfront[#]: 500 5.5.1 Not implemented.
+LOG3[#]: Remote server is not RFC 2487 compliant
+LOG5[#]: Connection reset: 0 byte(s) sent to TLS, 0 byte(s) sent to socket
+mailfront[#]: bytes in: 26 bytes out: 131

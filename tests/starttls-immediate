@@ -1,9 +1,8 @@
 setup_cert
 make_stunnel_conf 'smtp echo accept'
 
-export TLS_IMMEDIATE=1
+env TLS_CERTFILE=$certfile TLS_KEYFILE=$keyfile TLS_IMMEDIATE=1 \
 stunnel $tmp/stunnel.conf < /dev/null 2>&1 | fixtls
-unset TLS_IMMEDIATE
 
 <result>
 LOG5[#]: Service [stunnel] accepted connection
