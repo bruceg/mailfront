@@ -4,16 +4,15 @@ Bruce Guenter <bruce@untroubled.org>
 Version @VERSION@
 @TODAY@
 
-This is mailfront, a package containing customizeable network front-ends
+This is mailfront, a package containing customizable network front-ends
 for mail servers.  It contains complete SMTP, QMQP, QMTP, and POP3
-front-ends as well as an authentication module for IMAP.  The mail
-delivery front-ends also contain internal address filtering features.
+front ends as well as an authentication module for IMAP.  The mail
+delivery front ends also contain internal address filtering features.
 
-Two SMTP back-ends are provided.  One delivers mail to qmail-queue,
+Two SMTP back ends are provided.  One delivers mail to qmail-queue,
 mimicking most of the behavior of qmail-smtpd, with the addition of
-support for SMTP AUTH.  The other rejects all SMTP commands if
-$SMTPREJECT is set, and execs its command line otherwise (in order to
-run the above program).
+support for SMTP AUTH.  The other writes accepted messages to individual
+files in a named directory.
 
 A mailing list has been set up to discuss this and other packages.
 To subscribe, send an email to:
@@ -23,76 +22,6 @@ A mailing list archive is available at:
 
 Development versions of @PACKAGE@ are available at:
 	https://github.com/bruceg/mailfront
-
-Requirements:
-
-- bglibs version 2.01
-- cvm version 0.97
-- Lua version 5 or later (optional)
-
-Installation:
-
-- Build the sources by running "make".
-- To build the Lua plugin, run "make lua".
-- After the package has been compiled, run "make install" as root.
-
-Configuration:
-
-- To take advantage of the SMTP AUTH features, make sure you have a CVM
-  authentication program (some are included with the cvm package itself).
-- Run a CVM authentication module to provide the AUTH feature.
-  Example:  To run cvm-vmailmgr as a daemon:
-    exec /usr/local/bin/softlimit -m 9000000 \
-     /usr/local/bin/cvm-vmailmgr /tmp/.cvm-vmailmgr 2>&1
-- Configure your mail system to use the SMTP back-end with the
-  appropriate environment variables.
-
-  Example using tcpserver (highly recommended):
-    #!/bin/sh
-    QMAILDUID=`id -u qmaild`
-    NOFILESGID=`id -g qmaild`
-    MAXSMTPD=`head -1 /var/qmail/control/concurrencyincoming`
-    if [ -z "$QMAILDUID" -o -z "$NOFILESGID" -o -z "$MAXSMTPD" ]; then
-        echo $0: QMAILDUID, NOFILESGID, or MAXSMTPD is unset
-        exit 1
-    fi
-    exec \
-    /usr/local/bin/envdir /etc/smtpfront \
-    /usr/local/bin/softlimit -m 2000000 \
-    /usr/local/bin/tcpserver -v -R -H \
-      -l "`head -1 /var/qmail/control/me`" -x /etc/tcp.smtp.cdb \
-      -c "$MAXSMTPD" -u "$QMAILDUID" -g "$NOFILESGID" 0 25 \
-    /usr/local/bin/smtpfront-qmail 2>&1
-
-  /etc/smtpfront/CVM_SASL_PLAIN:
-    cvm-local:/tmp/.cvm-vmailmgr
-
-  Example using xinetd with TCP Wrappers:
-
-  /etc/xinetd.d/smtp:
-    # default: on
-    # description: smtp
-    service smtp
-    {
-    	disable	= no
-    	flags		= REUSE NAMEINARGS
-    	socket_type	= stream        
-    	protocol	= tcp
-    	wait		= no
-    	user		= qmaild
-    	server		= /usr/sbin/tcpd
-    	server_args 	= /var/qmail/bin/tcp-env -R /usr/local/sbin/smtpfront-wrapper
-    	log_on_success          += USERID
-    	log_on_failure          += USERID
-    }
-
-  /usr/local/sbin/smtpfront-wrapper:
-    #!/bin/sh
-    CVM_SASL_PLAIN=cvm-local:/tmp/.cvm-unix
-    export CVM_SASL_PLAIN
-    CVM_SASL_LOGIN=cvm-local:/tmp/.cvm-unix
-    export CVM_SASL_LOGIN
-    exec /usr/local/bin/smtpfront-qmail 2>> /tmp/smtpfront-errs.txt
 
 
 This project was initiated at FutureQuest, Inc.  We are releasing it

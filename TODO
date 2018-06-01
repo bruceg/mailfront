@@ -1,7 +1,5 @@
 - Fix SASL "Authentication failed" message to include EMSS code
 
-- Write install document.
-
 - Tests:
   - Test application of environment variables in mail rules
 
