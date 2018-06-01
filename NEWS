@@ -1,3 +1,6 @@
+-------------------------------------------------------------------------------
+Changes in version 2.20
+
 - Added support for STARTTLS directly in the SMTP protocol.
   Adapted from contribution by John R. Levine.
 
