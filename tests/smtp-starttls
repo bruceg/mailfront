@@ -21,7 +21,7 @@ unset TLS_CERTFILE TLS_KEYFILE
 <result>
 LOG5[#]: Service [stunnel] accepted connection
 220 local.host mailfront ESMTP^M
-mailfront[#]: Starting TLS handshake 
+mailfront[#]: Starting TLS handshake
 mailfront[#]: TLS handshake: TLS#.#/X.509/AEAD
 mailfront[#]: MAIL FROM:<nobody>
 250 Sender='nobody'.^M
@@ -32,7 +32,7 @@ mailfront[#]: bytes in: 38 bytes out: 49
 
 LOG5[#]: Service [stunnel] accepted connection
 220 local.host mailfront ESMTP^M
-mailfront[#]: Starting TLS handshake 
+mailfront[#]: Starting TLS handshake
 mailfront[#]: TLS handshake: TLS#.#/X.509/AEAD
 mailfront[#]: bytes in: 0 bytes out: 0
 LOG5[#]: Connection closed: 0 byte(s) sent to TLS, 0 byte(s) sent to socket

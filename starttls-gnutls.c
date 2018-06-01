@@ -159,7 +159,7 @@ int starttls_start(void)
   gnutls_certificate_allocate_credentials(&x509_cred);
   ret = gnutls_certificate_set_x509_key_file(x509_cred, certfile, keyfile, GNUTLS_X509_FMT_PEM);
   if (ret != GNUTLS_E_SUCCESS) {
-    msg2("TLS init failed ", gnutls_strerror(ret));
+    msg2("TLS init failed: ", gnutls_strerror(ret));
     return 0;
   }
 
@@ -173,7 +173,7 @@ int starttls_start(void)
     my_priority = "NORMAL";
   ret = gnutls_priority_init(&priority_cache, my_priority, NULL);
   if (ret != GNUTLS_E_SUCCESS) {
-    msg2("TLS priority error ", gnutls_strerror(ret));
+    msg2("TLS priority error: ", gnutls_strerror(ret));
     return 0;
   }
 
@@ -192,12 +192,12 @@ int starttls_start(void)
   gnutls_transport_set_pull_function(gsession, (gnutls_pull_func)llread);
   gnutls_transport_set_push_function(gsession, (gnutls_push_func)llwrite);
 
-  msg1("Starting TLS handshake ");
+  msg1("Starting TLS handshake");
 
   ret = gnutls_handshake(gsession);
   if (ret < 0) {
     gnutls_deinit(gsession);
-    msg2("TLS handshake failed ", gnutls_strerror(ret));
+    msg2("TLS handshake failed: ", gnutls_strerror(ret));
     return 0;
   }
   p = gnutls_protocol_get_name(gnutls_protocol_get_version(gsession));

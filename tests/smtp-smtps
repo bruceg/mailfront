@@ -7,7 +7,7 @@ unset TLS_IMMEDIATE
 
 <result>
 LOG5[#]: Service [stunnel] accepted connection
-mailfront[#]: Starting TLS handshake 
+mailfront[#]: Starting TLS handshake
 mailfront[#]: TLS handshake: TLS#.#/X.509/AEAD
 220 local.host mailfront ESMTP^M
 mailfront[#]: bytes in: 0 bytes out: 32
