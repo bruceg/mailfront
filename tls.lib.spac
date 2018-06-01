@@ -1,0 +1,2 @@
+: conf-tls make-tls.sh Makefile
+sh make-tls.sh $@

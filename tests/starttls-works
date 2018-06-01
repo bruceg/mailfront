@@ -1,0 +1,23 @@
+setup_cert
+make_stunnel_conf 'smtp echo accept' 'protocol = smtp'
+
+{
+    # Add sleeps between echos to avoid races
+    echo 'MAIL FROM:<nobody>'
+    sleep 1
+    echo 'RCPT TO:<somebody>'
+    sleep 1
+} | env TLS_CERTFILE=$certfile TLS_KEYFILE=$keyfile \
+stunnel $tmp/stunnel.conf 2>&1 | fixtls
+
+<result>
+LOG5[#]: Service [stunnel] accepted connection
+220 local.host mailfront ESMTP^M
+mailfront[#]: Starting TLS handshake
+mailfront[#]: TLS handshake: TLS#.#/X.509/AEAD
+mailfront[#]: MAIL FROM:<nobody>
+250 Sender='nobody'.^M
+mailfront[#]: RCPT TO:<somebody>
+250 Recipient='somebody'.^M
+LOG5[#]: Connection closed: 38 byte(s) sent to TLS, 49 byte(s) sent to socket
+mailfront[#]: bytes in: 38 bytes out: 49

@@ -1,10 +1,21 @@
+fixout() {
+  sed -e '/^220 local.host mailfront ESMTP/d; s/\[[0-9]*\]:/[#]:/;'
+}
+fixtls() {
+  sed -e '
+    s/\[[0-9]*\]:/[#]:/;
+    /INTERNAL ERROR: Uninitialized client session cache/d;
+    s/^.* \(LOG[1-9]\)/\1/;
+    /^LOG[1-9]\[ui\]: /d;
+    s/handshake: TLS[1-9]\.[0-9]/handshake: TLS#.#/;
+  '
+}
+
 smtpfront() {
-  $src/mailfront smtp "$@" 2>&1 \
-  | sed -e '/^220 local.host mailfront ESMTP/d; s/\[[0123456789]*\]:/[#]:/'
+  $src/mailfront smtp "$@" 2>&1 | fixout
 }
 sfecho() {
-  $src/mailfront smtp echo "$@" 2>/dev/null \
-  | grep -v '^220 local.host mailfront ESMTP'
+  $src/mailfront smtp echo "$@" 2>/dev/null | fixout
 }
 pfauth() {
   $src/pop3front-auth "$@" echo Yes. 2>/dev/null \
@@ -53,6 +64,41 @@ dump_queuedir() {
 
 cleanup_queuedir() {
     rm -rf $QUEUEDIR
+}
+
+setup_cert() {
+    certfile=$tmp/tlscrt.pem
+    keyfile=$tmp/tlskey.pem
+    dhparams=$tmp/dhparams.pem
+
+    if ! [ -s $certfile ]
+    then
+        certtool --generate-privkey --sec-param low --outfile $keyfile 2> /dev/null
+        template=$tmp/cert.cfg
+        echo 'cn = example.com' > $template
+        certtool --generate-self-signed --load-privkey $keyfile --template $template --outfile $certfile 2> /dev/null
+        rm -f $template
+        certtool --generate-dh-params --sec-param low --outfile $dhparams 2> /dev/null
+    fi
+}
+
+make_stunnel_conf() {
+    modules="$1"
+    shift
+    {
+        cat <<EOF
+client = yes
+debug = notice
+exec = $src/mailfront
+execArgs = mailfront $modules
+foreground = yes
+syslog = no
+EOF
+        for line in "$@"
+        do
+            echo "$line"
+        done
+    } > $tmp/stunnel.conf
 }
 
 PROTO=TEST

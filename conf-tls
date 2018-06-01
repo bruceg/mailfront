@@ -1,0 +1,9 @@
+auto
+
+This file controls which TLS implementation to use.
+
+Possible values are:
+
+auto	Auto-detect which TLS implementation to use
+gnutls	Use the GnuTLS library to implement TLS functions
+none	No TLS implementation -- stub out the routines
