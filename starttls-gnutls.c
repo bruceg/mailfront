@@ -3,6 +3,7 @@
 #include <bglibs/iobuf.h>
 #include <bglibs/msg.h>
 #include <bglibs/str.h>
+#include <bglibs/wrap.h>
 
 #include <errno.h>
 #include <gnutls/gnutls.h>
@@ -12,17 +13,12 @@
 
 #define DH_BITS 1024
 
-static gnutls_certificate_credentials_t x509_cred;
-static gnutls_priority_t priority_cache;
 static gnutls_session_t gsession;
 
 static int tls_available = 0;
 
 static ibuf realinbuf;			/* underlying input stream */
 static obuf realoutbuf;			/* underlying output stream */
-
-static const char *certfile;
-static const char *keyfile;
 
 /*
  * TLS read and write functions for bglib, to fake out the rest of
@@ -94,34 +90,16 @@ static ssize_t llwrite(gnutls_transport_ptr_t p, void* buf, size_t size)
   (void)p;
 }
 
-static gnutls_session_t initialize_tls_session(void)
-{
-  gnutls_session_t tlssession;
-
-  gnutls_init(&tlssession, GNUTLS_SERVER);
-
-  gnutls_priority_set(tlssession, priority_cache);
-
-  gnutls_credentials_set(tlssession, GNUTLS_CRD_CERTIFICATE, x509_cred);
-
-  /* request client certificate if any. */
-  gnutls_certificate_server_set_request(tlssession, GNUTLS_CERT_REQUEST);
-
-  /* Set maximum compatibility mode. */
-  gnutls_session_enable_compatibility_mode(tlssession);
-
-  return tlssession;
-}
-
-static gnutls_dh_params_t dh_params;
-
 const response* starttls_init(void)
 {
   int ret;
+  gnutls_dh_params_t dh_params;
+  gnutls_priority_t priority_cache;
+  gnutls_certificate_credentials_t x509_cred;
   const char *my_priority = getenv("TLS_PRIORITY");
+  const char* certfile = getenv("TLS_CERTFILE");
+  const char* keyfile = getenv("TLS_KEYFILE");
 
-  certfile = getenv("TLS_CERTFILE");
-  keyfile = getenv("TLS_KEYFILE");
   if (keyfile == NULL)
     keyfile = certfile;
 
@@ -152,7 +130,18 @@ const response* starttls_init(void)
   gnutls_dh_params_generate2(dh_params, DH_BITS);
   gnutls_certificate_set_dh_params(x509_cred, dh_params);
 
-  gsession = initialize_tls_session();
+  gnutls_init(&gsession, GNUTLS_SERVER);
+
+  gnutls_priority_set(gsession, priority_cache);
+
+  gnutls_credentials_set(gsession, GNUTLS_CRD_CERTIFICATE, x509_cred);
+
+  /* request client certificate if any. */
+  gnutls_certificate_server_set_request(gsession, GNUTLS_CERT_REQUEST);
+
+  /* Set maximum compatibility mode. */
+  gnutls_session_enable_compatibility_mode(gsession);
+
   tls_available = 1;
 
   if (getenv("TLS_IMMEDIATE")) {
@@ -162,14 +151,12 @@ const response* starttls_init(void)
   return NULL;
 }
 
-static str tlsparams;
-
-static int didstarttls = 0;
-
 int starttls_start(void)
 {
+  static int didstarttls = 0;
   int ret;
   const char *p, *p2, *p3;
+  str tlsparams = {0};
 
   /* STARTTLS must be the last command in a pipeline, but too bad.
    * I don't think CVE-2011-0411 applies since the TLS handshake
@@ -203,9 +190,10 @@ int starttls_start(void)
   p = gnutls_protocol_get_name(gnutls_protocol_get_version(gsession));
   p2 = gnutls_certificate_type_get_name(gnutls_certificate_type_get(gsession));
   p3 = gnutls_mac_get_name(gnutls_mac_get(gsession));
-  str_copy5s(&tlsparams, p, "/" , p2, "/", p3);
+  wrap_str(str_copy5s(&tlsparams, p, "/" , p2, "/", p3));
   msg2("TLS handshake: ", tlsparams.s);
   session_setstr("tlsparams", tlsparams.s);
+  str_free(&tlsparams);
   return 1;
 }
 
