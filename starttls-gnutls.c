@@ -194,8 +194,8 @@ int starttls_start(void)
 
   ret = gnutls_handshake(gsession);
   if (ret < 0) {
-    gnutls_deinit(gsession);
     msg2("TLS handshake failed: ", gnutls_strerror(ret));
+    gnutls_deinit(gsession);
     return 0;
   }
   p = gnutls_protocol_get_name(gnutls_protocol_get_version(gsession));
