@@ -1,3 +1,5 @@
+- Added key exchange and cipher info to TLS handshake logging.
+
 -------------------------------------------------------------------------------
 Changes in version 2.21
 

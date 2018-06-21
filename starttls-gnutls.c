@@ -157,12 +157,27 @@ const response* starttls_init(void)
   return NULL;
 }
 
+static void set_tlsparams(void)
+{
+  const char* protocol = gnutls_protocol_get_name(gnutls_protocol_get_version(gsession));
+  const char* keyex = gnutls_kx_get_name(gnutls_kx_get(gsession));
+  const char* cipher = gnutls_cipher_get_name(gnutls_cipher_get(gsession));
+  const char* mac = gnutls_mac_get_name(gnutls_mac_get(gsession));
+  str tlsparams = {0};
+  wrap_str(str_copyf(&tlsparams, "s{ }s{ }s{ }s", protocol, keyex, cipher, mac));
+  msg2("TLS handshake: ", tlsparams.s);
+  session_setstr("tls_params", tlsparams.s);
+  str_free(&tlsparams);
+  session_setstr("tls_protocol", protocol);
+  session_setstr("tls_keyex", keyex);
+  session_setstr("tls_cipher", cipher);
+  session_setstr("tls_mac", mac);
+}
+
 int starttls_start(void)
 {
   static int didstarttls = 0;
   int ret;
-  const char *p, *p2, *p3;
-  str tlsparams = {0};
 
   /* STARTTLS must be the last command in a pipeline, but too bad.
    * I don't think CVE-2011-0411 applies since the TLS handshake
@@ -193,13 +208,7 @@ int starttls_start(void)
     gnutls_deinit(gsession);
     return 0;
   }
-  p = gnutls_protocol_get_name(gnutls_protocol_get_version(gsession));
-  p2 = gnutls_certificate_type_get_name(gnutls_certificate_type_get(gsession));
-  p3 = gnutls_mac_get_name(gnutls_mac_get(gsession));
-  wrap_str(str_copy5s(&tlsparams, p, "/" , p2, "/", p3));
-  msg2("TLS handshake: ", tlsparams.s);
-  session_setstr("tlsparams", tlsparams.s);
-  str_free(&tlsparams);
+  set_tlsparams();
   return 1;
 }
 
