@@ -1,5 +1,8 @@
 - Fixed crash bug in STARTTLS handling of loaded DH parameters.
 
+- Added $TLS_COMPAT flag to disable certain TLS (security) features for
+  maximum compatibility with buggy clients.
+
 -------------------------------------------------------------------------------
 Changes in version 2.20
 

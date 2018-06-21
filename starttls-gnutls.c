@@ -144,8 +144,9 @@ const response* starttls_init(void)
 
   gnutls_credentials_set(gsession, GNUTLS_CRD_CERTIFICATE, x509_cred);
 
-  /* Set maximum compatibility mode. */
-  gnutls_session_enable_compatibility_mode(gsession);
+  if (getenv("TLS_COMPAT") != NULL)
+    /* Set maximum compatibility mode. */
+    gnutls_session_enable_compatibility_mode(gsession);
 
   tls_available = 1;
 
