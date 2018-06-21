@@ -1,3 +1,6 @@
+-------------------------------------------------------------------------------
+Changes in version 2.21
+
 - Fixed crash bug in STARTTLS handling of loaded DH parameters.
 
 - Added $TLS_COMPAT flag to disable certain TLS (security) features for
