@@ -1,3 +1,5 @@
+- Fixed crash bug in STARTTLS handling of loaded DH parameters.
+
 -------------------------------------------------------------------------------
 Changes in version 2.20
 

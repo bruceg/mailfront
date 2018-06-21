@@ -138,7 +138,7 @@ const response* starttls_init(void)
       return NULL;
     }
     gnutls_certificate_set_dh_params(x509_cred, dh_params);
-    gnutls_dh_params_deinit(dh_params);
+    /* Don't deinit the dh_params, since the above only stores a pointer to the params. */
   }
 
   gnutls_init(&gsession, GNUTLS_SERVER);
