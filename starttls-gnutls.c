@@ -147,9 +147,6 @@ const response* starttls_init(void)
 
   gnutls_credentials_set(gsession, GNUTLS_CRD_CERTIFICATE, x509_cred);
 
-  /* request client certificate if any. */
-  gnutls_certificate_server_set_request(gsession, GNUTLS_CERT_REQUEST);
-
   /* Set maximum compatibility mode. */
   gnutls_session_enable_compatibility_mode(gsession);
 
