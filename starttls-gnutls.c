@@ -93,7 +93,6 @@ const response* starttls_init(void)
 {
   int ret;
   gnutls_dh_params_t dh_params;
-  gnutls_priority_t priority_cache;
   gnutls_certificate_credentials_t x509_cred;
   const char *my_priority = getenv("TLS_PRIORITY");
   const char* certfile = getenv("TLS_CERTFILE");
@@ -115,9 +114,11 @@ const response* starttls_init(void)
     return 0;
   }
 
+  gnutls_init(&gsession, GNUTLS_SERVER);
+
   if (!my_priority)
     my_priority = "NORMAL";
-  ret = gnutls_priority_init(&priority_cache, my_priority, NULL);
+  ret = gnutls_priority_set_direct(gsession, my_priority, NULL);
   if (ret != GNUTLS_E_SUCCESS) {
     msg2("TLS priority error: ", gnutls_strerror(ret));
     return 0;
@@ -140,10 +141,6 @@ const response* starttls_init(void)
     gnutls_certificate_set_dh_params(x509_cred, dh_params);
     /* Don't deinit the dh_params, since the above only stores a pointer to the params. */
   }
-
-  gnutls_init(&gsession, GNUTLS_SERVER);
-
-  gnutls_priority_set(gsession, priority_cache);
 
   gnutls_credentials_set(gsession, GNUTLS_CRD_CERTIFICATE, x509_cred);
 
