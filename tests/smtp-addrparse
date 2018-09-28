@@ -1,0 +1,56 @@
+sfecho <<EOF
+MAIL FROM
+MAIL FROM 
+MAIL FROM:
+MAIL FROM<
+MAIL FROM>
+MAIL FROM me
+MAIL FROM:me
+MAIL FROM<me>
+MAIL FROM:<me>
+MAIL FROM me PARAM=VALUE
+MAIL FROM:me PARAM=VALUE
+MAIL FROM<me> PARAM=VALUE
+MAIL FROM:<me> PARAM=VALUE
+RCPT TO
+RCPT TO 
+RCPT TO:
+RCPT TO<
+RCPT TO>
+RCPT TO you
+RCPT TO:you
+RCPT TO<you>
+RCPT TO:<you>
+RCPT TO you PARAM=VALUE
+RCPT TO:you PARAM=VALUE
+RCPT TO<you> PARAM=VALUE
+RCPT TO:<you> PARAM=VALUE
+EOF
+
+<result>
+501 5.5.2 Syntax error in address parameter.^M
+501 5.5.2 Syntax error in address parameter.^M
+501 5.5.2 Syntax error in address parameter.^M
+501 5.5.2 Syntax error in address parameter.^M
+501 5.5.2 Syntax error in address parameter.^M
+250 Sender='me'.^M
+250 Sender='me'.^M
+250 Sender='me'.^M
+250 Sender='me'.^M
+250 Sender='me'. [PARAM=VALUE]^M
+250 Sender='me'. [PARAM=VALUE]^M
+250 Sender='me'. [PARAM=VALUE]^M
+250 Sender='me'. [PARAM=VALUE]^M
+501 5.5.2 Syntax error in address parameter.^M
+501 5.5.2 Syntax error in address parameter.^M
+501 5.5.2 Syntax error in address parameter.^M
+501 5.5.2 Syntax error in address parameter.^M
+501 5.5.2 Syntax error in address parameter.^M
+250 Recipient='you'.^M
+250 Recipient='you'.^M
+250 Recipient='you'.^M
+250 Recipient='you'.^M
+250 Recipient='you'. [PARAM=VALUE]^M
+250 Recipient='you'. [PARAM=VALUE]^M
+250 Recipient='you'. [PARAM=VALUE]^M
+250 Recipient='you'. [PARAM=VALUE]^M

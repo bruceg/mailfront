@@ -73,7 +73,8 @@ static const response* parse_addr_arg(void)
     }
   }
   ++i;
-  if (i > arg.len) return &resp_badaddr;
+  if (i > arg.len)
+    return (addr.len > 0 && term == SPACE) ? 0 : &resp_badaddr;
   while (i < arg.len && arg.s[i] == SPACE) ++i;
   if (!str_copyb(&params, arg.s+i, arg.len-i)) return &resp_oom;
   str_subst(&params, ' ', 0);

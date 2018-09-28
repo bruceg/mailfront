@@ -1,3 +1,5 @@
+- Fixed pre-standard SMTP address parsing.
+
 - Added key exchange and cipher info to TLS handshake logging.
 
 -------------------------------------------------------------------------------
