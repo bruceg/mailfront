@@ -14,7 +14,7 @@ stunnel $tmp/stunnel.conf 2>&1 | fixtls
 LOG5[#]: Service [stunnel] accepted connection
 220 local.host mailfront ESMTP^M
 mailfront[#]: Starting TLS handshake
-mailfront[#]: TLS handshake: TLS#.#/X.509/AEAD
+mailfront[#]: TLS handshake: TLS#.# ECDHE-RSA AES-256-GCM AEAD
 mailfront[#]: MAIL FROM:<nobody>
 250 Sender='nobody'.^M
 mailfront[#]: RCPT TO:<somebody>
